@@ -5,6 +5,15 @@ export type Objetivo = "forca" | "emagrecer" | "taf" | "saude" | "definicao" | "
 export type Caminho = "barra" | "casa";
 export type Nivel = "iniciante" | "intermediario" | "avancado";
 
+export type Sexo = "masc" | "fem";
+
+export type TafResultado = {
+  cargoId: string;
+  data: number; // timestamp
+  sexo: Sexo;
+  resultados: Record<string, number>; // provaId -> valor
+};
+
 export type ElevoUser = {
   nome?: string;
   email?: string;
@@ -18,6 +27,10 @@ export type ElevoUser = {
   diasJornada?: number;
   treinosFeitos?: number;
   streak?: number;
+  // TAF
+  tafCargoId?: string;
+  tafSexo?: Sexo;
+  tafHistorico?: TafResultado[];
 };
 
 const KEY = "elevo:user";
