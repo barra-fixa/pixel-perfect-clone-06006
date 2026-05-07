@@ -18,6 +18,7 @@ import { Route as LojaRouteImport } from './routes/loja'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as EvolucaoRouteImport } from './routes/evolucao'
 import { Route as ComunidadeRouteImport } from './routes/comunidade'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TreinoConcluidoRouteImport } from './routes/treino.concluido'
 import { Route as TreinoAtivoRouteImport } from './routes/treino.ativo'
@@ -79,6 +80,11 @@ const EvolucaoRoute = EvolucaoRouteImport.update({
 const ComunidadeRoute = ComunidadeRouteImport.update({
   id: '/comunidade',
   path: '/comunidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -169,6 +175,7 @@ const OnboardingCaminhoRoute = OnboardingCaminhoRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/comunidade': typeof ComunidadeRoute
   '/evolucao': typeof EvolucaoRoute
   '/home': typeof HomeRoute
@@ -197,6 +204,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/comunidade': typeof ComunidadeRoute
   '/evolucao': typeof EvolucaoRoute
   '/home': typeof HomeRoute
@@ -226,6 +234,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/comunidade': typeof ComunidadeRoute
   '/evolucao': typeof EvolucaoRoute
   '/home': typeof HomeRoute
@@ -256,6 +265,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/comunidade'
     | '/evolucao'
     | '/home'
@@ -284,6 +294,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/comunidade'
     | '/evolucao'
     | '/home'
@@ -312,6 +323,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/auth'
     | '/comunidade'
     | '/evolucao'
     | '/home'
@@ -341,6 +353,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
   ComunidadeRoute: typeof ComunidadeRoute
   EvolucaoRoute: typeof EvolucaoRoute
   HomeRoute: typeof HomeRoute
@@ -424,6 +437,13 @@ declare module '@tanstack/react-router' {
       path: '/comunidade'
       fullPath: '/comunidade'
       preLoaderRoute: typeof ComunidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -590,6 +610,7 @@ const TreinoRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
   ComunidadeRoute: ComunidadeRoute,
   EvolucaoRoute: EvolucaoRoute,
   HomeRoute: HomeRoute,
@@ -612,13 +633,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

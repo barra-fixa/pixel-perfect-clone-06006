@@ -4,11 +4,22 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useLocation,
+  useNavigate,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
+import { useAuth } from "@/hooks/use-auth";
+
+const PUBLIC_ROUTES = ["/", "/auth"];
+function isPublic(pathname: string) {
+  if (PUBLIC_ROUTES.includes(pathname)) return true;
+  if (pathname.startsWith("/onboarding")) return true;
+  return false;
+}
 
 function NotFoundComponent() {
   return (
@@ -109,12 +120,36 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+function AuthGate() {
+  const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const pub = isPublic(location.pathname);
+
+  useEffect(() => {
+    if (loading) return;
+    if (!isAuthenticated && !pub) {
+      navigate({ to: "/auth", replace: true });
+    }
+  }, [loading, isAuthenticated, pub, navigate]);
+
+  if (loading && !pub) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center text-sm" style={{ color: "var(--muted-foreground)" }}>
+        Carregando...
+      </div>
+    );
+  }
+  if (!isAuthenticated && !pub) return null;
+  return <Outlet />;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <AuthGate />
     </QueryClientProvider>
   );
 }
