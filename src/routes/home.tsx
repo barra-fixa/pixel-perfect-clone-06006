@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Apple, Bell, Flame, Lightbulb, Play, Trophy, Users } from "lucide-react";
+import { Apple, Bell, Flame, Lightbulb, Play, Shield, Trophy, Users } from "lucide-react";
 import { BottomNav } from "@/components/BottomNav";
 import { useElevoUser } from "@/lib/elevo-store";
 import { TREINO_DO_DIA } from "@/lib/mock-treino";
@@ -144,6 +144,32 @@ function HomePage() {
           </div>
         </Link>
       </div>
+
+      <Link
+        to="/taf"
+        className="rounded-2xl p-4 flex items-center gap-3 mb-2 transition active:scale-[0.99] relative overflow-hidden"
+        style={{
+          background:
+            "linear-gradient(135deg, color-mix(in oklab, var(--primary) 22%, var(--card)) 0%, var(--card) 80%)",
+          border: "1px solid color-mix(in oklab, var(--primary) 30%, var(--border))",
+        }}
+      >
+        <div
+          className="size-12 rounded-xl flex items-center justify-center shrink-0"
+          style={{ backgroundColor: "color-mix(in oklab, var(--primary) 22%, transparent)" }}
+        >
+          <Shield size={20} style={{ color: "var(--primary)" }} />
+        </div>
+        <div className="flex-1">
+          <div className="text-sm font-semibold">Preparação TAF</div>
+          <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+            Escolha seu cargo e simule a prova
+          </div>
+        </div>
+        <span className="text-xs font-semibold" style={{ color: "var(--primary)" }}>
+          Abrir
+        </span>
+      </Link>
 
       <Link
         to="/comunidade"
