@@ -9,10 +9,9 @@ export const Route = createFileRoute("/perfil")({
 
 const sections: { label: string; sub?: string; to?: string }[] = [
   { label: "Meu plano", sub: "Free — 13 dias para garantir o mês grátis", to: "/upgrade" },
-  { label: "Meus dados", sub: "Objetivo, nível e frequência" },
-  { label: "Minha meta", sub: "8 treinos este mês" },
-  { label: "Histórico de treinos" },
-  { label: "Notificações" },
+  { label: "Meus dados", sub: "Objetivo, nível e frequência", to: "/perfil/dados" },
+  { label: "Histórico de treinos", sub: "Veja tudo que você já fez", to: "/perfil/historico" },
+  { label: "Notificações", sub: "Lembretes de treino e água", to: "/perfil/notificacoes" },
   { label: "Suporte" },
 ];
 
