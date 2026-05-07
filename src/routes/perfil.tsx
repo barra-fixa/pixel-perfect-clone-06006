@@ -1,7 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ChevronRight, LogOut } from "lucide-react";
 import { BottomNav } from "@/components/BottomNav";
 import { useElevoUser } from "@/lib/elevo-store";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/perfil")({
   component: PerfilPage,
@@ -17,7 +18,14 @@ const sections: { label: string; sub?: string; to?: string }[] = [
 
 function PerfilPage() {
   const user = useElevoUser();
+  const navigate = useNavigate();
   const nome = user.nome ?? "Atleta Elevo";
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  };
+
   const email = user.email ?? "—";
   const initial = nome.charAt(0).toUpperCase();
 
@@ -67,7 +75,7 @@ function PerfilPage() {
         })}
       </ul>
 
-      <button className="mt-6 w-full elevo-card p-4 flex items-center justify-center gap-2 text-sm font-medium" style={{ color: "var(--destructive)" }}>
+      <button onClick={handleLogout} className="mt-6 w-full elevo-card p-4 flex items-center justify-center gap-2 text-sm font-medium" style={{ color: "var(--destructive)" }}>
         <LogOut size={16} /> Sair
       </button>
 

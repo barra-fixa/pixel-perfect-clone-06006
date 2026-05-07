@@ -120,7 +120,7 @@ function Splash() {
         <Link to="/onboarding/objetivo" className="btn-primary">
           Começar agora — grátis
         </Link>
-        <Link to="/home" className="btn-ghost w-full block text-center">
+        <Link to="/auth" className="btn-ghost w-full block text-center">
           Já tenho conta
         </Link>
         <p className="text-center text-[11px] mt-1" style={{ color: "var(--subtle)" }}>
