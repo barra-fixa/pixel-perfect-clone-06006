@@ -1,17 +1,26 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Check, X, Trophy, Calendar, RefreshCw, Home } from "lucide-react";
-import { getCargo } from "@/lib/taf-data";
+import { Check, X, Trophy, Calendar, RefreshCw, Home, History, ChevronRight } from "lucide-react";
+import { getCargo, CARGOS } from "@/lib/taf-data";
 import { useElevoUser } from "@/lib/elevo-store";
+
+type Search = { i?: number };
 
 export const Route = createFileRoute("/taf/resultado")({
   component: ResultadoPage,
+  validateSearch: (s: Record<string, unknown>): Search => ({
+    i: typeof s.i === "number" ? s.i : s.i ? Number(s.i) : undefined,
+  }),
 });
 
 function ResultadoPage() {
   const user = useElevoUser();
   const navigate = useNavigate();
-  const ultimo = (user.tafHistorico ?? []).at(-1);
+  const { i } = Route.useSearch();
+  const historico = user.tafHistorico ?? [];
+  const idx = typeof i === "number" && i >= 0 && i < historico.length ? i : historico.length - 1;
+  const ultimo = historico[idx];
   const cargo = getCargo(ultimo?.cargoId);
+
 
   if (!ultimo || !cargo) {
     return (
@@ -153,6 +162,63 @@ function ResultadoPage() {
           </div>
         ))}
       </div>
+
+      {/* Histórico */}
+      {historico.length > 1 && (
+        <div className="mt-8">
+          <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
+            <History size={14} style={{ color: "var(--secondary)" }} />
+            Histórico de simulados
+          </h2>
+          <div className="space-y-2">
+            {[...historico]
+              .map((h, originalIdx) => ({ h, originalIdx }))
+              .reverse()
+              .map(({ h, originalIdx }) => {
+                const c = CARGOS.find((c) => c.id === h.cargoId);
+                if (!c) return null;
+                const aprov = c.provas.filter(
+                  (p) => (h.resultados[p.id] ?? 0) >= p.meta[h.sexo],
+                ).length;
+                const tot = c.provas.length;
+                const okAll = aprov === tot;
+                const isAtual = originalIdx === idx;
+                return (
+                  <button
+                    key={h.data}
+                    className="selectable w-full flex items-center gap-3 text-left"
+                    data-active={isAtual}
+                    onClick={() =>
+                      navigate({ to: "/taf/resultado", search: { i: originalIdx } })
+                    }
+                  >
+                    <span className="text-2xl">{c.emoji}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold truncate">
+                        {c.sigla} · {h.sexo === "masc" ? "M" : "F"}
+                      </div>
+                      <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                        {new Date(h.data).toLocaleString("pt-BR")}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div
+                        className="text-sm font-bold"
+                        style={{ color: okAll ? "var(--primary)" : "var(--warning)" }}
+                      >
+                        {aprov}/{tot}
+                      </div>
+                      <div className="text-[10px]" style={{ color: "var(--subtle)" }}>
+                        {okAll ? "aprovado" : "parcial"}
+                      </div>
+                    </div>
+                    <ChevronRight size={16} style={{ color: "var(--subtle)" }} />
+                  </button>
+                );
+              })}
+          </div>
+        </div>
+      )}
 
       <div className="mt-8 space-y-2">
         <Link to="/taf/simulado" className="btn-primary">
