@@ -1,17 +1,26 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Check, X, Trophy, Calendar, RefreshCw, Home } from "lucide-react";
-import { getCargo } from "@/lib/taf-data";
+import { Check, X, Trophy, Calendar, RefreshCw, Home, History, ChevronRight } from "lucide-react";
+import { getCargo, CARGOS } from "@/lib/taf-data";
 import { useElevoUser } from "@/lib/elevo-store";
+
+type Search = { i?: number };
 
 export const Route = createFileRoute("/taf/resultado")({
   component: ResultadoPage,
+  validateSearch: (s: Record<string, unknown>): Search => ({
+    i: typeof s.i === "number" ? s.i : s.i ? Number(s.i) : undefined,
+  }),
 });
 
 function ResultadoPage() {
   const user = useElevoUser();
   const navigate = useNavigate();
-  const ultimo = (user.tafHistorico ?? []).at(-1);
+  const { i } = Route.useSearch();
+  const historico = user.tafHistorico ?? [];
+  const idx = typeof i === "number" && i >= 0 && i < historico.length ? i : historico.length - 1;
+  const ultimo = historico[idx];
   const cargo = getCargo(ultimo?.cargoId);
+
 
   if (!ultimo || !cargo) {
     return (
