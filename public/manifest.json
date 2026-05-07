@@ -1,0 +1,15 @@
+{
+  "name": "Elevo",
+  "short_name": "Elevo",
+  "description": "Treine em casa com plano personalizado por IA. Eleve seu treino. Eleve sua vida.",
+  "display": "standalone",
+  "background_color": "#0F0F0F",
+  "theme_color": "#1D9E75",
+  "start_url": "/",
+  "scope": "/",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
