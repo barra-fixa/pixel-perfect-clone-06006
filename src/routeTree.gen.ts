@@ -10,33 +10,154 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OnboardingSacoRouteImport } from './routes/onboarding.saco'
+import { Route as OnboardingProcessandoRouteImport } from './routes/onboarding.processando'
+import { Route as OnboardingPreviewRouteImport } from './routes/onboarding.preview'
+import { Route as OnboardingObjetivoRouteImport } from './routes/onboarding.objetivo'
+import { Route as OnboardingNivelRouteImport } from './routes/onboarding.nivel'
+import { Route as OnboardingFrequenciaRouteImport } from './routes/onboarding.frequencia'
+import { Route as OnboardingEquipamentosRouteImport } from './routes/onboarding.equipamentos'
+import { Route as OnboardingEmailRouteImport } from './routes/onboarding.email'
+import { Route as OnboardingCaminhoRouteImport } from './routes/onboarding.caminho'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OnboardingSacoRoute = OnboardingSacoRouteImport.update({
+  id: '/onboarding/saco',
+  path: '/onboarding/saco',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingProcessandoRoute = OnboardingProcessandoRouteImport.update({
+  id: '/onboarding/processando',
+  path: '/onboarding/processando',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingPreviewRoute = OnboardingPreviewRouteImport.update({
+  id: '/onboarding/preview',
+  path: '/onboarding/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingObjetivoRoute = OnboardingObjetivoRouteImport.update({
+  id: '/onboarding/objetivo',
+  path: '/onboarding/objetivo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingNivelRoute = OnboardingNivelRouteImport.update({
+  id: '/onboarding/nivel',
+  path: '/onboarding/nivel',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingFrequenciaRoute = OnboardingFrequenciaRouteImport.update({
+  id: '/onboarding/frequencia',
+  path: '/onboarding/frequencia',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingEquipamentosRoute = OnboardingEquipamentosRouteImport.update({
+  id: '/onboarding/equipamentos',
+  path: '/onboarding/equipamentos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingEmailRoute = OnboardingEmailRouteImport.update({
+  id: '/onboarding/email',
+  path: '/onboarding/email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingCaminhoRoute = OnboardingCaminhoRouteImport.update({
+  id: '/onboarding/caminho',
+  path: '/onboarding/caminho',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/onboarding/caminho': typeof OnboardingCaminhoRoute
+  '/onboarding/email': typeof OnboardingEmailRoute
+  '/onboarding/equipamentos': typeof OnboardingEquipamentosRoute
+  '/onboarding/frequencia': typeof OnboardingFrequenciaRoute
+  '/onboarding/nivel': typeof OnboardingNivelRoute
+  '/onboarding/objetivo': typeof OnboardingObjetivoRoute
+  '/onboarding/preview': typeof OnboardingPreviewRoute
+  '/onboarding/processando': typeof OnboardingProcessandoRoute
+  '/onboarding/saco': typeof OnboardingSacoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/onboarding/caminho': typeof OnboardingCaminhoRoute
+  '/onboarding/email': typeof OnboardingEmailRoute
+  '/onboarding/equipamentos': typeof OnboardingEquipamentosRoute
+  '/onboarding/frequencia': typeof OnboardingFrequenciaRoute
+  '/onboarding/nivel': typeof OnboardingNivelRoute
+  '/onboarding/objetivo': typeof OnboardingObjetivoRoute
+  '/onboarding/preview': typeof OnboardingPreviewRoute
+  '/onboarding/processando': typeof OnboardingProcessandoRoute
+  '/onboarding/saco': typeof OnboardingSacoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/onboarding/caminho': typeof OnboardingCaminhoRoute
+  '/onboarding/email': typeof OnboardingEmailRoute
+  '/onboarding/equipamentos': typeof OnboardingEquipamentosRoute
+  '/onboarding/frequencia': typeof OnboardingFrequenciaRoute
+  '/onboarding/nivel': typeof OnboardingNivelRoute
+  '/onboarding/objetivo': typeof OnboardingObjetivoRoute
+  '/onboarding/preview': typeof OnboardingPreviewRoute
+  '/onboarding/processando': typeof OnboardingProcessandoRoute
+  '/onboarding/saco': typeof OnboardingSacoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/onboarding/caminho'
+    | '/onboarding/email'
+    | '/onboarding/equipamentos'
+    | '/onboarding/frequencia'
+    | '/onboarding/nivel'
+    | '/onboarding/objetivo'
+    | '/onboarding/preview'
+    | '/onboarding/processando'
+    | '/onboarding/saco'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/onboarding/caminho'
+    | '/onboarding/email'
+    | '/onboarding/equipamentos'
+    | '/onboarding/frequencia'
+    | '/onboarding/nivel'
+    | '/onboarding/objetivo'
+    | '/onboarding/preview'
+    | '/onboarding/processando'
+    | '/onboarding/saco'
+  id:
+    | '__root__'
+    | '/'
+    | '/onboarding/caminho'
+    | '/onboarding/email'
+    | '/onboarding/equipamentos'
+    | '/onboarding/frequencia'
+    | '/onboarding/nivel'
+    | '/onboarding/objetivo'
+    | '/onboarding/preview'
+    | '/onboarding/processando'
+    | '/onboarding/saco'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  OnboardingCaminhoRoute: typeof OnboardingCaminhoRoute
+  OnboardingEmailRoute: typeof OnboardingEmailRoute
+  OnboardingEquipamentosRoute: typeof OnboardingEquipamentosRoute
+  OnboardingFrequenciaRoute: typeof OnboardingFrequenciaRoute
+  OnboardingNivelRoute: typeof OnboardingNivelRoute
+  OnboardingObjetivoRoute: typeof OnboardingObjetivoRoute
+  OnboardingPreviewRoute: typeof OnboardingPreviewRoute
+  OnboardingProcessandoRoute: typeof OnboardingProcessandoRoute
+  OnboardingSacoRoute: typeof OnboardingSacoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,12 +169,94 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/onboarding/saco': {
+      id: '/onboarding/saco'
+      path: '/onboarding/saco'
+      fullPath: '/onboarding/saco'
+      preLoaderRoute: typeof OnboardingSacoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/processando': {
+      id: '/onboarding/processando'
+      path: '/onboarding/processando'
+      fullPath: '/onboarding/processando'
+      preLoaderRoute: typeof OnboardingProcessandoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/preview': {
+      id: '/onboarding/preview'
+      path: '/onboarding/preview'
+      fullPath: '/onboarding/preview'
+      preLoaderRoute: typeof OnboardingPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/objetivo': {
+      id: '/onboarding/objetivo'
+      path: '/onboarding/objetivo'
+      fullPath: '/onboarding/objetivo'
+      preLoaderRoute: typeof OnboardingObjetivoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/nivel': {
+      id: '/onboarding/nivel'
+      path: '/onboarding/nivel'
+      fullPath: '/onboarding/nivel'
+      preLoaderRoute: typeof OnboardingNivelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/frequencia': {
+      id: '/onboarding/frequencia'
+      path: '/onboarding/frequencia'
+      fullPath: '/onboarding/frequencia'
+      preLoaderRoute: typeof OnboardingFrequenciaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/equipamentos': {
+      id: '/onboarding/equipamentos'
+      path: '/onboarding/equipamentos'
+      fullPath: '/onboarding/equipamentos'
+      preLoaderRoute: typeof OnboardingEquipamentosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/email': {
+      id: '/onboarding/email'
+      path: '/onboarding/email'
+      fullPath: '/onboarding/email'
+      preLoaderRoute: typeof OnboardingEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/caminho': {
+      id: '/onboarding/caminho'
+      path: '/onboarding/caminho'
+      fullPath: '/onboarding/caminho'
+      preLoaderRoute: typeof OnboardingCaminhoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  OnboardingCaminhoRoute: OnboardingCaminhoRoute,
+  OnboardingEmailRoute: OnboardingEmailRoute,
+  OnboardingEquipamentosRoute: OnboardingEquipamentosRoute,
+  OnboardingFrequenciaRoute: OnboardingFrequenciaRoute,
+  OnboardingNivelRoute: OnboardingNivelRoute,
+  OnboardingObjetivoRoute: OnboardingObjetivoRoute,
+  OnboardingPreviewRoute: OnboardingPreviewRoute,
+  OnboardingProcessandoRoute: OnboardingProcessandoRoute,
+  OnboardingSacoRoute: OnboardingSacoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
