@@ -22,6 +22,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as TreinoConcluidoRouteImport } from './routes/treino.concluido'
 import { Route as TreinoAtivoRouteImport } from './routes/treino.ativo'
 import { Route as TafSimuladoRouteImport } from './routes/taf.simulado'
+import { Route as TafResultadoRouteImport } from './routes/taf.resultado'
 import { Route as OnboardingSacoRouteImport } from './routes/onboarding.saco'
 import { Route as OnboardingProcessandoRouteImport } from './routes/onboarding.processando'
 import { Route as OnboardingPreviewRouteImport } from './routes/onboarding.preview'
@@ -97,6 +98,11 @@ const TafSimuladoRoute = TafSimuladoRouteImport.update({
   path: '/simulado',
   getParentRoute: () => TafRoute,
 } as any)
+const TafResultadoRoute = TafResultadoRouteImport.update({
+  id: '/resultado',
+  path: '/resultado',
+  getParentRoute: () => TafRoute,
+} as any)
 const OnboardingSacoRoute = OnboardingSacoRouteImport.update({
   id: '/onboarding/saco',
   path: '/onboarding/saco',
@@ -163,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/processando': typeof OnboardingProcessandoRoute
   '/onboarding/saco': typeof OnboardingSacoRoute
+  '/taf/resultado': typeof TafResultadoRoute
   '/taf/simulado': typeof TafSimuladoRoute
   '/treino/ativo': typeof TreinoAtivoRoute
   '/treino/concluido': typeof TreinoConcluidoRoute
@@ -187,6 +194,7 @@ export interface FileRoutesByTo {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/processando': typeof OnboardingProcessandoRoute
   '/onboarding/saco': typeof OnboardingSacoRoute
+  '/taf/resultado': typeof TafResultadoRoute
   '/taf/simulado': typeof TafSimuladoRoute
   '/treino/ativo': typeof TreinoAtivoRoute
   '/treino/concluido': typeof TreinoConcluidoRoute
@@ -212,6 +220,7 @@ export interface FileRoutesById {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/processando': typeof OnboardingProcessandoRoute
   '/onboarding/saco': typeof OnboardingSacoRoute
+  '/taf/resultado': typeof TafResultadoRoute
   '/taf/simulado': typeof TafSimuladoRoute
   '/treino/ativo': typeof TreinoAtivoRoute
   '/treino/concluido': typeof TreinoConcluidoRoute
@@ -238,6 +247,7 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/processando'
     | '/onboarding/saco'
+    | '/taf/resultado'
     | '/taf/simulado'
     | '/treino/ativo'
     | '/treino/concluido'
@@ -262,6 +272,7 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/processando'
     | '/onboarding/saco'
+    | '/taf/resultado'
     | '/taf/simulado'
     | '/treino/ativo'
     | '/treino/concluido'
@@ -286,6 +297,7 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/processando'
     | '/onboarding/saco'
+    | '/taf/resultado'
     | '/taf/simulado'
     | '/treino/ativo'
     | '/treino/concluido'
@@ -406,6 +418,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TafSimuladoRouteImport
       parentRoute: typeof TafRoute
     }
+    '/taf/resultado': {
+      id: '/taf/resultado'
+      path: '/resultado'
+      fullPath: '/taf/resultado'
+      preLoaderRoute: typeof TafResultadoRouteImport
+      parentRoute: typeof TafRoute
+    }
     '/onboarding/saco': {
       id: '/onboarding/saco'
       path: '/onboarding/saco'
@@ -473,10 +492,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface TafRouteChildren {
+  TafResultadoRoute: typeof TafResultadoRoute
   TafSimuladoRoute: typeof TafSimuladoRoute
 }
 
 const TafRouteChildren: TafRouteChildren = {
+  TafResultadoRoute: TafResultadoRoute,
   TafSimuladoRoute: TafSimuladoRoute,
 }
 

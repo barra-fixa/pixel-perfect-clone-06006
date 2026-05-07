@@ -80,7 +80,7 @@ function SimuladoPage() {
           { cargoId: cargo.id, data: Date.now(), sexo, resultados: novos },
         ],
       });
-      navigate({ to: "/taf" });
+      navigate({ to: "/taf/resultado" });
     } else {
       setIdx(idx + 1);
     }
