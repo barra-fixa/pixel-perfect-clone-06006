@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Bell, Flame, Lightbulb, Play, Trophy } from "lucide-react";
+import { Apple, Bell, Flame, Lightbulb, Play, Trophy, Users } from "lucide-react";
 import { BottomNav } from "@/components/BottomNav";
 import { useElevoUser } from "@/lib/elevo-store";
 import { TREINO_DO_DIA } from "@/lib/mock-treino";
@@ -117,9 +117,36 @@ function HomePage() {
         </div>
       </div>
 
-      {/* desafio */}
+      {/* atalhos */}
+      <div className="grid grid-cols-2 gap-3 mb-3">
+        <Link to="/nutricao" className="elevo-card p-4 transition active:scale-[0.98]">
+          <div
+            className="size-10 rounded-xl flex items-center justify-center mb-2"
+            style={{ backgroundColor: "color-mix(in oklab, var(--primary) 18%, transparent)" }}
+          >
+            <Apple size={18} style={{ color: "var(--primary)" }} />
+          </div>
+          <div className="text-sm font-semibold">Nutrição</div>
+          <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+            Pré, pós e hidratação
+          </div>
+        </Link>
+        <Link to="/comunidade" className="elevo-card p-4 transition active:scale-[0.98]">
+          <div
+            className="size-10 rounded-xl flex items-center justify-center mb-2"
+            style={{ backgroundColor: "color-mix(in oklab, var(--secondary) 20%, transparent)" }}
+          >
+            <Users size={18} style={{ color: "var(--secondary)" }} />
+          </div>
+          <div className="text-sm font-semibold">Comunidade</div>
+          <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+            Desafios e ranking
+          </div>
+        </Link>
+      </div>
+
       <Link
-        to="/loja"
+        to="/comunidade"
         className="elevo-card p-4 flex items-center gap-3 mb-2 transition active:scale-[0.99]"
       >
         <div

@@ -12,9 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UpgradeRouteImport } from './routes/upgrade'
 import { Route as TreinoRouteImport } from './routes/treino'
 import { Route as PerfilRouteImport } from './routes/perfil'
+import { Route as NutricaoRouteImport } from './routes/nutricao'
 import { Route as LojaRouteImport } from './routes/loja'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as EvolucaoRouteImport } from './routes/evolucao'
+import { Route as ComunidadeRouteImport } from './routes/comunidade'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TreinoConcluidoRouteImport } from './routes/treino.concluido'
 import { Route as TreinoAtivoRouteImport } from './routes/treino.ativo'
@@ -43,6 +45,11 @@ const PerfilRoute = PerfilRouteImport.update({
   path: '/perfil',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NutricaoRoute = NutricaoRouteImport.update({
+  id: '/nutricao',
+  path: '/nutricao',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LojaRoute = LojaRouteImport.update({
   id: '/loja',
   path: '/loja',
@@ -56,6 +63,11 @@ const HomeRoute = HomeRouteImport.update({
 const EvolucaoRoute = EvolucaoRouteImport.update({
   id: '/evolucao',
   path: '/evolucao',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComunidadeRoute = ComunidadeRouteImport.update({
+  id: '/comunidade',
+  path: '/comunidade',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -121,9 +133,11 @@ const OnboardingCaminhoRoute = OnboardingCaminhoRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/comunidade': typeof ComunidadeRoute
   '/evolucao': typeof EvolucaoRoute
   '/home': typeof HomeRoute
   '/loja': typeof LojaRoute
+  '/nutricao': typeof NutricaoRoute
   '/perfil': typeof PerfilRoute
   '/treino': typeof TreinoRouteWithChildren
   '/upgrade': typeof UpgradeRoute
@@ -141,9 +155,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/comunidade': typeof ComunidadeRoute
   '/evolucao': typeof EvolucaoRoute
   '/home': typeof HomeRoute
   '/loja': typeof LojaRoute
+  '/nutricao': typeof NutricaoRoute
   '/perfil': typeof PerfilRoute
   '/treino': typeof TreinoRouteWithChildren
   '/upgrade': typeof UpgradeRoute
@@ -162,9 +178,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/comunidade': typeof ComunidadeRoute
   '/evolucao': typeof EvolucaoRoute
   '/home': typeof HomeRoute
   '/loja': typeof LojaRoute
+  '/nutricao': typeof NutricaoRoute
   '/perfil': typeof PerfilRoute
   '/treino': typeof TreinoRouteWithChildren
   '/upgrade': typeof UpgradeRoute
@@ -184,9 +202,11 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/comunidade'
     | '/evolucao'
     | '/home'
     | '/loja'
+    | '/nutricao'
     | '/perfil'
     | '/treino'
     | '/upgrade'
@@ -204,9 +224,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/comunidade'
     | '/evolucao'
     | '/home'
     | '/loja'
+    | '/nutricao'
     | '/perfil'
     | '/treino'
     | '/upgrade'
@@ -224,9 +246,11 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/comunidade'
     | '/evolucao'
     | '/home'
     | '/loja'
+    | '/nutricao'
     | '/perfil'
     | '/treino'
     | '/upgrade'
@@ -245,9 +269,11 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ComunidadeRoute: typeof ComunidadeRoute
   EvolucaoRoute: typeof EvolucaoRoute
   HomeRoute: typeof HomeRoute
   LojaRoute: typeof LojaRoute
+  NutricaoRoute: typeof NutricaoRoute
   PerfilRoute: typeof PerfilRoute
   TreinoRoute: typeof TreinoRouteWithChildren
   UpgradeRoute: typeof UpgradeRoute
@@ -285,6 +311,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PerfilRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/nutricao': {
+      id: '/nutricao'
+      path: '/nutricao'
+      fullPath: '/nutricao'
+      preLoaderRoute: typeof NutricaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/loja': {
       id: '/loja'
       path: '/loja'
@@ -304,6 +337,13 @@ declare module '@tanstack/react-router' {
       path: '/evolucao'
       fullPath: '/evolucao'
       preLoaderRoute: typeof EvolucaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/comunidade': {
+      id: '/comunidade'
+      path: '/comunidade'
+      fullPath: '/comunidade'
+      preLoaderRoute: typeof ComunidadeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -408,9 +448,11 @@ const TreinoRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ComunidadeRoute: ComunidadeRoute,
   EvolucaoRoute: EvolucaoRoute,
   HomeRoute: HomeRoute,
   LojaRoute: LojaRoute,
+  NutricaoRoute: NutricaoRoute,
   PerfilRoute: PerfilRoute,
   TreinoRoute: TreinoRouteWithChildren,
   UpgradeRoute: UpgradeRoute,
