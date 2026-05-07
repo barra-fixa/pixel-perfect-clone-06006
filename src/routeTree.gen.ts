@@ -23,6 +23,9 @@ import { Route as TreinoConcluidoRouteImport } from './routes/treino.concluido'
 import { Route as TreinoAtivoRouteImport } from './routes/treino.ativo'
 import { Route as TafSimuladoRouteImport } from './routes/taf.simulado'
 import { Route as TafResultadoRouteImport } from './routes/taf.resultado'
+import { Route as PerfilNotificacoesRouteImport } from './routes/perfil.notificacoes'
+import { Route as PerfilHistoricoRouteImport } from './routes/perfil.historico'
+import { Route as PerfilDadosRouteImport } from './routes/perfil.dados'
 import { Route as OnboardingSacoRouteImport } from './routes/onboarding.saco'
 import { Route as OnboardingProcessandoRouteImport } from './routes/onboarding.processando'
 import { Route as OnboardingPreviewRouteImport } from './routes/onboarding.preview'
@@ -103,6 +106,21 @@ const TafResultadoRoute = TafResultadoRouteImport.update({
   path: '/resultado',
   getParentRoute: () => TafRoute,
 } as any)
+const PerfilNotificacoesRoute = PerfilNotificacoesRouteImport.update({
+  id: '/notificacoes',
+  path: '/notificacoes',
+  getParentRoute: () => PerfilRoute,
+} as any)
+const PerfilHistoricoRoute = PerfilHistoricoRouteImport.update({
+  id: '/historico',
+  path: '/historico',
+  getParentRoute: () => PerfilRoute,
+} as any)
+const PerfilDadosRoute = PerfilDadosRouteImport.update({
+  id: '/dados',
+  path: '/dados',
+  getParentRoute: () => PerfilRoute,
+} as any)
 const OnboardingSacoRoute = OnboardingSacoRouteImport.update({
   id: '/onboarding/saco',
   path: '/onboarding/saco',
@@ -156,7 +174,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/loja': typeof LojaRoute
   '/nutricao': typeof NutricaoRoute
-  '/perfil': typeof PerfilRoute
+  '/perfil': typeof PerfilRouteWithChildren
   '/taf': typeof TafRouteWithChildren
   '/treino': typeof TreinoRouteWithChildren
   '/upgrade': typeof UpgradeRoute
@@ -169,6 +187,9 @@ export interface FileRoutesByFullPath {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/processando': typeof OnboardingProcessandoRoute
   '/onboarding/saco': typeof OnboardingSacoRoute
+  '/perfil/dados': typeof PerfilDadosRoute
+  '/perfil/historico': typeof PerfilHistoricoRoute
+  '/perfil/notificacoes': typeof PerfilNotificacoesRoute
   '/taf/resultado': typeof TafResultadoRoute
   '/taf/simulado': typeof TafSimuladoRoute
   '/treino/ativo': typeof TreinoAtivoRoute
@@ -181,7 +202,7 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/loja': typeof LojaRoute
   '/nutricao': typeof NutricaoRoute
-  '/perfil': typeof PerfilRoute
+  '/perfil': typeof PerfilRouteWithChildren
   '/taf': typeof TafRouteWithChildren
   '/treino': typeof TreinoRouteWithChildren
   '/upgrade': typeof UpgradeRoute
@@ -194,6 +215,9 @@ export interface FileRoutesByTo {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/processando': typeof OnboardingProcessandoRoute
   '/onboarding/saco': typeof OnboardingSacoRoute
+  '/perfil/dados': typeof PerfilDadosRoute
+  '/perfil/historico': typeof PerfilHistoricoRoute
+  '/perfil/notificacoes': typeof PerfilNotificacoesRoute
   '/taf/resultado': typeof TafResultadoRoute
   '/taf/simulado': typeof TafSimuladoRoute
   '/treino/ativo': typeof TreinoAtivoRoute
@@ -207,7 +231,7 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/loja': typeof LojaRoute
   '/nutricao': typeof NutricaoRoute
-  '/perfil': typeof PerfilRoute
+  '/perfil': typeof PerfilRouteWithChildren
   '/taf': typeof TafRouteWithChildren
   '/treino': typeof TreinoRouteWithChildren
   '/upgrade': typeof UpgradeRoute
@@ -220,6 +244,9 @@ export interface FileRoutesById {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/processando': typeof OnboardingProcessandoRoute
   '/onboarding/saco': typeof OnboardingSacoRoute
+  '/perfil/dados': typeof PerfilDadosRoute
+  '/perfil/historico': typeof PerfilHistoricoRoute
+  '/perfil/notificacoes': typeof PerfilNotificacoesRoute
   '/taf/resultado': typeof TafResultadoRoute
   '/taf/simulado': typeof TafSimuladoRoute
   '/treino/ativo': typeof TreinoAtivoRoute
@@ -247,6 +274,9 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/processando'
     | '/onboarding/saco'
+    | '/perfil/dados'
+    | '/perfil/historico'
+    | '/perfil/notificacoes'
     | '/taf/resultado'
     | '/taf/simulado'
     | '/treino/ativo'
@@ -272,6 +302,9 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/processando'
     | '/onboarding/saco'
+    | '/perfil/dados'
+    | '/perfil/historico'
+    | '/perfil/notificacoes'
     | '/taf/resultado'
     | '/taf/simulado'
     | '/treino/ativo'
@@ -297,6 +330,9 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/processando'
     | '/onboarding/saco'
+    | '/perfil/dados'
+    | '/perfil/historico'
+    | '/perfil/notificacoes'
     | '/taf/resultado'
     | '/taf/simulado'
     | '/treino/ativo'
@@ -310,7 +346,7 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   LojaRoute: typeof LojaRoute
   NutricaoRoute: typeof NutricaoRoute
-  PerfilRoute: typeof PerfilRoute
+  PerfilRoute: typeof PerfilRouteWithChildren
   TafRoute: typeof TafRouteWithChildren
   TreinoRoute: typeof TreinoRouteWithChildren
   UpgradeRoute: typeof UpgradeRoute
@@ -425,6 +461,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TafResultadoRouteImport
       parentRoute: typeof TafRoute
     }
+    '/perfil/notificacoes': {
+      id: '/perfil/notificacoes'
+      path: '/notificacoes'
+      fullPath: '/perfil/notificacoes'
+      preLoaderRoute: typeof PerfilNotificacoesRouteImport
+      parentRoute: typeof PerfilRoute
+    }
+    '/perfil/historico': {
+      id: '/perfil/historico'
+      path: '/historico'
+      fullPath: '/perfil/historico'
+      preLoaderRoute: typeof PerfilHistoricoRouteImport
+      parentRoute: typeof PerfilRoute
+    }
+    '/perfil/dados': {
+      id: '/perfil/dados'
+      path: '/dados'
+      fullPath: '/perfil/dados'
+      preLoaderRoute: typeof PerfilDadosRouteImport
+      parentRoute: typeof PerfilRoute
+    }
     '/onboarding/saco': {
       id: '/onboarding/saco'
       path: '/onboarding/saco'
@@ -491,6 +548,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface PerfilRouteChildren {
+  PerfilDadosRoute: typeof PerfilDadosRoute
+  PerfilHistoricoRoute: typeof PerfilHistoricoRoute
+  PerfilNotificacoesRoute: typeof PerfilNotificacoesRoute
+}
+
+const PerfilRouteChildren: PerfilRouteChildren = {
+  PerfilDadosRoute: PerfilDadosRoute,
+  PerfilHistoricoRoute: PerfilHistoricoRoute,
+  PerfilNotificacoesRoute: PerfilNotificacoesRoute,
+}
+
+const PerfilRouteWithChildren =
+  PerfilRoute._addFileChildren(PerfilRouteChildren)
+
 interface TafRouteChildren {
   TafResultadoRoute: typeof TafResultadoRoute
   TafSimuladoRoute: typeof TafSimuladoRoute
@@ -523,7 +595,7 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   LojaRoute: LojaRoute,
   NutricaoRoute: NutricaoRoute,
-  PerfilRoute: PerfilRoute,
+  PerfilRoute: PerfilRouteWithChildren,
   TafRoute: TafRouteWithChildren,
   TreinoRoute: TreinoRouteWithChildren,
   UpgradeRoute: UpgradeRoute,

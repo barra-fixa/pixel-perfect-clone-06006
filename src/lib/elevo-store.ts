@@ -14,6 +14,21 @@ export type TafResultado = {
   resultados: Record<string, number>; // provaId -> valor
 };
 
+export type TreinoFeito = {
+  id: string;
+  nome: string;
+  data: number;
+  duracaoMin: number;
+  exercicios: number;
+};
+
+export type Notificacoes = {
+  treino: boolean;
+  agua: boolean;
+  comunidade: boolean;
+  horario: string; // "HH:MM"
+};
+
 export type ElevoUser = {
   nome?: string;
   email?: string;
@@ -31,6 +46,10 @@ export type ElevoUser = {
   tafCargoId?: string;
   tafSexo?: Sexo;
   tafHistorico?: TafResultado[];
+  // Histórico
+  historicoTreinos?: TreinoFeito[];
+  // Notificações
+  notificacoes?: Notificacoes;
 };
 
 const KEY = "elevo:user";
