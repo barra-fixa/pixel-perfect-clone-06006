@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { OnboardingShell } from "@/components/OnboardingShell";
 import { saveUser } from "@/lib/elevo-store";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/onboarding/email")({
   component: EmailPage,
@@ -11,26 +12,50 @@ function EmailPage() {
   const navigate = useNavigate();
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
   const [opt, setOpt] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
 
-  const valido = nome.trim().length >= 2 && /\S+@\S+\.\S+/.test(email);
+  const valido =
+    nome.trim().length >= 2 && /\S+@\S+\.\S+/.test(email) && senha.length >= 6;
+
+  const handleSubmit = async () => {
+    setErro(null);
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password: senha,
+        options: {
+          emailRedirectTo: `${window.location.origin}/onboarding/preview`,
+          data: { nome: nome.trim() },
+        },
+      });
+      if (error) throw error;
+      saveUser({ nome: nome.trim(), email: email.trim() });
+      navigate({ to: "/onboarding/preview" });
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : "Não foi possível criar a conta");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <OnboardingShell
       title="Para onde enviamos seu plano?"
-      subtitle="Salve seu plano personalizado gratuitamente"
+      subtitle="Crie sua conta grátis para salvar seu plano"
       footer={
         <>
-          <button
-            className="btn-primary"
-            disabled={!valido}
-            onClick={() => {
-              saveUser({ nome: nome.trim(), email: email.trim() });
-              navigate({ to: "/onboarding/preview" });
-            }}
-          >
-            Receber meu plano grátis
+          <button className="btn-primary" disabled={!valido || loading} onClick={handleSubmit}>
+            {loading ? "Criando..." : "Receber meu plano grátis"}
           </button>
+          {erro && (
+            <p className="text-center mt-2 text-xs" style={{ color: "var(--destructive)" }}>
+              {erro}
+            </p>
+          )}
           <p className="text-center mt-3 text-xs" style={{ color: "var(--subtle)" }}>
             Sem spam. Cancele quando quiser.
           </p>
@@ -60,6 +85,18 @@ function EmailPage() {
             placeholder="seu@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="text-xs font-medium mb-1.5 block" style={{ color: "var(--muted-foreground)" }}>
+            Senha
+          </label>
+          <input
+            type="password"
+            className="input-field"
+            placeholder="Mínimo 6 caracteres"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
           />
         </div>
         <label className="flex items-start gap-3 mt-2 cursor-pointer">
