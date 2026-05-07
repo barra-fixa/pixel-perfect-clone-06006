@@ -44,7 +44,7 @@ function CaminhoPage() {
             <Dumbbell size={22} />
           </div>
           <div>
-            <div className="font-semibold">Tenho barra instalada</div>
+            <div className="font-semibold">Com minha Barra Fixa</div>
             <div className="text-sm" style={{ color: "var(--muted-foreground)" }}>
               Calistenia e progressão na barra
             </div>
