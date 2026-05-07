@@ -9,7 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UpgradeRouteImport } from './routes/upgrade'
+import { Route as TreinoRouteImport } from './routes/treino'
+import { Route as PerfilRouteImport } from './routes/perfil'
+import { Route as LojaRouteImport } from './routes/loja'
+import { Route as HomeRouteImport } from './routes/home'
+import { Route as EvolucaoRouteImport } from './routes/evolucao'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TreinoConcluidoRouteImport } from './routes/treino.concluido'
+import { Route as TreinoAtivoRouteImport } from './routes/treino.ativo'
 import { Route as OnboardingSacoRouteImport } from './routes/onboarding.saco'
 import { Route as OnboardingProcessandoRouteImport } from './routes/onboarding.processando'
 import { Route as OnboardingPreviewRouteImport } from './routes/onboarding.preview'
@@ -20,10 +28,50 @@ import { Route as OnboardingEquipamentosRouteImport } from './routes/onboarding.
 import { Route as OnboardingEmailRouteImport } from './routes/onboarding.email'
 import { Route as OnboardingCaminhoRouteImport } from './routes/onboarding.caminho'
 
+const UpgradeRoute = UpgradeRouteImport.update({
+  id: '/upgrade',
+  path: '/upgrade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TreinoRoute = TreinoRouteImport.update({
+  id: '/treino',
+  path: '/treino',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilRoute = PerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LojaRoute = LojaRouteImport.update({
+  id: '/loja',
+  path: '/loja',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EvolucaoRoute = EvolucaoRouteImport.update({
+  id: '/evolucao',
+  path: '/evolucao',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const TreinoConcluidoRoute = TreinoConcluidoRouteImport.update({
+  id: '/concluido',
+  path: '/concluido',
+  getParentRoute: () => TreinoRoute,
+} as any)
+const TreinoAtivoRoute = TreinoAtivoRouteImport.update({
+  id: '/ativo',
+  path: '/ativo',
+  getParentRoute: () => TreinoRoute,
 } as any)
 const OnboardingSacoRoute = OnboardingSacoRouteImport.update({
   id: '/onboarding/saco',
@@ -73,6 +121,12 @@ const OnboardingCaminhoRoute = OnboardingCaminhoRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/evolucao': typeof EvolucaoRoute
+  '/home': typeof HomeRoute
+  '/loja': typeof LojaRoute
+  '/perfil': typeof PerfilRoute
+  '/treino': typeof TreinoRouteWithChildren
+  '/upgrade': typeof UpgradeRoute
   '/onboarding/caminho': typeof OnboardingCaminhoRoute
   '/onboarding/email': typeof OnboardingEmailRoute
   '/onboarding/equipamentos': typeof OnboardingEquipamentosRoute
@@ -82,9 +136,17 @@ export interface FileRoutesByFullPath {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/processando': typeof OnboardingProcessandoRoute
   '/onboarding/saco': typeof OnboardingSacoRoute
+  '/treino/ativo': typeof TreinoAtivoRoute
+  '/treino/concluido': typeof TreinoConcluidoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/evolucao': typeof EvolucaoRoute
+  '/home': typeof HomeRoute
+  '/loja': typeof LojaRoute
+  '/perfil': typeof PerfilRoute
+  '/treino': typeof TreinoRouteWithChildren
+  '/upgrade': typeof UpgradeRoute
   '/onboarding/caminho': typeof OnboardingCaminhoRoute
   '/onboarding/email': typeof OnboardingEmailRoute
   '/onboarding/equipamentos': typeof OnboardingEquipamentosRoute
@@ -94,10 +156,18 @@ export interface FileRoutesByTo {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/processando': typeof OnboardingProcessandoRoute
   '/onboarding/saco': typeof OnboardingSacoRoute
+  '/treino/ativo': typeof TreinoAtivoRoute
+  '/treino/concluido': typeof TreinoConcluidoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/evolucao': typeof EvolucaoRoute
+  '/home': typeof HomeRoute
+  '/loja': typeof LojaRoute
+  '/perfil': typeof PerfilRoute
+  '/treino': typeof TreinoRouteWithChildren
+  '/upgrade': typeof UpgradeRoute
   '/onboarding/caminho': typeof OnboardingCaminhoRoute
   '/onboarding/email': typeof OnboardingEmailRoute
   '/onboarding/equipamentos': typeof OnboardingEquipamentosRoute
@@ -107,11 +177,19 @@ export interface FileRoutesById {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/processando': typeof OnboardingProcessandoRoute
   '/onboarding/saco': typeof OnboardingSacoRoute
+  '/treino/ativo': typeof TreinoAtivoRoute
+  '/treino/concluido': typeof TreinoConcluidoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/evolucao'
+    | '/home'
+    | '/loja'
+    | '/perfil'
+    | '/treino'
+    | '/upgrade'
     | '/onboarding/caminho'
     | '/onboarding/email'
     | '/onboarding/equipamentos'
@@ -121,9 +199,17 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/processando'
     | '/onboarding/saco'
+    | '/treino/ativo'
+    | '/treino/concluido'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/evolucao'
+    | '/home'
+    | '/loja'
+    | '/perfil'
+    | '/treino'
+    | '/upgrade'
     | '/onboarding/caminho'
     | '/onboarding/email'
     | '/onboarding/equipamentos'
@@ -133,9 +219,17 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/processando'
     | '/onboarding/saco'
+    | '/treino/ativo'
+    | '/treino/concluido'
   id:
     | '__root__'
     | '/'
+    | '/evolucao'
+    | '/home'
+    | '/loja'
+    | '/perfil'
+    | '/treino'
+    | '/upgrade'
     | '/onboarding/caminho'
     | '/onboarding/email'
     | '/onboarding/equipamentos'
@@ -145,10 +239,18 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/processando'
     | '/onboarding/saco'
+    | '/treino/ativo'
+    | '/treino/concluido'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  EvolucaoRoute: typeof EvolucaoRoute
+  HomeRoute: typeof HomeRoute
+  LojaRoute: typeof LojaRoute
+  PerfilRoute: typeof PerfilRoute
+  TreinoRoute: typeof TreinoRouteWithChildren
+  UpgradeRoute: typeof UpgradeRoute
   OnboardingCaminhoRoute: typeof OnboardingCaminhoRoute
   OnboardingEmailRoute: typeof OnboardingEmailRoute
   OnboardingEquipamentosRoute: typeof OnboardingEquipamentosRoute
@@ -162,12 +264,68 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/upgrade': {
+      id: '/upgrade'
+      path: '/upgrade'
+      fullPath: '/upgrade'
+      preLoaderRoute: typeof UpgradeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/treino': {
+      id: '/treino'
+      path: '/treino'
+      fullPath: '/treino'
+      preLoaderRoute: typeof TreinoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/loja': {
+      id: '/loja'
+      path: '/loja'
+      fullPath: '/loja'
+      preLoaderRoute: typeof LojaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/evolucao': {
+      id: '/evolucao'
+      path: '/evolucao'
+      fullPath: '/evolucao'
+      preLoaderRoute: typeof EvolucaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/treino/concluido': {
+      id: '/treino/concluido'
+      path: '/concluido'
+      fullPath: '/treino/concluido'
+      preLoaderRoute: typeof TreinoConcluidoRouteImport
+      parentRoute: typeof TreinoRoute
+    }
+    '/treino/ativo': {
+      id: '/treino/ativo'
+      path: '/ativo'
+      fullPath: '/treino/ativo'
+      preLoaderRoute: typeof TreinoAtivoRouteImport
+      parentRoute: typeof TreinoRoute
     }
     '/onboarding/saco': {
       id: '/onboarding/saco'
@@ -235,8 +393,27 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface TreinoRouteChildren {
+  TreinoAtivoRoute: typeof TreinoAtivoRoute
+  TreinoConcluidoRoute: typeof TreinoConcluidoRoute
+}
+
+const TreinoRouteChildren: TreinoRouteChildren = {
+  TreinoAtivoRoute: TreinoAtivoRoute,
+  TreinoConcluidoRoute: TreinoConcluidoRoute,
+}
+
+const TreinoRouteWithChildren =
+  TreinoRoute._addFileChildren(TreinoRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  EvolucaoRoute: EvolucaoRoute,
+  HomeRoute: HomeRoute,
+  LojaRoute: LojaRoute,
+  PerfilRoute: PerfilRoute,
+  TreinoRoute: TreinoRouteWithChildren,
+  UpgradeRoute: UpgradeRoute,
   OnboardingCaminhoRoute: OnboardingCaminhoRoute,
   OnboardingEmailRoute: OnboardingEmailRoute,
   OnboardingEquipamentosRoute: OnboardingEquipamentosRoute,
