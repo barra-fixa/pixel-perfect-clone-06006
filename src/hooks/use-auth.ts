@@ -9,7 +9,7 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
@@ -18,6 +18,10 @@ export function useAuth() {
           email: s.user.email ?? undefined,
           nome: meta?.nome ?? meta?.full_name ?? undefined,
         });
+        // defer to avoid running supabase calls inside the auth callback
+        setTimeout(() => { void hydrateFromSupabase(); }, 0);
+      } else if (event === "SIGNED_OUT") {
+        clearLocalCache();
       }
     });
 
@@ -25,6 +29,7 @@ export function useAuth() {
       setSession(data.session);
       setUser(data.session?.user ?? null);
       setLoading(false);
+      if (data.session) void hydrateFromSupabase();
     });
 
     return () => sub.subscription.unsubscribe();
