@@ -18,7 +18,7 @@ function EmailPage() {
   const [erro, setErro] = useState<string | null>(null);
 
   const valido =
-    nome.trim().length >= 2 && /\S+@\S+\.\S+/.test(email) && senha.length >= 6;
+    nome.trim().length >= 2 && /\S+@\S+\.\S+/.test(email) && senha.length >= 1;
 
   const handleSubmit = async () => {
     setErro(null);
