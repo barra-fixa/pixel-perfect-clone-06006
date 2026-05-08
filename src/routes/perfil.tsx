@@ -76,6 +76,25 @@ function PerfilPage() {
         })}
       </ul>
 
+      <section className="mt-6">
+        <h2 className="text-sm font-semibold mb-3">Badges</h2>
+        <div className="grid grid-cols-4 gap-2">
+          {listBadges(user).map((b) => (
+            <div
+              key={b.id}
+              className="elevo-card p-2 text-center"
+              title={`${b.titulo} — ${b.descricao}`}
+              style={{ opacity: b.unlocked ? 1 : 0.35 }}
+            >
+              <div className="text-2xl">{b.emoji}</div>
+              <div className="text-[10px] mt-1 leading-tight" style={{ color: "var(--muted-foreground)" }}>
+                {b.titulo}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <button onClick={handleLogout} className="mt-6 w-full elevo-card p-4 flex items-center justify-center gap-2 text-sm font-medium" style={{ color: "var(--destructive)" }}>
         <LogOut size={16} /> Sair
       </button>
