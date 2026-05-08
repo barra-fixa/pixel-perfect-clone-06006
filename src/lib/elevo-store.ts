@@ -230,7 +230,7 @@ async function migrateLocalToSupabase(uid: string, fromDb: Partial<ElevoUser>) {
   }
   if (Object.keys(profilePatch).length > 0) {
     const row = patchToRow(profilePatch);
-    await supabase.from("profiles").update(row).eq("id", uid);
+    await supabase.from("profiles").update(row as TablesUpdate<"profiles">).eq("id", uid);
     Object.assign(fromDb, profilePatch);
   }
 
