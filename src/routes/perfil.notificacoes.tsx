@@ -1,7 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Bell, ChevronLeft, Droplet, Dumbbell, Users } from "lucide-react";
+import { Bell, ChevronLeft, Droplet, Dumbbell, Users, Send } from "lucide-react";
+import { toast } from "sonner";
 import { loadUser, saveUser, type Notificacoes } from "@/lib/elevo-store";
+import { enablePush, disablePush, isPushEnabled, isPushSupported, sendTestPush } from "@/lib/push";
 
 export const Route = createFileRoute("/perfil/notificacoes")({
   component: NotificacoesPage,
@@ -18,11 +20,42 @@ function NotificacoesPage() {
   const navigate = useNavigate();
   const [n, setN] = useState<Notificacoes>(DEFAULT);
   const [saved, setSaved] = useState(false);
+  const [pushOn, setPushOn] = useState(false);
+  const [pushBusy, setPushBusy] = useState(false);
+  const supported = isPushSupported();
 
   useEffect(() => {
     const u = loadUser();
     setN({ ...DEFAULT, ...(u.notificacoes ?? {}) });
+    isPushEnabled().then(setPushOn);
   }, []);
+
+  const togglePush = async (v: boolean) => {
+    setPushBusy(true);
+    try {
+      if (v) {
+        const r = await enablePush();
+        if (!r.ok) {
+          toast.error(r.reason || "Não foi possível ativar push");
+        } else {
+          setPushOn(true);
+          toast.success("Notificações push ativadas");
+        }
+      } else {
+        await disablePush();
+        setPushOn(false);
+        toast.success("Push desativado");
+      }
+    } finally {
+      setPushBusy(false);
+    }
+  };
+
+  const testar = async () => {
+    const r = await sendTestPush();
+    if (r.ok) toast.success("Push enviado!");
+    else toast.error(r.error || "Falha ao enviar");
+  };
 
   const update = (patch: Partial<Notificacoes>) => {
     const next = { ...n, ...patch };
