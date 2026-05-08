@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Pause, Play, Plus, Minus, Check, X, ArrowRight } from "lucide-react";
 import { getCargo } from "@/lib/taf-data";
-import { loadUser, saveUser, useElevoUser } from "@/lib/elevo-store";
+import { addTafResultado, useElevoUser } from "@/lib/elevo-store";
 
 export const Route = createFileRoute("/taf/simulado")({
   component: SimuladoPage,
