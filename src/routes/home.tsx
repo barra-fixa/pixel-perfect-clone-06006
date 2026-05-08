@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Bell, Calendar, CheckCircle2, ChevronRight, Clock, Dumbbell, Flame, LogOut, Play, Target, TrendingUp, Trophy } from "lucide-react";
+import { useMemo } from "react";
 import { BottomNav } from "@/components/BottomNav";
 import { META_POR_NIVEL, useElevoUser } from "@/lib/elevo-store";
-import { TREINO_DO_DIA } from "@/lib/mock-treino";
+import { getTreinoDoDia } from "@/lib/treinos";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/home")({
@@ -32,6 +33,7 @@ function tempoRelativo(ms: number) {
 function HomePage() {
   const user = useElevoUser();
   const navigate = useNavigate();
+  const treinoHoje = useMemo(() => getTreinoDoDia(user), [user]);
 
   const nome = user.nome ?? "Atleta";
   const initial = nome.charAt(0).toUpperCase();
