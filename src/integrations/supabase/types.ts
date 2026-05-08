@@ -16,25 +16,130 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
+          caminho: string | null
           created_at: string
+          dias_jornada: number | null
           email: string | null
+          equipamentos: string[] | null
+          frequencia: number | null
           id: string
+          nivel: string | null
           nome: string | null
+          notificacoes: Json | null
+          objetivo: string | null
+          plano: string | null
+          streak: number | null
+          taf_cargo_id: string | null
+          taf_sexo: string | null
+          tem_saco_pancada: boolean | null
+          treinos_feitos: number | null
           updated_at: string
         }
         Insert: {
+          caminho?: string | null
           created_at?: string
+          dias_jornada?: number | null
           email?: string | null
+          equipamentos?: string[] | null
+          frequencia?: number | null
           id: string
+          nivel?: string | null
           nome?: string | null
+          notificacoes?: Json | null
+          objetivo?: string | null
+          plano?: string | null
+          streak?: number | null
+          taf_cargo_id?: string | null
+          taf_sexo?: string | null
+          tem_saco_pancada?: boolean | null
+          treinos_feitos?: number | null
           updated_at?: string
         }
         Update: {
+          caminho?: string | null
           created_at?: string
+          dias_jornada?: number | null
           email?: string | null
+          equipamentos?: string[] | null
+          frequencia?: number | null
           id?: string
+          nivel?: string | null
           nome?: string | null
+          notificacoes?: Json | null
+          objetivo?: string | null
+          plano?: string | null
+          streak?: number | null
+          taf_cargo_id?: string | null
+          taf_sexo?: string | null
+          tem_saco_pancada?: boolean | null
+          treinos_feitos?: number | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      taf_resultados: {
+        Row: {
+          cargo_id: string
+          created_at: string
+          data: string
+          id: string
+          resultados: Json
+          sexo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cargo_id: string
+          created_at?: string
+          data?: string
+          id?: string
+          resultados?: Json
+          sexo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cargo_id?: string
+          created_at?: string
+          data?: string
+          id?: string
+          resultados?: Json
+          sexo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      treinos_historico: {
+        Row: {
+          created_at: string
+          data: string
+          duracao_min: number
+          exercicios: number
+          id: string
+          nome: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: string
+          duracao_min?: number
+          exercicios?: number
+          id?: string
+          nome: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: string
+          duracao_min?: number
+          exercicios?: number
+          id?: string
+          nome?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

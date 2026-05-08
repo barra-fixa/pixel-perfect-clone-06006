@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, Minus, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
-import { saveUser, useElevoUser } from "@/lib/elevo-store";
+import { saveUser, useElevoUser, addTreinoHistorico } from "@/lib/elevo-store";
 import { TREINO_DO_DIA } from "@/lib/mock-treino";
 
 export const Route = createFileRoute("/treino/ativo")({
@@ -47,6 +47,13 @@ function TreinoAtivoPage() {
           treinosFeitos: (user.treinosFeitos ?? 0) + 1,
           streak: (user.streak ?? 0) + 1,
           diasJornada: (user.diasJornada ?? 1) + 1,
+        });
+        void addTreinoHistorico({
+          id: crypto.randomUUID(),
+          nome: TREINO_DO_DIA.nome,
+          data: Date.now(),
+          duracaoMin: TREINO_DO_DIA.duracaoMin ?? 30,
+          exercicios: TREINO_DO_DIA.exercicios.length,
         });
         navigate({ to: "/treino/concluido" });
       }

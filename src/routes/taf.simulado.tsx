@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Pause, Play, Plus, Minus, Check, X, ArrowRight } from "lucide-react";
 import { getCargo } from "@/lib/taf-data";
-import { loadUser, saveUser, useElevoUser } from "@/lib/elevo-store";
+import { addTafResultado, useElevoUser } from "@/lib/elevo-store";
 
 export const Route = createFileRoute("/taf/simulado")({
   component: SimuladoPage,
@@ -72,14 +72,7 @@ function SimuladoPage() {
     const novos = { ...resultados, [prova.id]: valor };
     setResultados(novos);
     if (fim) {
-      const cur = loadUser();
-      const hist = cur.tafHistorico ?? [];
-      saveUser({
-        tafHistorico: [
-          ...hist,
-          { cargoId: cargo.id, data: Date.now(), sexo, resultados: novos },
-        ],
-      });
+      void addTafResultado({ cargoId: cargo.id, data: Date.now(), sexo, resultados: novos });
       navigate({ to: "/taf/resultado" });
     } else {
       setIdx(idx + 1);
