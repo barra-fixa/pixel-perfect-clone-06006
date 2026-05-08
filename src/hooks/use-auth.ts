@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { saveUser } from "@/lib/elevo-store";
+import { saveUser, hydrateFromSupabase, clearLocalCache } from "@/lib/elevo-store";
 
 export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
