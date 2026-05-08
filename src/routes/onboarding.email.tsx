@@ -3,6 +3,7 @@ import { useState } from "react";
 import { OnboardingShell } from "@/components/OnboardingShell";
 import { saveUser } from "@/lib/elevo-store";
 import { supabase } from "@/integrations/supabase/client";
+import { normalizePassword } from "@/lib/password";
 
 export const Route = createFileRoute("/onboarding/email")({
   component: EmailPage,
