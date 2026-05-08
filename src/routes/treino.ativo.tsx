@@ -1,8 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, Minus, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
-import { saveUser, useElevoUser, addTreinoHistorico } from "@/lib/elevo-store";
+import { loadUser, saveUser, useElevoUser, addTreinoHistorico } from "@/lib/elevo-store";
 import { TREINO_DO_DIA } from "@/lib/mock-treino";
+import { checkUnlocks, checkMetaSemanal } from "@/lib/badges";
 
 export const Route = createFileRoute("/treino/ativo")({
   component: TreinoAtivoPage,
@@ -43,6 +44,7 @@ function TreinoAtivoPage() {
         setReps(0);
       } else {
         // concluir treino
+        const prev = loadUser();
         saveUser({
           treinosFeitos: (user.treinosFeitos ?? 0) + 1,
           streak: (user.streak ?? 0) + 1,
@@ -55,6 +57,9 @@ function TreinoAtivoPage() {
           duracaoMin: TREINO_DO_DIA.duracaoMin ?? 30,
           exercicios: TREINO_DO_DIA.exercicios.length,
         });
+        const next = loadUser();
+        checkUnlocks(prev, next);
+        checkMetaSemanal(next);
         navigate({ to: "/treino/concluido" });
       }
     }
