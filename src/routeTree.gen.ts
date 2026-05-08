@@ -36,6 +36,7 @@ import { Route as OnboardingFrequenciaRouteImport } from './routes/onboarding.fr
 import { Route as OnboardingEquipamentosRouteImport } from './routes/onboarding.equipamentos'
 import { Route as OnboardingEmailRouteImport } from './routes/onboarding.email'
 import { Route as OnboardingCaminhoRouteImport } from './routes/onboarding.caminho'
+import { Route as ApiPublicHooksSendRemindersRouteImport } from './routes/api/public/hooks/send-reminders'
 
 const UpgradeRoute = UpgradeRouteImport.update({
   id: '/upgrade',
@@ -172,6 +173,12 @@ const OnboardingCaminhoRoute = OnboardingCaminhoRouteImport.update({
   path: '/onboarding/caminho',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksSendRemindersRoute =
+  ApiPublicHooksSendRemindersRouteImport.update({
+    id: '/api/public/hooks/send-reminders',
+    path: '/api/public/hooks/send-reminders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -201,6 +208,7 @@ export interface FileRoutesByFullPath {
   '/taf/simulado': typeof TafSimuladoRoute
   '/treino/ativo': typeof TreinoAtivoRoute
   '/treino/concluido': typeof TreinoConcluidoRoute
+  '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -230,6 +238,7 @@ export interface FileRoutesByTo {
   '/taf/simulado': typeof TafSimuladoRoute
   '/treino/ativo': typeof TreinoAtivoRoute
   '/treino/concluido': typeof TreinoConcluidoRoute
+  '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -260,6 +269,7 @@ export interface FileRoutesById {
   '/taf/simulado': typeof TafSimuladoRoute
   '/treino/ativo': typeof TreinoAtivoRoute
   '/treino/concluido': typeof TreinoConcluidoRoute
+  '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -291,6 +301,7 @@ export interface FileRouteTypes {
     | '/taf/simulado'
     | '/treino/ativo'
     | '/treino/concluido'
+    | '/api/public/hooks/send-reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -320,6 +331,7 @@ export interface FileRouteTypes {
     | '/taf/simulado'
     | '/treino/ativo'
     | '/treino/concluido'
+    | '/api/public/hooks/send-reminders'
   id:
     | '__root__'
     | '/'
@@ -349,6 +361,7 @@ export interface FileRouteTypes {
     | '/taf/simulado'
     | '/treino/ativo'
     | '/treino/concluido'
+    | '/api/public/hooks/send-reminders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -372,6 +385,7 @@ export interface RootRouteChildren {
   OnboardingPreviewRoute: typeof OnboardingPreviewRoute
   OnboardingProcessandoRoute: typeof OnboardingProcessandoRoute
   OnboardingSacoRoute: typeof OnboardingSacoRoute
+  ApiPublicHooksSendRemindersRoute: typeof ApiPublicHooksSendRemindersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -565,6 +579,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingCaminhoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/send-reminders': {
+      id: '/api/public/hooks/send-reminders'
+      path: '/api/public/hooks/send-reminders'
+      fullPath: '/api/public/hooks/send-reminders'
+      preLoaderRoute: typeof ApiPublicHooksSendRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -629,6 +650,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingPreviewRoute: OnboardingPreviewRoute,
   OnboardingProcessandoRoute: OnboardingProcessandoRoute,
   OnboardingSacoRoute: OnboardingSacoRoute,
+  ApiPublicHooksSendRemindersRoute: ApiPublicHooksSendRemindersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
