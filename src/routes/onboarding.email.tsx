@@ -18,7 +18,7 @@ function EmailPage() {
   const [erro, setErro] = useState<string | null>(null);
 
   const valido =
-    nome.trim().length >= 2 && /\S+@\S+\.\S+/.test(email) && senha.length >= 6;
+    nome.trim().length >= 2 && /\S+@\S+\.\S+/.test(email) && senha.length >= 1;
 
   const handleSubmit = async () => {
     setErro(null);
@@ -108,7 +108,7 @@ function EmailPage() {
           <input
             type="password"
             className="input-field"
-            placeholder="Mínimo 6 caracteres"
+            placeholder="Sua senha"
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
           />
