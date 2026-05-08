@@ -135,8 +135,10 @@ function AuthGate() {
     if (loading) return;
     if (!isAuthenticated && !pub) {
       navigate({ to: "/auth", replace: true });
+    } else if (isAuthenticated && (location.pathname === "/auth" || location.pathname === "/")) {
+      navigate({ to: "/home", replace: true });
     }
-  }, [loading, isAuthenticated, pub, navigate]);
+  }, [loading, isAuthenticated, pub, navigate, location.pathname]);
 
   if (loading && !pub) {
     return (
