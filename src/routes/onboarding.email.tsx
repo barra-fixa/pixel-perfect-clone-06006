@@ -33,16 +33,12 @@ function EmailPage() {
           data: { nome: nome.trim() },
         },
       });
-          emailRedirectTo: `${window.location.origin}/onboarding/preview`,
-          data: { nome: nome.trim() },
-        },
-      });
       if (error) {
         // Se já existe, tenta logar com a senha informada
         if ((error as { code?: string }).code === "user_already_exists") {
           const { error: signInErr } = await supabase.auth.signInWithPassword({
             email: email.trim(),
-            password: senha,
+            password: pwd,
           });
           if (signInErr) {
             setErro("Esse e-mail já tem conta. Verifique a senha ou faça login.");
