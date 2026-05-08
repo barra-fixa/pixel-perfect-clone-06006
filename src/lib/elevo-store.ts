@@ -131,7 +131,7 @@ async function pushProfilePatch(patch: Partial<ElevoUser>) {
   if (!uid) return;
   const { error } = await supabase
     .from("profiles")
-    .update(row)
+    .update(row as TablesUpdate<"profiles">)
     .eq("id", uid);
   if (error) console.warn("[elevo] profile sync falhou:", error.message);
 }
