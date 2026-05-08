@@ -14,6 +14,62 @@ export type Database = {
   }
   public: {
     Tables: {
+      community_posts: {
+        Row: {
+          autor_nome: string
+          created_at: string
+          id: string
+          texto: string
+          treino_nome: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          autor_nome: string
+          created_at?: string
+          id?: string
+          texto: string
+          treino_nome?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          autor_nome?: string
+          created_at?: string
+          id?: string
+          texto?: string
+          treino_nome?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      post_likes: {
+        Row: {
+          created_at: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           caminho: string | null
