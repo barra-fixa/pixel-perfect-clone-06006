@@ -3,6 +3,7 @@
 // When authenticated, writes are mirrored to Supabase and reads are hydrated from it.
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { TablesUpdate } from "@/integrations/supabase/types";
 
 export type Objetivo = "forca" | "emagrecer" | "taf" | "saude" | "definicao" | "zero";
 export type Caminho = "barra" | "casa";
