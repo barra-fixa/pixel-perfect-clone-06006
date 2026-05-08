@@ -19,9 +19,10 @@ export const Route = createFileRoute("/api/public/hooks/send-reminders")({
 
           const url = new URL(request.url);
           const now = new Date();
-          // hour can be passed in (?hour=07) or defaults to current UTC hour
+          // Convert UTC hour to Brasília (UTC-3). Users save horario in BR local time.
           const hourParam = url.searchParams.get("hour");
-          const hh = (hourParam ?? String(now.getUTCHours()).padStart(2, "0")).padStart(2, "0");
+          const brHour = (now.getUTCHours() - 3 + 24) % 24;
+          const hh = (hourParam ?? String(brHour).padStart(2, "0")).padStart(2, "0");
 
           // Find profiles opted-in for treino reminders at this hour
           const { data: profiles, error: profErr } = await supabaseAdmin
