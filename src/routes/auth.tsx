@@ -104,11 +104,10 @@ function AuthPage() {
           <input
             type="password"
             required
-            minLength={6}
             className="input-field"
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
-            placeholder="Mínimo 6 caracteres"
+            placeholder="Sua senha"
           />
         </div>
 
