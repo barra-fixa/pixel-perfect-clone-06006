@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { saveUser } from "@/lib/elevo-store";
+import { normalizePassword } from "@/lib/password";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
