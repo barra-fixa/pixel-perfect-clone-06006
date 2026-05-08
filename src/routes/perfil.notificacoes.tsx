@@ -117,6 +117,37 @@ function NotificacoesPage() {
       </ul>
 
       <section className="mt-6">
+        <h2 className="text-sm font-semibold mb-3">Notificações push (navegador / celular)</h2>
+        <div className="elevo-card p-4 space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="size-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: "var(--muted)" }}>
+              <Bell size={18} style={{ color: "var(--primary)" }} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold">Receber push</div>
+              <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                {supported ? "Lembretes mesmo com o app fechado" : "Não suportado neste navegador"}
+              </div>
+            </div>
+            <button
+              onClick={() => togglePush(!pushOn)}
+              disabled={!supported || pushBusy}
+              aria-pressed={pushOn}
+              className="relative w-11 h-6 rounded-full transition shrink-0 disabled:opacity-50"
+              style={{ backgroundColor: pushOn ? "var(--primary)" : "var(--border)" }}
+            >
+              <span className="absolute top-0.5 size-5 rounded-full bg-white transition-transform" style={{ transform: pushOn ? "translateX(22px)" : "translateX(2px)" }} />
+            </button>
+          </div>
+          {pushOn && (
+            <button onClick={testar} className="btn-outline w-full flex items-center justify-center gap-2 text-sm">
+              <Send size={14} /> Enviar push de teste
+            </button>
+          )}
+        </div>
+      </section>
+
+      <section className="mt-6">
         <h2 className="text-sm font-semibold mb-3">Horário do lembrete de treino</h2>
         <div className="elevo-card p-4 flex items-center justify-between">
           <span className="text-sm" style={{ color: "var(--muted-foreground)" }}>
