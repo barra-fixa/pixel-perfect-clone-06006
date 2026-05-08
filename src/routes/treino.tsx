@@ -1,30 +1,65 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ChevronRight, Clock } from "lucide-react";
+import { useMemo, useState } from "react";
 import { BottomNav } from "@/components/BottomNav";
-import { TREINO_DO_DIA } from "@/lib/mock-treino";
+import { useElevoUser } from "@/lib/elevo-store";
+import { getPlanoSemanal } from "@/lib/treinos";
 
 export const Route = createFileRoute("/treino")({
   component: TreinoPage,
 });
 
+const DIAS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
 function TreinoPage() {
+  const user = useElevoUser();
+  const navigate = useNavigate();
+  const plano = useMemo(() => getPlanoSemanal(user), [user]);
+  const hojeIdx = new Date().getDay() % plano.length;
+  const [sel, setSel] = useState(hojeIdx);
+  const treino = plano[sel];
+
   return (
     <div className="elevo-shell px-5 pt-6 pb-32 min-h-dvh">
-      <header className="mb-6">
+      <header className="mb-4">
         <p className="text-xs uppercase tracking-wider" style={{ color: "var(--primary)" }}>
-          Treino de hoje
+          Plano da semana
         </p>
-        <h1 className="text-2xl font-bold mt-1">{TREINO_DO_DIA.nome}</h1>
+        <h1 className="text-2xl font-bold mt-1">{treino.nome}</h1>
         <div className="flex gap-3 mt-2 text-sm" style={{ color: "var(--muted-foreground)" }}>
           <span className="flex items-center gap-1">
-            <Clock size={14} /> {TREINO_DO_DIA.duracaoMin} min
+            <Clock size={14} /> {treino.duracaoMin} min
           </span>
-          <span>· {TREINO_DO_DIA.exercicios.length} exercícios</span>
+          <span>· {treino.exercicios.length} exercícios</span>
         </div>
       </header>
 
+      {/* Seletor de dia / treino */}
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-4 -mx-5 px-5">
+        {plano.map((t, i) => {
+          const active = i === sel;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setSel(i)}
+              className="shrink-0 rounded-xl px-3 py-2 text-left min-w-[110px] transition"
+              style={{
+                backgroundColor: active ? "var(--primary)" : "var(--card)",
+                color: active ? "var(--primary-foreground)" : "var(--foreground)",
+                border: `1px solid ${active ? "var(--primary)" : "var(--border)"}`,
+              }}
+            >
+              <div className="text-[10px] uppercase tracking-wider opacity-80">
+                {DIAS[i % 7]} {i === hojeIdx && "· hoje"}
+              </div>
+              <div className="text-xs font-semibold mt-0.5 leading-tight">{t.nome}</div>
+            </button>
+          );
+        })}
+      </div>
+
       <ul className="space-y-3">
-        {TREINO_DO_DIA.exercicios.map((ex, idx) => (
+        {treino.exercicios.map((ex, idx) => (
           <li key={ex.id} className="elevo-card p-3 flex items-center gap-3">
             <div
               className="size-16 rounded-xl flex items-center justify-center text-3xl shrink-0"
@@ -38,6 +73,7 @@ function TreinoPage() {
               </div>
               <div className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>
                 {ex.series} séries × {ex.reps}
+                {ex.pesoSugerido ? ` · ${ex.pesoSugerido}kg` : ""}
               </div>
               <div className="flex gap-2 mt-1.5">
                 <span
@@ -63,9 +99,12 @@ function TreinoPage() {
       </ul>
 
       <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-5">
-        <Link to="/treino/ativo" className="btn-primary">
+        <button
+          className="btn-primary"
+          onClick={() => navigate({ to: "/treino/ativo", search: { dia: sel } })}
+        >
           Começar treino
-        </Link>
+        </button>
       </div>
 
       <BottomNav />

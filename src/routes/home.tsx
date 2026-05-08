@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Bell, Calendar, CheckCircle2, ChevronRight, Clock, Dumbbell, Flame, LogOut, Play, Target, TrendingUp, Trophy } from "lucide-react";
+import { useMemo } from "react";
 import { BottomNav } from "@/components/BottomNav";
 import { META_POR_NIVEL, useElevoUser } from "@/lib/elevo-store";
-import { TREINO_DO_DIA } from "@/lib/mock-treino";
+import { getTreinoDoDia } from "@/lib/treinos";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/home")({
@@ -32,6 +33,7 @@ function tempoRelativo(ms: number) {
 function HomePage() {
   const user = useElevoUser();
   const navigate = useNavigate();
+  const treinoHoje = useMemo(() => getTreinoDoDia(user), [user]);
 
   const nome = user.nome ?? "Atleta";
   const initial = nome.charAt(0).toUpperCase();
@@ -186,14 +188,14 @@ function HomePage() {
               <Clock size={12} /> {diaSemana} · 07:00
             </div>
           </div>
-          <h2 className="text-2xl font-bold">{TREINO_DO_DIA.nome}</h2>
+          <h2 className="text-2xl font-bold">{treinoHoje.nome}</h2>
           <div className="flex gap-4 mt-1 text-sm" style={{ color: "var(--muted-foreground)" }}>
-            <span>⏱ {TREINO_DO_DIA.duracaoMin} min</span>
-            <span>🏋️ {TREINO_DO_DIA.exercicios.length} exercícios</span>
+            <span>⏱ {treinoHoje.duracaoMin} min</span>
+            <span>🏋️ {treinoHoje.exercicios.length} exercícios</span>
           </div>
 
           <ul className="mt-3 space-y-1.5">
-            {TREINO_DO_DIA.exercicios.slice(0, 3).map((ex) => (
+            {treinoHoje.exercicios.slice(0, 3).map((ex) => (
               <li key={ex.id} className="flex items-center gap-2 text-sm">
                 <span className="text-base">{ex.emoji}</span>
                 <span className="truncate">{ex.nome}</span>
@@ -202,9 +204,9 @@ function HomePage() {
                 </span>
               </li>
             ))}
-            {TREINO_DO_DIA.exercicios.length > 3 && (
+            {treinoHoje.exercicios.length > 3 && (
               <li className="text-xs pl-7" style={{ color: "var(--subtle)" }}>
-                + {TREINO_DO_DIA.exercicios.length - 3} exercícios
+                + {treinoHoje.exercicios.length - 3} exercícios
               </li>
             )}
           </ul>
