@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { saveUser } from "@/lib/elevo-store";
+import { normalizePassword } from "@/lib/password";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
@@ -21,10 +22,11 @@ function AuthPage() {
     setErro(null);
     setLoading(true);
     try {
+      const pwd = normalizePassword(senha);
       if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
           email,
-          password: senha,
+          password: pwd,
           options: {
             emailRedirectTo: `${window.location.origin}/home`,
             data: { nome },
@@ -33,7 +35,7 @@ function AuthPage() {
         if (error) throw error;
         saveUser({ nome, email });
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password: senha });
+        const { error } = await supabase.auth.signInWithPassword({ email, password: pwd });
         if (error) throw error;
       }
       navigate({ to: "/home" });
@@ -102,11 +104,10 @@ function AuthPage() {
           <input
             type="password"
             required
-            minLength={6}
             className="input-field"
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
-            placeholder="Mínimo 6 caracteres"
+            placeholder="Sua senha"
           />
         </div>
 

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { OnboardingShell } from "@/components/OnboardingShell";
 import { saveUser } from "@/lib/elevo-store";
 import { supabase } from "@/integrations/supabase/client";
+import { normalizePassword } from "@/lib/password";
 
 export const Route = createFileRoute("/onboarding/email")({
   component: EmailPage,
@@ -23,9 +24,10 @@ function EmailPage() {
     setErro(null);
     setLoading(true);
     try {
+      const pwd = normalizePassword(senha);
       const { error } = await supabase.auth.signUp({
         email: email.trim(),
-        password: senha,
+        password: pwd,
         options: {
           emailRedirectTo: `${window.location.origin}/onboarding/preview`,
           data: { nome: nome.trim() },
@@ -36,7 +38,7 @@ function EmailPage() {
         if ((error as { code?: string }).code === "user_already_exists") {
           const { error: signInErr } = await supabase.auth.signInWithPassword({
             email: email.trim(),
-            password: senha,
+            password: pwd,
           });
           if (signInErr) {
             setErro("Esse e-mail já tem conta. Verifique a senha ou faça login.");
