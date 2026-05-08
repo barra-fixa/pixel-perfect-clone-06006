@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, Minus, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
-import { saveUser, useElevoUser } from "@/lib/elevo-store";
+import { saveUser, useElevoUser, addTreinoHistorico } from "@/lib/elevo-store";
 import { TREINO_DO_DIA } from "@/lib/mock-treino";
 
 export const Route = createFileRoute("/treino/ativo")({
