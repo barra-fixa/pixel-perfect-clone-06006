@@ -72,14 +72,7 @@ function SimuladoPage() {
     const novos = { ...resultados, [prova.id]: valor };
     setResultados(novos);
     if (fim) {
-      const cur = loadUser();
-      const hist = cur.tafHistorico ?? [];
-      saveUser({
-        tafHistorico: [
-          ...hist,
-          { cargoId: cargo.id, data: Date.now(), sexo, resultados: novos },
-        ],
-      });
+      void addTafResultado({ cargoId: cargo.id, data: Date.now(), sexo, resultados: novos });
       navigate({ to: "/taf/resultado" });
     } else {
       setIdx(idx + 1);
