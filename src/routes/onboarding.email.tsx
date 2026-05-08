@@ -108,7 +108,7 @@ function EmailPage() {
           <input
             type="password"
             className="input-field"
-            placeholder="Mínimo 6 caracteres"
+            placeholder="Sua senha"
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
           />
