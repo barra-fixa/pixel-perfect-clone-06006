@@ -22,10 +22,11 @@ function AuthPage() {
     setErro(null);
     setLoading(true);
     try {
+      const pwd = normalizePassword(senha);
       if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
           email,
-          password: senha,
+          password: pwd,
           options: {
             emailRedirectTo: `${window.location.origin}/home`,
             data: { nome },
@@ -34,7 +35,7 @@ function AuthPage() {
         if (error) throw error;
         saveUser({ nome, email });
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password: senha });
+        const { error } = await supabase.auth.signInWithPassword({ email, password: pwd });
         if (error) throw error;
       }
       navigate({ to: "/home" });
