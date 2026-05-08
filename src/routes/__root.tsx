@@ -13,6 +13,7 @@ import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
 import { useAuth } from "@/hooks/use-auth";
+import { Toaster } from "@/components/ui/sonner";
 
 const PUBLIC_ROUTES = ["/", "/auth"];
 function isPublic(pathname: string) {
@@ -154,6 +155,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthGate />
+      <Toaster position="top-center" theme="dark" richColors />
     </QueryClientProvider>
   );
 }
