@@ -13,6 +13,7 @@ import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
 import { useAuth } from "@/hooks/use-auth";
+import { Toaster } from "@/components/ui/sonner";
 
 const PUBLIC_ROUTES = ["/", "/auth"];
 function isPublic(pathname: string) {
@@ -134,8 +135,10 @@ function AuthGate() {
     if (loading) return;
     if (!isAuthenticated && !pub) {
       navigate({ to: "/auth", replace: true });
+    } else if (isAuthenticated && (location.pathname === "/auth" || location.pathname === "/")) {
+      navigate({ to: "/home", replace: true });
     }
-  }, [loading, isAuthenticated, pub, navigate]);
+  }, [loading, isAuthenticated, pub, navigate, location.pathname]);
 
   if (loading && !pub) {
     return (
@@ -154,6 +157,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthGate />
+      <Toaster position="top-center" theme="dark" richColors />
     </QueryClientProvider>
   );
 }
