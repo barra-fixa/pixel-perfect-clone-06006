@@ -3,6 +3,7 @@ import { ChevronRight, LogOut } from "lucide-react";
 import { BottomNav } from "@/components/BottomNav";
 import { useElevoUser } from "@/lib/elevo-store";
 import { supabase } from "@/integrations/supabase/client";
+import { listBadges } from "@/lib/badges";
 
 export const Route = createFileRoute("/perfil")({
   component: PerfilPage,
