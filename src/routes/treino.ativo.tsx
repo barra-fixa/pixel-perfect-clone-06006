@@ -48,6 +48,13 @@ function TreinoAtivoPage() {
           streak: (user.streak ?? 0) + 1,
           diasJornada: (user.diasJornada ?? 1) + 1,
         });
+        void addTreinoHistorico({
+          id: crypto.randomUUID(),
+          nome: TREINO_DO_DIA.nome,
+          data: Date.now(),
+          duracaoMin: TREINO_DO_DIA.duracaoMin ?? 30,
+          exercicios: TREINO_DO_DIA.exercicios.length,
+        });
         navigate({ to: "/treino/concluido" });
       }
     }
