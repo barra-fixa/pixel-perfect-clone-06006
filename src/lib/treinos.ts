@@ -342,7 +342,8 @@ function splitSemanal(obj: Objetivo, freq: number): Foco[] {
   if (f === 4) {
     return ["Peito + Tríceps", "Costas + Bíceps", "Pernas", "Ombro + Core"];
   }
-  return ["Peito + Tríceps", "Costas + Bíceps", "Pernas", "Ombro + Core", "Full body", "Cardio + Core"].slice(0, f);
+  const six: Foco[] = ["Peito + Tríceps", "Costas + Bíceps", "Pernas", "Ombro + Core", "Full body", "Cardio + Core"];
+  return six.slice(0, f);
 }
 
 // ---------- API pública ----------
