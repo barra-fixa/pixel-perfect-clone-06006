@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ChevronRight, Clock } from "lucide-react";
 import { useMemo, useState } from "react";
 import { BottomNav } from "@/components/BottomNav";
@@ -108,8 +108,6 @@ function TreinoPage() {
       </div>
 
       <BottomNav />
-      {/* Link de fallback caso a navegação acima falhe */}
-      <Link to="/treino" className="hidden" />
     </div>
   );
 }
