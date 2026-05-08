@@ -43,7 +43,7 @@ function HomePage() {
   const progressoGeral = Math.round((semanaAtual / totalSemanas) * 100);
 
   // Treinos da semana
-  const freq = user.frequencia ?? META_POR_NIVEL[user.nivel ?? "iniciante"] / 2 ?? 3;
+  const freq = user.frequencia ?? Math.max(1, Math.round(META_POR_NIVEL[user.nivel ?? "iniciante"] / 2));
   const seteDiasAtras = Date.now() - 7 * 24 * 60 * 60 * 1000;
   const treinosDaSemana = (user.historicoTreinos ?? []).filter((t) => t.data >= seteDiasAtras).length;
   const metaSemana = freq;
