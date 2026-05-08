@@ -32,7 +32,21 @@ function EmailPage() {
           data: { nome: nome.trim() },
         },
       });
-      if (error) throw error;
+      if (error) {
+        // Se já existe, tenta logar com a senha informada
+        if ((error as { code?: string }).code === "user_already_exists") {
+          const { error: signInErr } = await supabase.auth.signInWithPassword({
+            email: email.trim(),
+            password: senha,
+          });
+          if (signInErr) {
+            setErro("Esse e-mail já tem conta. Verifique a senha ou faça login.");
+            return;
+          }
+        } else {
+          throw error;
+        }
+      }
       saveUser({ nome: nome.trim(), email: email.trim() });
       navigate({ to: "/onboarding/preview" });
     } catch (err) {
