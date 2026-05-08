@@ -24,10 +24,15 @@ function EmailPage() {
     setErro(null);
     setLoading(true);
     try {
+      const pwd = normalizePassword(senha);
       const { error } = await supabase.auth.signUp({
         email: email.trim(),
-        password: senha,
+        password: pwd,
         options: {
+          emailRedirectTo: `${window.location.origin}/onboarding/preview`,
+          data: { nome: nome.trim() },
+        },
+      });
           emailRedirectTo: `${window.location.origin}/onboarding/preview`,
           data: { nome: nome.trim() },
         },
