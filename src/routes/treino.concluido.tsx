@@ -1,14 +1,21 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check } from "lucide-react";
+import { z } from "zod";
 import { useElevoUser } from "@/lib/elevo-store";
-import { TREINO_DO_DIA } from "@/lib/mock-treino";
+
+const searchSchema = z.object({
+  dur: z.coerce.number().optional(),
+  ex: z.coerce.number().optional(),
+});
 
 export const Route = createFileRoute("/treino/concluido")({
+  validateSearch: (s) => searchSchema.parse(s),
   component: ConcluidoPage,
 });
 
 function ConcluidoPage() {
   const user = useElevoUser();
+  const { dur = 28, ex = 4 } = Route.useSearch();
   return (
     <div className="elevo-shell px-5 pt-12 pb-8 min-h-dvh flex flex-col items-center text-center">
       <div className="relative mb-8">
@@ -33,9 +40,9 @@ function ConcluidoPage() {
       </p>
 
       <div className="grid grid-cols-3 gap-3 mt-8 w-full">
-        <Stat label="Duração" value="28 min" />
-        <Stat label="Exercícios" value={`${TREINO_DO_DIA.exercicios.length}/${TREINO_DO_DIA.exercicios.length}`} />
-        <Stat label="Calorias" value="~210" />
+        <Stat label="Duração" value={`${dur} min`} />
+        <Stat label="Exercícios" value={`${ex}/${ex}`} />
+        <Stat label="Calorias" value={`~${Math.round(dur * 7)}`} />
       </div>
 
       <div className="elevo-card p-4 mt-4 w-full text-left">
