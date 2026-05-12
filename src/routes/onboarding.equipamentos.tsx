@@ -9,9 +9,12 @@ export const Route = createFileRoute("/onboarding/equipamentos")({
 
 const opcoes = [
   { id: "nenhum", emoji: "🏃", titulo: "Nenhum — só meu corpo" },
-  { id: "saco", emoji: "🥊", titulo: "Saco de pancada" },
   { id: "halteres", emoji: "🏋️", titulo: "Halteres" },
   { id: "elastico", emoji: "🟢", titulo: "Banda elástica" },
+  { id: "corda", emoji: "🪢", titulo: "Corda de pular" },
+  { id: "kettlebell", emoji: "⚫", titulo: "Kettlebell" },
+  { id: "paralela", emoji: "🦾", titulo: "Barra paralela" },
+  { id: "saco", emoji: "🥊", titulo: "Saco de pancada" },
   { id: "bike", emoji: "🚴", titulo: "Bicicleta" },
   { id: "tapete", emoji: "🧘", titulo: "Colchonete" },
 ];
