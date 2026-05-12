@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ChevronLeft, Check } from "lucide-react";
+import { ChevronLeft, Check, Dumbbell, Home as HomeIcon } from "lucide-react";
 import {
   loadUser,
   saveUser,
+  type Caminho,
   type Nivel,
   type Objetivo,
   type Sexo,
@@ -29,6 +30,15 @@ const NIVEIS: { id: Nivel; label: string; sub: string }[] = [
   { id: "avancado", label: "Avançado", sub: "8+ barras" },
 ];
 
+// Opções de equipamentos (alinhadas com onboarding.equipamentos.tsx)
+const EQUIPAMENTOS: { id: string; emoji: string; titulo: string }[] = [
+  { id: "halteres", emoji: "🏋️", titulo: "Halteres" },
+  { id: "elastico", emoji: "🟢", titulo: "Banda elástica" },
+  { id: "saco", emoji: "🥊", titulo: "Saco de pancada" },
+  { id: "bike", emoji: "🚴", titulo: "Bicicleta" },
+  { id: "tapete", emoji: "🧘", titulo: "Colchonete" },
+];
+
 function DadosPage() {
   const navigate = useNavigate();
   const [nome, setNome] = useState("");
@@ -38,6 +48,8 @@ function DadosPage() {
   const [frequencia, setFrequencia] = useState<number>(3);
   const [tafCargoId, setTafCargoId] = useState<string | undefined>();
   const [tafSexo, setTafSexo] = useState<Sexo | undefined>();
+  const [caminho, setCaminho] = useState<Caminho | undefined>();
+  const [equipamentos, setEquipamentos] = useState<string[]>([]);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
@@ -49,12 +61,30 @@ function DadosPage() {
     setFrequencia(u.frequencia ?? 3);
     setTafCargoId(u.tafCargoId);
     setTafSexo(u.tafSexo);
+    setCaminho(u.caminho);
+    setEquipamentos(u.equipamentos ?? []);
   }, []);
 
   const onSave = () => {
-    saveUser({ nome, email, objetivo, nivel, frequencia, tafCargoId, tafSexo });
+    saveUser({
+      nome,
+      email,
+      objetivo,
+      nivel,
+      frequencia,
+      tafCargoId,
+      tafSexo,
+      caminho,
+      equipamentos,
+    });
     setSaved(true);
     setTimeout(() => navigate({ to: "/perfil" }), 600);
+  };
+
+  const toggleEquip = (id: string) => {
+    setEquipamentos((prev) =>
+      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+    );
   };
 
   return (
@@ -105,6 +135,79 @@ function DadosPage() {
           ))}
         </div>
       </Section>
+
+      {/* Como você treina (caminho) */}
+      <Section title="Como você treina?">
+        <div className="grid grid-cols-1 gap-2">
+          <button
+            data-active={caminho === "barra"}
+            onClick={() => setCaminho("barra")}
+            className="selectable selectable-purple flex gap-3 items-center text-left p-3"
+          >
+            <div
+              className="size-10 rounded-xl flex items-center justify-center shrink-0"
+              style={{
+                backgroundColor: "color-mix(in oklab, var(--secondary) 25%, transparent)",
+                color: "var(--secondary)",
+              }}
+            >
+              <Dumbbell size={18} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold">Com minha Barra Fixa</div>
+              <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                Treinos focados em calistenia e progressão na barra
+              </div>
+            </div>
+            {caminho === "barra" && <Check size={18} style={{ color: "var(--secondary)" }} />}
+          </button>
+
+          <button
+            data-active={caminho === "casa"}
+            onClick={() => setCaminho("casa")}
+            className="selectable flex gap-3 items-center text-left p-3"
+          >
+            <div
+              className="size-10 rounded-xl flex items-center justify-center shrink-0"
+              style={{
+                backgroundColor: "color-mix(in oklab, var(--primary) 25%, transparent)",
+                color: "var(--primary)",
+              }}
+            >
+              <HomeIcon size={18} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold">Treino em casa</div>
+              <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                Peso do corpo + equipamentos opcionais
+              </div>
+            </div>
+            {caminho === "casa" && <Check size={18} style={{ color: "var(--primary)" }} />}
+          </button>
+        </div>
+      </Section>
+
+      {/* Equipamentos — só mostra se caminho == casa */}
+      {caminho === "casa" && (
+        <Section title="O que você tem em casa?">
+          <p className="text-xs mb-3 -mt-1" style={{ color: "var(--muted-foreground)" }}>
+            Marque o que tiver disponível. Vamos usar nos seus treinos.
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {EQUIPAMENTOS.map((e) => (
+              <button
+                key={e.id}
+                data-active={equipamentos.includes(e.id)}
+                onClick={() => toggleEquip(e.id)}
+                className="selectable text-left p-3"
+              >
+                <div className="text-xl">{e.emoji}</div>
+                <div className="text-xs font-semibold mt-1">{e.titulo}</div>
+              </button>
+            ))}
+          </div>
+        </Section>
+      )}
 
       <Section title="Nível">
         <div className="space-y-2">
