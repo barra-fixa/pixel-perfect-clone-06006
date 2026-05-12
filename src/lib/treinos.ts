@@ -226,33 +226,106 @@ type Foco =
   | "Full body"
   | "Cardio + Core";
 
-function montar(foco: Foco, n: Nivel, c: Caminho): Exercicio[] {
+/**
+ * Monta a lista de exercícios para um dado foco, caminho e equipamentos.
+ *
+ * Regras de negócio:
+ * - `caminho === "barra"`: barra fixa é o centro do treino. Quando o foco
+ *   permite (costas, bíceps, full body, core), a barra entra como exercício PRINCIPAL.
+ *   Onde a barra não trabalha (peito, perna), usamos peso do corpo e oferecemos
+ *   variações de calistenia que mantêm o aluno fluindo entre os treinos.
+ *
+ * - `caminho === "casa"`: peso do corpo é o padrão. Halteres, elásticos, etc só
+ *   entram se o usuário marcou explicitamente em `equipamentos`. Sem nada marcado,
+ *   o treino é 100% peso do corpo (acessível pra qualquer um).
+ */
+function montar(foco: Foco, n: Nivel, c: Caminho, equipamentos: string[]): Exercicio[] {
   const temBarra = c === "barra";
+  const temHalteres = equipamentos.includes("halteres");
+
   switch (foco) {
     case "Peito + Tríceps":
-      return temBarra
-        ? [ex("flexao", n), ex("supino", n), ex("triceps", n), ex("prancha", n)]
-        : [ex("flexao", n), ex("flexaoDiamante", n), ex("triceps", n), ex("prancha", n)];
+      // Peito/Tríceps: barra fixa não trabalha esses músculos.
+      // Mesmo com barra, o treino aqui é peso do corpo (flexões).
+      // Halteres entram só pra quem tem em casa.
+      if (temBarra) {
+        return [ex("flexao", n), ex("flexaoDiamante", n), ex("triceps", n), ex("prancha", n)];
+      }
+      if (temHalteres) {
+        return [ex("flexao", n), ex("supino", n), ex("triceps", n), ex("prancha", n)];
+      }
+      return [ex("flexao", n), ex("flexaoDiamante", n), ex("triceps", n), ex("prancha", n)];
+
     case "Costas + Bíceps":
-      return temBarra
-        ? [ex("barraFixa", n), ex("remadaAustraliana", n), ex("rosca", n), ex("prancha", n)]
-        : [ex("remadaCurvada", n), ex("rosca", n), ex("roscaMartelo", n), ex("prancha", n)];
+      // Aqui é onde a barra REALMENTE brilha.
+      if (temBarra) {
+        return [
+          ex("barraFixa", n), // principal — costas
+          ex("barraFixaSupinada", n), // principal — bíceps
+          ex("remadaAustraliana", n), // complementar (mesma barra)
+          ex("prancha", n), // core como fechamento
+        ];
+      }
+      if (temHalteres) {
+        return [ex("remadaCurvada", n), ex("rosca", n), ex("roscaMartelo", n), ex("prancha", n)];
+      }
+      // Sem barra e sem halteres: alternativas com peso corporal
+      return [ex("flexao", n), ex("flexaoDiamante", n), ex("prancha", n), ex("deadbug", n)];
+
     case "Pernas":
+      // Barra fixa não trabalha pernas. Sempre peso do corpo aqui.
       return [
         ex("agachamento", n),
         ex("afundo", n),
+        ex("agachamentoBulgaro", n),
         ex("glutePonte", n),
         ex("panturrilha", n),
-        ex("abdominal", n),
       ];
+
     case "Ombro + Core":
-      return [ex("desenvolvimento", n), ex("elevacaoLateral", n), ex("pranchaLateral", n), ex("deadbug", n)];
+      // Ombro: com halteres usamos desenvolvimento; sem, usamos peso corporal.
+      // Core: prancha, prancha lateral, dead bug.
+      if (temHalteres) {
+        return [ex("desenvolvimento", n), ex("elevacaoLateral", n), ex("pranchaLateral", n), ex("deadbug", n)];
+      }
+      // Sem halteres: pike push-up (flexão pike trabalha ombro), prancha alta
+      return [ex("pranchaAlta", n), ex("flexaoDiamante", n), ex("pranchaLateral", n), ex("deadbug", n)];
+
     case "Full body":
-      return temBarra
-        ? [ex("agachamento", n), ex("flexao", n), ex("remadaAustraliana", n), ex("prancha", n)]
-        : [ex("agachamento", n), ex("flexao", n), ex("remadaCurvada", n), ex("prancha", n)];
+      // Full body com barra: barra fixa é o exercício principal,
+      // complementado com agachamento (perna), flexão (peito) e prancha (core).
+      if (temBarra) {
+        return [
+          ex("barraFixa", n), // principal
+          ex("agachamento", n), // perna
+          ex("flexao", n), // peito
+          ex("prancha", n), // core
+        ];
+      }
+      if (temHalteres) {
+        return [ex("agachamento", n), ex("flexao", n), ex("remadaCurvada", n), ex("prancha", n)];
+      }
+      return [ex("agachamento", n), ex("flexao", n), ex("burpee", n), ex("prancha", n)];
+
     case "Cardio + Core":
-      return [ex("jumpingJack", n), ex("burpee", n), ex("mountainClimber", n), ex("abdominal", n), ex("prancha", n)];
+      // Cardio é independente do caminho. Adiciona corda só se marcou.
+      // Pode incluir abdominal na barra (elevação de pernas) se tiver barra.
+      if (temBarra) {
+        return [
+          ex("jumpingJack", n),
+          ex("burpee", n),
+          ex("mountainClimber", n),
+          ex("abdominal", n),
+          ex("bicycleCrunch", n),
+        ];
+      }
+      return [
+        ex("jumpingJack", n),
+        ex("burpee", n),
+        ex("mountainClimber", n),
+        ex("abdominal", n),
+        ex("prancha", n),
+      ];
   }
 }
 
@@ -313,10 +386,11 @@ export function getPlanoSemanal(user: ElevoUser): Treino[] {
   const caminho: Caminho = user.caminho ?? "casa";
   const obj: Objetivo = user.objetivo ?? "saude";
   const freq = user.frequencia ?? 3;
+  const equipamentos = user.equipamentos ?? [];
 
   const focos = splitSemanal(obj, freq);
   return focos.map((foco, i) => {
-    const exs = montar(foco, nivel, caminho);
+    const exs = montar(foco, nivel, caminho, equipamentos);
     return {
       id: `t${i}`,
       nome: foco,
