@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ChevronLeft, Minus, Plus } from "lucide-react";
+import { ChevronLeft, ChevronDown, Info, Minus, Plus } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { loadUser, saveUser, useElevoUser, addTreinoHistorico } from "@/lib/elevo-store";
@@ -27,6 +27,7 @@ function TreinoAtivoPage() {
   const [peso, setPeso] = useState<number>(0);
   const [resting, setResting] = useState(false);
   const [restLeft, setRestLeft] = useState(0);
+  const [showInstr, setShowInstr] = useState(false);
 
   const ex = treino.exercicios[exIdx];
 
@@ -42,6 +43,7 @@ function TreinoAtivoPage() {
   // Atualiza peso sugerido ao trocar de exercício
   useEffect(() => {
     setPeso(ex?.pesoSugerido ?? 0);
+    setShowInstr(false);
   }, [exIdx, ex?.pesoSugerido]);
 
   useEffect(() => {
@@ -112,20 +114,114 @@ function TreinoAtivoPage() {
         />
       </div>
 
+      {/* Imagem do exercício (com fallback para emoji) */}
       <div
-        className="aspect-square rounded-3xl flex items-center justify-center mb-5"
+        className="aspect-square rounded-3xl overflow-hidden mb-5 relative"
         style={{
           background:
             "linear-gradient(135deg, var(--card-elevated), color-mix(in oklab, var(--primary) 12%, var(--card)))",
         }}
       >
-        <span className="text-[120px]">{ex.emoji}</span>
+        {ex.imagem ? (
+          <>
+            <img
+              src={ex.imagem}
+              alt={ex.nome}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-contain"
+              onError={(e) => {
+                // Se a imagem falhar, mostra o emoji
+                (e.currentTarget as HTMLImageElement).style.display = "none";
+              }}
+            />
+            <span className="absolute inset-0 flex items-center justify-center text-[120px] opacity-0 pointer-events-none">
+              {ex.emoji}
+            </span>
+          </>
+        ) : (
+          <span className="absolute inset-0 flex items-center justify-center text-[120px]">{ex.emoji}</span>
+        )}
+        {/* Badge com nome do músculo */}
+        <span
+          className="absolute top-3 left-3 text-[10px] font-semibold px-2 py-1 rounded-full uppercase tracking-wider"
+          style={{
+            backgroundColor: "color-mix(in oklab, var(--primary) 20%, var(--card))",
+            color: "var(--primary)",
+          }}
+        >
+          {ex.musculo}
+        </span>
       </div>
 
       <h1 className="text-xl font-bold leading-tight">{ex.nome}</h1>
       <div className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
         Série {serie} de {ex.series} · {ex.reps} repetições
       </div>
+
+      {/* Toggle de instruções */}
+      <button
+        className="elevo-card p-3 mt-3 flex items-center justify-between w-full text-left"
+        onClick={() => setShowInstr((v) => !v)}
+        aria-expanded={showInstr}
+      >
+        <span className="flex items-center gap-2 text-sm font-semibold">
+          <Info size={16} style={{ color: "var(--primary)" }} />
+          Como executar
+        </span>
+        <ChevronDown
+          size={18}
+          style={{
+            color: "var(--muted-foreground)",
+            transform: showInstr ? "rotate(180deg)" : "rotate(0deg)",
+            transition: "transform 200ms",
+          }}
+        />
+      </button>
+
+      {showInstr && (
+        <div className="elevo-card p-4 mt-2 space-y-3">
+          <div>
+            <h3 className="text-xs uppercase tracking-wider font-semibold mb-1.5" style={{ color: "var(--primary)" }}>
+              Passo a passo
+            </h3>
+            <ol className="text-sm space-y-1 list-decimal pl-4" style={{ color: "var(--foreground)" }}>
+              {ex.instrucoes.map((p, i) => (
+                <li key={i}>{p}</li>
+              ))}
+            </ol>
+          </div>
+          {ex.errosComuns && ex.errosComuns.length > 0 && (
+            <div>
+              <h3
+                className="text-xs uppercase tracking-wider font-semibold mb-1.5"
+                style={{ color: "var(--warning)" }}
+              >
+                Erros comuns
+              </h3>
+              <ul className="text-sm space-y-1 list-disc pl-4" style={{ color: "var(--muted-foreground)" }}>
+                {ex.errosComuns.map((e, i) => (
+                  <li key={i}>{e}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {ex.dicas && ex.dicas.length > 0 && (
+            <div>
+              <h3
+                className="text-xs uppercase tracking-wider font-semibold mb-1.5"
+                style={{ color: "var(--secondary)" }}
+              >
+                Dicas
+              </h3>
+              <ul className="text-sm space-y-1 list-disc pl-4" style={{ color: "var(--muted-foreground)" }}>
+                {ex.dicas.map((d, i) => (
+                  <li key={i}>{d}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Peso */}
       {!resting && ex.pesoSugerido !== undefined && (
