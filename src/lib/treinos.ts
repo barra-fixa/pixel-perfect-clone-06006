@@ -422,3 +422,69 @@ export function getTreinoDoDia(user: ElevoUser, date = new Date()): Treino {
   const idx = date.getDay() % plano.length;
   return plano[idx];
 }
+
+// ---------- Substituição de exercícios ----------
+
+/**
+ * Retorna exercícios alternativos que substituem um exercício atual.
+ * Critério: mesmo músculo principal, mesmo "tipo" de equipamento necessário,
+ * e nível compatível.
+ *
+ * - excluir: id do exercício atual (pra não voltar o mesmo)
+ * - user: usado pra respeitar caminho/equipamentos do usuário (ex.: não sugerir
+ *   exercícios com halteres se o usuário não tem halteres marcado)
+ *
+ * Devolve no máximo 4 alternativas. Se não encontrar nenhuma, devolve array vazio.
+ */
+export function alternativasDe(excluir: ExercicioId, user: ElevoUser): Exercicio[] {
+  const base = EXERCICIOS_BASE[excluir];
+  if (!base) return [];
+
+  const nivel: Nivel = user.nivel ?? "iniciante";
+  const caminho: Caminho = user.caminho ?? "casa";
+  const temBarra = caminho === "barra";
+  const equipamentos = user.equipamentos ?? [];
+  const temPeso = equipamentos.includes("halteres") || equipamentos.includes("kettlebell");
+
+  // Filtra por mesmo músculo, exclui o atual, e remove os que não fazem sentido
+  // pro caminho/equipamento do usuário.
+  const alternativas: ExercicioId[] = [];
+  for (const id of _IDS_TREINOS) {
+    if (id === excluir) continue;
+    const ex = EXERCICIOS_BASE[id];
+    if (!ex) continue;
+    if (ex.musculo !== base.musculo) continue;
+
+    // Filtros por equipamento implícito:
+    // - exercícios "supino", "remadaCurvada", "rosca", "roscaMartelo", "desenvolvimento",
+    //   "elevacaoLateral", "elevacaoFrontal" precisam de peso (halteres/kettlebell).
+    const precisaPeso = (
+      ["supino", "remadaCurvada", "rosca", "roscaMartelo", "desenvolvimento",
+       "elevacaoLateral", "elevacaoFrontal"] as ExercicioId[]
+    ).includes(id as ExercicioId);
+    if (precisaPeso && !temPeso) continue;
+
+    // - "barraFixa", "barraFixaSupinada", "remadaAustraliana" precisam da barra fixa.
+    const precisaBarra = (
+      ["barraFixa", "barraFixaSupinada", "remadaAustraliana"] as ExercicioId[]
+    ).includes(id as ExercicioId);
+    if (precisaBarra && !temBarra) continue;
+
+    alternativas.push(id as ExercicioId);
+    if (alternativas.length >= 4) break;
+  }
+
+  return alternativas.map((id) => ex(id, nivel));
+}
+
+// IDs completos (cópia local pra iterar — evita expor _IDS de exercicios-db).
+const _IDS_TREINOS: ExercicioId[] = [
+  "flexao", "supino", "triceps", "flexaoDiamante",
+  "barraFixa", "barraFixaSupinada", "remadaAustraliana", "remadaCurvada",
+  "rosca", "roscaMartelo",
+  "agachamento", "agachamentoBulgaro", "afundo", "panturrilha", "glutePonte", "steup",
+  "desenvolvimento", "elevacaoLateral", "elevacaoFrontal",
+  "prancha", "pranchaLateral", "abdominal", "bicycleCrunch", "deadbug", "pranchaAlta",
+  "burpee", "jumpingJack", "mountainClimber", "corrida", "pular",
+];
+

@@ -1,11 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ChevronLeft, ChevronDown, Info, Minus, Plus } from "lucide-react";
+import { ChevronLeft, ChevronDown, Info, Minus, Plus, Shuffle, TrendingUp } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { loadUser, saveUser, useElevoUser, addTreinoHistorico } from "@/lib/elevo-store";
-import { getPlanoSemanal } from "@/lib/treinos";
+import { alternativasDe, getPlanoSemanal, type Exercicio } from "@/lib/treinos";
 import { checkUnlocks, checkMetaSemanal } from "@/lib/badges";
-import { startProgresso, logSerie, clearProgresso } from "@/lib/treino-progress";
+import { startProgresso, logSerie, clearProgresso, marcarBateuMeta, sugerirProgresso } from "@/lib/treino-progress";
 
 const searchSchema = z.object({ dia: z.coerce.number().optional() });
 
@@ -13,6 +13,20 @@ export const Route = createFileRoute("/treino/ativo")({
   validateSearch: (s) => searchSchema.parse(s),
   component: TreinoAtivoPage,
 });
+
+/**
+ * Extrai a meta de reps de uma string como "10", "8-10", "30s", etc.
+ * Para ranges (ex: "8-10"), usa o limite SUPERIOR (mais conservador pra
+ * decidir se bateu a meta — bater 8 quando a meta é 8-10 não conta como
+ * "bater"; o usuário precisa fechar o range pra ganhar progressão).
+ */
+function parseRepsMeta(reps: string): number {
+  const range = reps.match(/(\d+)\s*-\s*(\d+)/);
+  if (range) return parseInt(range[2], 10);
+  const single = reps.match(/\d+/);
+  if (single) return parseInt(single[0], 10);
+  return 0;
+}
 
 function TreinoAtivoPage() {
   const navigate = useNavigate();
@@ -29,7 +43,25 @@ function TreinoAtivoPage() {
   const [restLeft, setRestLeft] = useState(0);
   const [showInstr, setShowInstr] = useState(false);
 
-  const ex = treino.exercicios[exIdx];
+  // Map de overrides: índice do exercício no treino -> exercício substituto.
+  // Usado pelo botão "🎲 Trocar exercício" pra permitir substituições locais
+  // sem alterar o plano armazenado.
+  const [overrides, setOverrides] = useState<Record<number, Exercicio>>({});
+
+  // Painel de seleção de alternativas (modal/dropdown)
+  const [mostrarAlternativas, setMostrarAlternativas] = useState(false);
+
+  // Conta quantas séries do exercício atual o usuário bateu a meta
+  const [seriesBatidas, setSeriesBatidas] = useState(0);
+
+  // Exercício atual: ou o override do índice, ou o original do plano
+  const ex = overrides[exIdx] ?? treino.exercicios[exIdx];
+
+  // Alternativas pré-calculadas pro exercício atual
+  const alternativas = useMemo(() => alternativasDe(ex.id as Parameters<typeof alternativasDe>[0], user), [ex.id, user]);
+
+  // Sugestão de progressão (calculada uma vez ao trocar de exercício)
+  const sugestao = useMemo(() => sugerirProgresso(ex.id, parseRepsMeta(ex.reps), ex.pesoSugerido ?? 0), [ex.id, ex.reps, ex.pesoSugerido]);
 
   // Inicia progresso ao montar
   useEffect(() => {
@@ -59,15 +91,29 @@ function TreinoAtivoPage() {
 
   const concluirSerie = () => {
     logSerie(ex.id, { reps, peso });
+
+    // Conta se o usuário bateu a meta de reps nesta série
+    const metaReps = parseRepsMeta(ex.reps);
+    const bateuMetaNaSerie = reps >= metaReps;
+    const novasSeriesBatidas = bateuMetaNaSerie ? seriesBatidas + 1 : seriesBatidas;
+    setSeriesBatidas(novasSeriesBatidas);
+
     if (serie < ex.series) {
       setSerie((s) => s + 1);
       setRestLeft(ex.descansoSeg);
       setResting(true);
-    } else if (exIdx < treino.exercicios.length - 1) {
-      setExIdx((i) => i + 1);
-      setSerie(1);
-      setReps(0);
     } else {
+      // Última série deste exercício — registra se bateu a meta em TODAS as séries
+      marcarBateuMeta(ex.id, novasSeriesBatidas === ex.series);
+
+      if (exIdx < treino.exercicios.length - 1) {
+        setExIdx((i) => i + 1);
+        setSerie(1);
+        setReps(0);
+        setSeriesBatidas(0); // reset pro próximo exercício
+        return;
+      }
+
       // concluir treino
       const prev = loadUser();
       saveUser({
@@ -153,10 +199,112 @@ function TreinoAtivoPage() {
         </span>
       </div>
 
-      <h1 className="text-xl font-bold leading-tight">{ex.nome}</h1>
-      <div className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
-        Série {serie} de {ex.series} · {ex.reps} repetições
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-xl font-bold leading-tight">{ex.nome}</h1>
+          <div className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
+            Série {serie} de {ex.series} · {ex.reps} repetições
+          </div>
+        </div>
+        {/* Botão "Trocar exercício" — só aparece se há alternativas e
+            não está em descanso/já começou a série atual. */}
+        {alternativas.length > 0 && !resting && serie === 1 && reps === 0 && (
+          <button
+            onClick={() => setMostrarAlternativas(true)}
+            className="elevo-card-elevated size-10 rounded-full flex items-center justify-center shrink-0"
+            aria-label="Trocar exercício"
+            title="Trocar exercício"
+          >
+            <Shuffle size={16} />
+          </button>
+        )}
       </div>
+
+      {/* Sugestão de progressão — aparece se o usuário bateu a meta nas últimas 2 sessões */}
+      {sugestao && !resting && serie === 1 && reps === 0 && (
+        <div
+          className="elevo-card p-3 mt-3 flex items-start gap-2"
+          style={{
+            backgroundColor: "color-mix(in oklab, var(--secondary) 12%, var(--card))",
+            borderColor: "color-mix(in oklab, var(--secondary) 40%, var(--border))",
+          }}
+        >
+          <TrendingUp size={16} className="mt-0.5 shrink-0" style={{ color: "var(--secondary)" }} />
+          <div className="text-xs leading-snug">
+            <div className="font-semibold" style={{ color: "var(--secondary)" }}>
+              Hora de progredir!
+            </div>
+            <div className="mt-0.5" style={{ color: "var(--muted-foreground)" }}>
+              {sugestao.motivo}
+              {sugestao.novasReps !== undefined && sugestao.novoPeso === undefined && (
+                <> Meta sugerida: <strong>{sugestao.novasReps} reps</strong>.</>
+              )}
+              {sugestao.novoPeso !== undefined && (
+                <> Meta sugerida: <strong>{sugestao.novoPeso}kg × {sugestao.novasReps ?? ex.reps} reps</strong>.</>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Painel modal de alternativas */}
+      {mostrarAlternativas && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center"
+          style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+          onClick={() => setMostrarAlternativas(false)}
+        >
+          <div
+            className="w-full max-w-[430px] rounded-t-3xl p-5 pb-8"
+            style={{ backgroundColor: "var(--card)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="h-1 w-12 rounded-full mx-auto mb-4" style={{ backgroundColor: "var(--border)" }} />
+            <h2 className="text-lg font-bold mb-1">Trocar exercício</h2>
+            <p className="text-xs mb-4" style={{ color: "var(--muted-foreground)" }}>
+              Mesmo músculo ({ex.musculo.toLowerCase()}), mesmo equipamento.
+            </p>
+            <ul className="space-y-2">
+              {alternativas.map((alt) => (
+                <li key={alt.id}>
+                  <button
+                    onClick={() => {
+                      setOverrides((prev) => ({ ...prev, [exIdx]: alt }));
+                      setMostrarAlternativas(false);
+                    }}
+                    className="elevo-card p-3 w-full text-left flex items-center gap-3"
+                  >
+                    {alt.imagem ? (
+                      <img
+                        src={alt.imagem}
+                        alt={alt.nome}
+                        className="size-12 rounded-lg object-cover shrink-0"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="size-12 rounded-lg flex items-center justify-center text-2xl shrink-0" style={{ backgroundColor: "var(--card-elevated)" }}>
+                        {alt.emoji}
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-semibold truncate">{alt.nome}</div>
+                      <div className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>
+                        {alt.series} × {alt.reps}
+                      </div>
+                    </div>
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <button
+              onClick={() => setMostrarAlternativas(false)}
+              className="btn-outline mt-4 w-full"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Toggle de instruções */}
       <button
