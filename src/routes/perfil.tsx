@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useChildMatches, useNavigate } from "@tanstack/react-router";
 import { ChevronRight, LogOut } from "lucide-react";
 import { BottomNav } from "@/components/BottomNav";
 import { useElevoUser } from "@/lib/elevo-store";
@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { listBadges } from "@/lib/badges";
 
 export const Route = createFileRoute("/perfil")({
-  component: PerfilPage,
+  component: PerfilLayout,
 });
 
 const sections: { label: string; sub?: string; to?: string }[] = [
@@ -16,6 +16,19 @@ const sections: { label: string; sub?: string; to?: string }[] = [
   { label: "Notificações", sub: "Lembretes de treino e água", to: "/perfil/notificacoes" },
   { label: "Suporte" },
 ];
+
+/**
+ * Wrapper que decide o que renderizar:
+ * - `/perfil` -> PerfilPage (lista de seções).
+ * - `/perfil/dados`, `/perfil/historico`, `/perfil/notificacoes` -> <Outlet /> (rota filha).
+ */
+function PerfilLayout() {
+  const filhas = useChildMatches();
+  if (filhas.length > 0) {
+    return <Outlet />;
+  }
+  return <PerfilPage />;
+}
 
 function PerfilPage() {
   const user = useElevoUser();

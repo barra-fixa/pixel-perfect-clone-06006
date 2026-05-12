@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useChildMatches, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Shield, ChevronRight, Trophy, Calendar, Target } from "lucide-react";
 import { BottomNav } from "@/components/BottomNav";
@@ -6,8 +6,21 @@ import { CARGOS, getCargo } from "@/lib/taf-data";
 import { saveUser, useElevoUser, type Sexo } from "@/lib/elevo-store";
 
 export const Route = createFileRoute("/taf")({
-  component: TafPage,
+  component: TafLayout,
 });
+
+/**
+ * Wrapper que decide o que renderizar:
+ * - `/taf` -> TafPage (seleção de cargo, histórico).
+ * - `/taf/simulado`, `/taf/resultado` -> <Outlet /> (rota filha).
+ */
+function TafLayout() {
+  const filhas = useChildMatches();
+  if (filhas.length > 0) {
+    return <Outlet />;
+  }
+  return <TafPage />;
+}
 
 function TafPage() {
   const user = useElevoUser();
