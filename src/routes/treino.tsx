@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useChildMatches, useNavigate } from "@tanstack/react-router";
 import { ChevronRight, Clock } from "lucide-react";
 import { useMemo, useState } from "react";
 import { BottomNav } from "@/components/BottomNav";
@@ -6,10 +6,26 @@ import { useElevoUser } from "@/lib/elevo-store";
 import { getPlanoSemanal } from "@/lib/treinos";
 
 export const Route = createFileRoute("/treino")({
-  component: TreinoPage,
+  component: TreinoLayout,
 });
 
 const DIAS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
+/**
+ * Wrapper que decide o que renderizar:
+ * - Se a URL é exatamente `/treino` -> renderiza a lista (TreinoPage).
+ * - Se a URL é uma rota filha (`/treino/ativo`, `/treino/concluido`) -> renderiza só o <Outlet />.
+ *
+ * Sem este wrapper, o TanStack Router renderizaria TreinoPage MAIS o Outlet das filhas,
+ * mas como TreinoPage não tem <Outlet />, as rotas filhas ficavam invisíveis.
+ */
+function TreinoLayout() {
+  const filhas = useChildMatches();
+  if (filhas.length > 0) {
+    return <Outlet />;
+  }
+  return <TreinoPage />;
+}
 
 function TreinoPage() {
   const user = useElevoUser();
