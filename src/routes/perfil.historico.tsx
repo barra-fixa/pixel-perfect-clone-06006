@@ -6,18 +6,10 @@ export const Route = createFileRoute("/perfil/historico")({
   component: HistoricoPage,
 });
 
-// Mock fallback se não houver histórico
-const MOCK = [
-  { id: "m1", nome: "Costas + Bíceps", data: Date.now() - 86400000, duracaoMin: 28, exercicios: 4 },
-  { id: "m2", nome: "Peito + Tríceps", data: Date.now() - 86400000 * 3, duracaoMin: 32, exercicios: 5 },
-  { id: "m3", nome: "Pernas + Core", data: Date.now() - 86400000 * 5, duracaoMin: 35, exercicios: 6 },
-  { id: "m4", nome: "Costas + Bíceps", data: Date.now() - 86400000 * 7, duracaoMin: 30, exercicios: 4 },
-];
-
 function HistoricoPage() {
   const navigate = useNavigate();
   const user = useElevoUser();
-  const treinos = user.historicoTreinos?.length ? user.historicoTreinos : MOCK;
+  const treinos = user.historicoTreinos ?? [];
   const sorted = [...treinos].sort((a, b) => b.data - a.data);
 
   // Agrupar por mês

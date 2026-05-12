@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ExternalLink, Tag } from "lucide-react";
+import { toast } from "sonner";
 import { BottomNav } from "@/components/BottomNav";
 
 export const Route = createFileRoute("/loja")({
@@ -18,6 +19,21 @@ const parceiros = [
   { nome: "Liv Up", desc: "R$30 em refeições", emoji: "🥗" },
 ];
 
+function copiarCupom() {
+  if (typeof navigator !== "undefined" && navigator.clipboard) {
+    void navigator.clipboard.writeText("PRO15");
+    toast.success("Cupom copiado! 🎟️", {
+      description: "Use PRO15 para 15% OFF",
+    });
+  }
+}
+
+function abrirEmBreve(nome: string) {
+  toast.info(`${nome} 🛒`, {
+    description: "Em breve você poderá comprar direto pelo app.",
+  });
+}
+
 function LojaPage() {
   return (
     <div className="elevo-shell px-5 pt-6 pb-32 min-h-dvh">
@@ -27,8 +43,9 @@ function LojaPage() {
       </p>
 
       {/* cupom Pro */}
-      <div
-        className="rounded-2xl p-4 mt-5 flex items-center gap-3"
+      <button
+        onClick={copiarCupom}
+        className="rounded-2xl p-4 mt-5 flex items-center gap-3 w-full text-left transition hover:opacity-90"
         style={{
           background:
             "linear-gradient(135deg, color-mix(in oklab, var(--secondary) 30%, var(--card)), var(--card))",
@@ -43,11 +60,11 @@ function LojaPage() {
         </div>
         <div className="flex-1">
           <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-            Cupom exclusivo Pro
+            Cupom exclusivo Pro · toque para copiar
           </div>
           <div className="font-bold tracking-wider">PRO15 — 15% OFF</div>
         </div>
-      </div>
+      </button>
 
       <h2 className="text-sm font-semibold mt-7 mb-3">Produtos Barra Fixa</h2>
       <div className="space-y-3">
@@ -78,6 +95,7 @@ function LojaPage() {
               className="size-10 rounded-full flex items-center justify-center"
               style={{ backgroundColor: "var(--card-elevated)" }}
               aria-label="Ver na loja"
+              onClick={() => abrirEmBreve(p.nome)}
             >
               <ExternalLink size={16} />
             </button>
@@ -88,7 +106,11 @@ function LojaPage() {
       <h2 className="text-sm font-semibold mt-7 mb-3">Parceiros</h2>
       <div className="grid grid-cols-1 gap-3">
         {parceiros.map((p) => (
-          <div key={p.nome} className="elevo-card p-3 flex items-center gap-3">
+          <button
+            key={p.nome}
+            onClick={() => abrirEmBreve(p.nome)}
+            className="elevo-card p-3 flex items-center gap-3 w-full text-left transition hover:opacity-90"
+          >
             <div
               className="size-11 rounded-xl flex items-center justify-center text-2xl"
               style={{ backgroundColor: "var(--card-elevated)" }}
@@ -104,7 +126,7 @@ function LojaPage() {
             <span className="text-xs font-semibold" style={{ color: "var(--primary)" }}>
               Ver
             </span>
-          </div>
+          </button>
         ))}
       </div>
 

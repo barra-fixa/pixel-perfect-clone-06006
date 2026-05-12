@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Check, ChevronLeft, X } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/upgrade")({
   component: UpgradePage,
@@ -101,13 +102,25 @@ function UpgradePage() {
             background:
               "linear-gradient(135deg, var(--secondary), color-mix(in oklab, var(--secondary) 70%, var(--primary)))",
           }}
+          onClick={() =>
+            toast.info("Pagamento em breve 🚀", {
+              description: "A ativação do plano Pro estará disponível em breve. Te avisamos por e-mail!",
+            })
+          }
         >
           Ativar Pro agora
         </button>
       </div>
 
       {/* anual */}
-      <div className="mt-3 elevo-card p-4">
+      <button
+        className="mt-3 elevo-card p-4 w-full text-left transition hover:opacity-90"
+        onClick={() =>
+          toast.info("Pagamento em breve 🚀", {
+            description: "O plano anual estará disponível em breve.",
+          })
+        }
+      >
         <div className="flex items-baseline justify-between">
           <span className="font-semibold">Pro Anual</span>
           <span
@@ -126,7 +139,7 @@ function UpgradePage() {
             /mês · R$119/ano
           </span>
         </div>
-      </div>
+      </button>
 
       <p className="text-center mt-5 text-[10px]" style={{ color: "var(--subtle)" }}>
         Cancele quando quiser. Sem fidelidade.
