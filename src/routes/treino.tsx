@@ -62,10 +62,25 @@ function TreinoPage() {
         {treino.exercicios.map((ex, idx) => (
           <li key={ex.id} className="elevo-card p-3 flex items-center gap-3">
             <div
-              className="size-16 rounded-xl flex items-center justify-center text-3xl shrink-0"
+              className="size-16 rounded-xl flex items-center justify-center text-3xl shrink-0 overflow-hidden relative"
               style={{ backgroundColor: "var(--card-elevated)" }}
             >
-              {ex.emoji}
+              {ex.imagem ? (
+                <>
+                  <img
+                    src={ex.imagem}
+                    alt=""
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.display = "none";
+                    }}
+                  />
+                  <span className="absolute inset-0 flex items-center justify-center -z-10">{ex.emoji}</span>
+                </>
+              ) : (
+                <span>{ex.emoji}</span>
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-semibold leading-snug truncate">
