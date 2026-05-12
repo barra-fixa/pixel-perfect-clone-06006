@@ -32,8 +32,12 @@ const NIVEIS: { id: Nivel; label: string; sub: string }[] = [
 
 // Opções de equipamentos (alinhadas com onboarding.equipamentos.tsx)
 const EQUIPAMENTOS: { id: string; emoji: string; titulo: string }[] = [
+  { id: "nenhum", emoji: "🏃", titulo: "Nenhum — só meu corpo" },
   { id: "halteres", emoji: "🏋️", titulo: "Halteres" },
   { id: "elastico", emoji: "🟢", titulo: "Banda elástica" },
+  { id: "corda", emoji: "🪢", titulo: "Corda de pular" },
+  { id: "kettlebell", emoji: "⚫", titulo: "Kettlebell" },
+  { id: "paralela", emoji: "🦾", titulo: "Barra paralela" },
   { id: "saco", emoji: "🥊", titulo: "Saco de pancada" },
   { id: "bike", emoji: "🚴", titulo: "Bicicleta" },
   { id: "tapete", emoji: "🧘", titulo: "Colchonete" },
@@ -82,9 +86,17 @@ function DadosPage() {
   };
 
   const toggleEquip = (id: string) => {
-    setEquipamentos((prev) =>
-      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
-    );
+    setEquipamentos((prev) => {
+      // "Nenhum" é exclusivo: ao marcar, desmarca todos os outros;
+      // ao marcar qualquer outro item, desmarca "Nenhum" automaticamente.
+      if (id === "nenhum") {
+        return prev.includes("nenhum") ? [] : ["nenhum"];
+      }
+      const semNenhum = prev.filter((p) => p !== "nenhum");
+      return semNenhum.includes(id)
+        ? semNenhum.filter((p) => p !== id)
+        : [...semNenhum, id];
+    });
   };
 
   return (

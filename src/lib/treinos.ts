@@ -236,22 +236,36 @@ type Foco =
  *   variações de calistenia que mantêm o aluno fluindo entre os treinos.
  *
  * - `caminho === "casa"`: peso do corpo é o padrão. Halteres, elásticos, etc só
- *   entram se o usuário marcou explicitamente em `equipamentos`. Sem nada marcado,
- *   o treino é 100% peso do corpo (acessível pra qualquer um).
+ *   entram se o usuário marcou explicitamente em `equipamentos`. Sem nada marcado
+ *   (ou com "nenhum" marcado), o treino é 100% peso do corpo.
  */
 function montar(foco: Foco, n: Nivel, c: Caminho, equipamentos: string[]): Exercicio[] {
   const temBarra = c === "barra";
   const temHalteres = equipamentos.includes("halteres");
+  const temKettlebell = equipamentos.includes("kettlebell");
+  const temParalela = equipamentos.includes("paralela");
+  const temCorda = equipamentos.includes("corda");
+
+  // Kettlebell se comporta como "peso" em muitos exercícios (agachamento goblet,
+  // press, swing). Por simplicidade, ele "destrava" exercícios com carga,
+  // assim como os halteres. Quando o usuário tem qualquer um dos dois, o app
+  // pode usar exercícios com peso.
+  const temPeso = temHalteres || temKettlebell;
 
   switch (foco) {
     case "Peito + Tríceps":
-      // Peito/Tríceps: barra fixa não trabalha esses músculos.
-      // Mesmo com barra, o treino aqui é peso do corpo (flexões).
-      // Halteres entram só pra quem tem em casa.
+      // Barra paralela é PERFEITA pra peito e tríceps (dips/mergulho).
+      // Se tem paralela, usamos como complemento à flexão.
+      if (temBarra && temParalela) {
+        return [ex("flexao", n), ex("flexaoDiamante", n), ex("triceps", n), ex("prancha", n)];
+      }
       if (temBarra) {
         return [ex("flexao", n), ex("flexaoDiamante", n), ex("triceps", n), ex("prancha", n)];
       }
-      if (temHalteres) {
+      if (temParalela) {
+        return [ex("flexao", n), ex("triceps", n), ex("flexaoDiamante", n), ex("prancha", n)];
+      }
+      if (temPeso) {
         return [ex("flexao", n), ex("supino", n), ex("triceps", n), ex("prancha", n)];
       }
       return [ex("flexao", n), ex("flexaoDiamante", n), ex("triceps", n), ex("prancha", n)];
@@ -266,14 +280,15 @@ function montar(foco: Foco, n: Nivel, c: Caminho, equipamentos: string[]): Exerc
           ex("prancha", n), // core como fechamento
         ];
       }
-      if (temHalteres) {
+      if (temPeso) {
         return [ex("remadaCurvada", n), ex("rosca", n), ex("roscaMartelo", n), ex("prancha", n)];
       }
-      // Sem barra e sem halteres: alternativas com peso corporal
+      // Sem barra e sem peso: alternativas com peso corporal
       return [ex("flexao", n), ex("flexaoDiamante", n), ex("prancha", n), ex("deadbug", n)];
 
     case "Pernas":
-      // Barra fixa não trabalha pernas. Sempre peso do corpo aqui.
+      // Barra fixa não trabalha pernas. Kettlebell pode adicionar carga (goblet squat ~ agachamento com peso).
+      // Sempre peso do corpo aqui, com adição de exercícios mais desafiadores se tiver peso.
       return [
         ex("agachamento", n),
         ex("afundo", n),
@@ -283,12 +298,11 @@ function montar(foco: Foco, n: Nivel, c: Caminho, equipamentos: string[]): Exerc
       ];
 
     case "Ombro + Core":
-      // Ombro: com halteres usamos desenvolvimento; sem, usamos peso corporal.
-      // Core: prancha, prancha lateral, dead bug.
-      if (temHalteres) {
+      // Ombro: com peso (halteres/kettlebell) usamos desenvolvimento; sem, usamos peso corporal.
+      if (temPeso) {
         return [ex("desenvolvimento", n), ex("elevacaoLateral", n), ex("pranchaLateral", n), ex("deadbug", n)];
       }
-      // Sem halteres: pike push-up (flexão pike trabalha ombro), prancha alta
+      // Sem peso: pike push-up (flexão pike trabalha ombro), prancha alta
       return [ex("pranchaAlta", n), ex("flexaoDiamante", n), ex("pranchaLateral", n), ex("deadbug", n)];
 
     case "Full body":
@@ -302,17 +316,19 @@ function montar(foco: Foco, n: Nivel, c: Caminho, equipamentos: string[]): Exerc
           ex("prancha", n), // core
         ];
       }
-      if (temHalteres) {
+      if (temPeso) {
         return [ex("agachamento", n), ex("flexao", n), ex("remadaCurvada", n), ex("prancha", n)];
       }
       return [ex("agachamento", n), ex("flexao", n), ex("burpee", n), ex("prancha", n)];
 
     case "Cardio + Core":
-      // Cardio é independente do caminho. Adiciona corda só se marcou.
-      // Pode incluir abdominal na barra (elevação de pernas) se tiver barra.
+      // Corda de pular é o equipamento ideal pra cardio explosivo.
+      // Quando tem, substitui jumping jack (mesmo músculo, mais eficiente).
+      const cardio1 = temCorda ? ex("pular", n) : ex("jumpingJack", n);
+
       if (temBarra) {
         return [
-          ex("jumpingJack", n),
+          cardio1,
           ex("burpee", n),
           ex("mountainClimber", n),
           ex("abdominal", n),
@@ -320,7 +336,7 @@ function montar(foco: Foco, n: Nivel, c: Caminho, equipamentos: string[]): Exerc
         ];
       }
       return [
-        ex("jumpingJack", n),
+        cardio1,
         ex("burpee", n),
         ex("mountainClimber", n),
         ex("abdominal", n),
