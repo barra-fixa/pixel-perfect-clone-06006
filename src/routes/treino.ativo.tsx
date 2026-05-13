@@ -117,6 +117,13 @@ function TreinoAtivoPage() {
     } else {
       // Última série deste exercício — registra se bateu a meta em TODAS as séries
       marcarBateuMeta(ex.id, novasSeriesBatidas === ex.series);
+      marcarExercicioFeito(treino.id, ex.id);
+
+      // Modo single-exercise: para aqui e mostra tela de conclusão.
+      if (singleMode) {
+        setExercicioConcluido(true);
+        return;
+      }
 
       if (exIdx < treino.exercicios.length - 1) {
         setExIdx((i) => i + 1);
