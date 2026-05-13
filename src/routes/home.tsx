@@ -237,41 +237,9 @@ function HomePage() {
         </p>
       </section>
 
-      {/* Card destacado: Treinos Só Barra Fixa */}
-      <Link
-        to="/treinos-so-barra"
-        className="block rounded-2xl p-4 mb-4 relative overflow-hidden active:scale-[0.99] transition"
-        style={{
-          background:
-            "linear-gradient(135deg, color-mix(in oklab, var(--secondary) 28%, var(--card)) 0%, var(--card) 80%)",
-          border: "1px solid color-mix(in oklab, var(--secondary) 40%, var(--border))",
-        }}
-      >
-        <div className="flex items-start gap-3">
-          <div
-            className="size-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
-            style={{ backgroundColor: "color-mix(in oklab, var(--secondary) 30%, transparent)" }}
-          >
-            🏋️
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-semibold" style={{ color: "var(--secondary)" }}>
-              <Sparkles size={11} /> Exclusivo
-            </div>
-            <div className="font-bold text-sm leading-tight">Treinos Só Barra Fixa</div>
-            <p className="text-[11px] mt-0.5" style={{ color: "var(--muted-foreground)" }}>
-              Sequência completa sem outro equipamento — só barra e peso corporal.
-            </p>
-            <div className="text-[11px] font-semibold mt-2" style={{ color: "var(--secondary)" }}>
-              Ver treinos exclusivos →
-            </div>
-          </div>
-        </div>
-      </Link>
-
       {/* Próximo treino — botão grande */}
       <section
-        className="rounded-2xl p-5 mb-5 relative overflow-hidden"
+        className="rounded-2xl p-5 mb-4 relative overflow-hidden"
         style={{
           background:
             "linear-gradient(135deg, color-mix(in oklab, var(--primary) 22%, var(--card)) 0%, var(--card) 75%)",
@@ -306,93 +274,35 @@ function HomePage() {
         </Link>
       </section>
 
-      {/* Streak */}
-      <div className="grid grid-cols-2 gap-3 mb-5">
-        <div className="elevo-card p-4">
-          <Flame size={20} style={{ color: "var(--warning)" }} />
-          <div className="mt-2 font-bold text-lg">{user.streak ?? 0} dias</div>
-          <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-            sequência ativa
-          </div>
-        </div>
-        <div className="elevo-card p-4">
-          <Trophy size={20} style={{ color: "var(--secondary)" }} />
-          <div className="mt-2 font-bold text-lg">{user.treinosFeitos ?? 0}</div>
-          <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-            treinos no total
-          </div>
-        </div>
-      </div>
-
-      {/* Histórico recente */}
-      <section className="mb-2">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-base font-semibold">Histórico recente</h3>
-          <Link to="/evolucao" className="text-xs font-semibold" style={{ color: "var(--primary)" }}>
-            Ver tudo
-          </Link>
-        </div>
-
-        {historico.length === 0 ? (
-          <div className="elevo-card p-6 text-center">
-            <Dumbbell size={28} className="mx-auto mb-2" style={{ color: "var(--subtle)" }} />
-            <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-              Nenhum treino registrado ainda
-            </p>
-            <p className="text-xs mt-1" style={{ color: "var(--subtle)" }}>
-              Comece seu primeiro treino para ver seu progresso aqui
-            </p>
-          </div>
-        ) : (
-          <ul className="space-y-2">
-            {historico.map((t) => (
-              <li key={t.id} className="elevo-card p-3 flex items-center gap-3">
-                <div
-                  className="size-10 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: "color-mix(in oklab, var(--primary) 18%, transparent)" }}
-                >
-                  <CheckCircle2 size={18} style={{ color: "var(--primary)" }} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold truncate">{t.nome}</div>
-                  <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-                    {tempoRelativo(t.data)} · {t.duracaoMin} min · {t.exercicios} exercícios
-                  </div>
-                </div>
-                <ChevronRight size={16} style={{ color: "var(--subtle)" }} />
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      {/* Rodapé: barra fixa recomendada (só pra quem ainda não tem) */}
-      {user.caminho !== "barra" && (
-        <a
-          href={PRODUTOS_BARRA_FIXA[0].link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="elevo-card mt-6 p-4 flex items-center gap-3"
-          style={{ borderColor: "color-mix(in oklab, var(--secondary) 30%, var(--border))" }}
-        >
+      {/* Card destacado: Treinos Só Barra Fixa */}
+      <Link
+        to="/treinos-so-barra"
+        className="block rounded-2xl p-4 mb-2 relative overflow-hidden active:scale-[0.99] transition"
+        style={{
+          background:
+            "linear-gradient(135deg, color-mix(in oklab, var(--secondary) 28%, var(--card)) 0%, var(--card) 80%)",
+          border: "1px solid color-mix(in oklab, var(--secondary) 40%, var(--border))",
+        }}
+      >
+        <div className="flex items-center gap-3">
           <div
-            className="size-11 rounded-xl flex items-center justify-center text-2xl shrink-0"
-            style={{ backgroundColor: "color-mix(in oklab, var(--secondary) 22%, transparent)" }}
+            className="size-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
+            style={{ backgroundColor: "color-mix(in oklab, var(--secondary) 30%, transparent)" }}
           >
             🏋️
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "var(--secondary)" }}>
-              Quer uma barra fixa?
+            <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-semibold" style={{ color: "var(--secondary)" }}>
+              <Sparkles size={11} /> Exclusivo
             </div>
-            <div className="text-sm font-bold leading-tight">Veja modelos recomendados</div>
-            <div className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
-              Destrave pull-ups e dezenas de exercícios novos
-            </div>
+            <div className="font-bold text-sm leading-tight">Treinos Só Barra Fixa</div>
+            <p className="text-[11px] mt-0.5" style={{ color: "var(--muted-foreground)" }}>
+              Sequência completa só com a barra.
+            </p>
           </div>
-          <ChevronRight size={16} style={{ color: "var(--subtle)" }} />
-        </a>
-      )}
+          <ChevronRight size={16} style={{ color: "var(--secondary)" }} />
+        </div>
+      </Link>
 
       <BottomNav />
     </div>
