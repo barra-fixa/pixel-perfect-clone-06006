@@ -155,6 +155,29 @@ function TreinoAtivoPage() {
     }
   };
 
+  // Tela "Exercício concluído" — só em modo single-exercise.
+  if (exercicioConcluido) {
+    return (
+      <div className="elevo-shell flex flex-col items-center justify-center px-5 py-8 min-h-dvh text-center">
+        <div className="text-7xl mb-4">🎉</div>
+        <h1 className="text-3xl font-black mb-2">Exercício concluído!</h1>
+        <p className="text-base mb-1" style={{ color: "var(--muted-foreground)" }}>
+          {ex.nome}
+        </p>
+        <p className="text-sm mb-8" style={{ color: "var(--subtle)" }}>
+          {ex.series} séries completas · Parabéns 💪
+        </p>
+        <button
+          className="btn-primary"
+          style={{ height: 56, fontSize: 16 }}
+          onClick={() => navigate({ to: "/home" })}
+        >
+          ← Voltar pra lista
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="elevo-shell flex flex-col px-5 pt-5 pb-6 min-h-dvh">
       {/* header */}
