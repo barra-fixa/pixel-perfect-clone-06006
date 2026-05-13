@@ -43,6 +43,8 @@ export type ElevoUser = {
   temSacoPancada?: boolean;
   nivel?: Nivel;
   frequencia?: number;
+  /** Dias da semana escolhidos para treinar (segunda=0..domingo=6). Local-only. */
+  diasTreino?: number[];
   plano?: "free" | "pro";
   diasJornada?: number;
   treinosFeitos?: number;
