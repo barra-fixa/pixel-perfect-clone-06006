@@ -237,57 +237,9 @@ function HomePage() {
         </p>
       </section>
 
-      {/* Próximo treino */}
-      <section
-        className="rounded-2xl p-5 mb-4 relative overflow-hidden"
-        style={{
-          background:
-            "linear-gradient(135deg, color-mix(in oklab, var(--primary) 28%, var(--card)) 0%, var(--card) 70%)",
-          border: "1px solid color-mix(in oklab, var(--primary) 35%, var(--border))",
-        }}
-      >
-        <div
-          className="absolute -right-10 -top-10 size-40 rounded-full opacity-30"
-          style={{ background: "radial-gradient(var(--primary), transparent 70%)" }}
-        />
-        <div className="relative">
-          <div className="flex items-center justify-between mb-1">
-            <div className="text-xs uppercase tracking-wider" style={{ color: "var(--primary)" }}>
-              Próximo treino
-            </div>
-            <div className="flex items-center gap-1 text-xs" style={{ color: "var(--muted-foreground)" }}>
-              <Clock size={12} /> {diaSemana} · 07:00
-            </div>
-          </div>
-          <h2 className="text-2xl font-bold">{treinoHoje.nome}</h2>
-          <div className="flex gap-4 mt-1 text-sm" style={{ color: "var(--muted-foreground)" }}>
-            <span>⏱ {treinoHoje.duracaoMin} min</span>
-            <span>🏋️ {treinoHoje.exercicios.length} exercícios</span>
-          </div>
+      {/* Treino de hoje — grid de exercícios clicáveis */}
+      <TreinoHojeGrid />
 
-          <ul className="mt-3 space-y-1.5">
-            {treinoHoje.exercicios.slice(0, 3).map((ex) => (
-              <li key={ex.id} className="flex items-center gap-2 text-sm">
-                <span className="text-base">{ex.emoji}</span>
-                <span className="truncate">{ex.nome}</span>
-                <span className="ml-auto text-xs shrink-0" style={{ color: "var(--muted-foreground)" }}>
-                  {ex.series}×{ex.reps}
-                </span>
-              </li>
-            ))}
-            {treinoHoje.exercicios.length > 3 && (
-              <li className="text-xs pl-7" style={{ color: "var(--subtle)" }}>
-                + {treinoHoje.exercicios.length - 3} exercícios
-              </li>
-            )}
-          </ul>
-
-          <button className="btn-primary mt-5" onClick={() => navigate({ to: "/treino/ativo" })}>
-            <Play size={18} className="mr-2" />
-            Começar treino agora
-          </button>
-        </div>
-      </section>
 
       {/* Streak */}
       <div className="grid grid-cols-2 gap-3 mb-5">
