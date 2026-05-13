@@ -435,7 +435,7 @@ export const EXERCICIOS_BASE: Record<ExercicioId, ExercicioBase> = {
     nome: "Polichinelo",
     musculo: "Cardio",
     emoji: "🤸",
-    fxId: "Jumping_Jacks",
+    // fxId removido: imagem indisponível no Free Exercise DB.
     instrucoes: [
       "Em pé, pés juntos, braços ao longo do corpo.",
       "Salte abrindo pernas e elevando braços acima da cabeça.",
