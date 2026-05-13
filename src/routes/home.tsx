@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Bell, Calendar, ChevronRight, LogOut, Sparkles, Target, TrendingUp, X } from "lucide-react";
+import { Bell, Calendar, ChevronRight, LogOut, Sparkles, Target, TrendingUp, Users, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { BottomNav } from "@/components/BottomNav";
 import { META_POR_NIVEL, useElevoUser } from "@/lib/elevo-store";
