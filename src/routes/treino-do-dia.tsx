@@ -233,6 +233,41 @@ function TreinoDoDiaPage() {
       <p className="text-center text-xs mt-3" style={{ color: "var(--subtle)" }}>
         Toque em qualquer exercício acima pra ver detalhes antes.
       </p>
+
+      {/* Rodapé educativo: barras fixas recomendadas */}
+      {user.caminho !== "barra" && (
+        <section className="mt-8">
+          <div className="text-[10px] uppercase tracking-wider font-semibold mb-2" style={{ color: "var(--secondary)" }}>
+            Quer destravar mais exercícios?
+          </div>
+          <h3 className="text-sm font-bold mb-3">Comece com uma barra fixa</h3>
+          <div className="space-y-2">
+            {PRODUTOS_BARRA_FIXA.slice(0, 2).map((p) => (
+              <a
+                key={p.id}
+                href={p.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="elevo-card p-3 flex items-center gap-3 active:scale-[0.99] transition"
+              >
+                <div
+                  className="size-10 rounded-xl flex items-center justify-center text-xl shrink-0"
+                  style={{ backgroundColor: "color-mix(in oklab, var(--secondary) 22%, transparent)" }}
+                >
+                  {p.emoji}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-semibold leading-tight line-clamp-1">{p.nome}</div>
+                  <div className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+                    {p.preco}
+                  </div>
+                </div>
+                <ChevronLeft size={14} className="rotate-180" style={{ color: "var(--subtle)" }} />
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
