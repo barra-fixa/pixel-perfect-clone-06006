@@ -396,6 +396,38 @@ function DadosPage() {
         {saved ? "Salvo ✓" : "Salvar alterações"}
       </button>
 
+      {/* Loja: barras fixas recomendadas */}
+      <Section title="Comprar barra fixa">
+        <p className="text-xs mb-3 -mt-1" style={{ color: "var(--muted-foreground)" }}>
+          Modelos que recomendamos pra destravar todos os exercícios.
+        </p>
+        <div className="space-y-2">
+          {PRODUTOS_BARRA_FIXA.map((p) => (
+            <a
+              key={p.id}
+              href={p.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="elevo-card p-3 flex items-center gap-3"
+            >
+              <div
+                className="size-10 rounded-xl flex items-center justify-center text-xl shrink-0"
+                style={{ backgroundColor: "color-mix(in oklab, var(--secondary) 22%, transparent)" }}
+              >
+                {p.emoji}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs font-semibold leading-tight line-clamp-1">{p.nome}</div>
+                <div className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+                  {p.descricao} · {p.preco}
+                </div>
+              </div>
+              <ChevronLeft size={14} className="rotate-180" style={{ color: "var(--subtle)" }} />
+            </a>
+          ))}
+        </div>
+      </Section>
+
       {/* Modal: pedir equipamento novo */}
       {pedidoOpen && (
         <div
