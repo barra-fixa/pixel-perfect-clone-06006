@@ -466,6 +466,8 @@ function TreinoDoDiaPage() {
           </div>
         </div>
       )}
+
+      <BottomNav />
     </div>
   );
 }
