@@ -1,10 +1,16 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Bell, Calendar, CheckCircle2, ChevronRight, Clock, Dumbbell, Flame, LogOut, Play, Target, TrendingUp, Trophy } from "lucide-react";
-import { useMemo } from "react";
+import { Bell, Calendar, CheckCircle2, ChevronRight, Clock, Dumbbell, Flame, LogOut, Play, Sparkles, Target, TrendingUp, Trophy, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { BottomNav } from "@/components/BottomNav";
 import { META_POR_NIVEL, useElevoUser } from "@/lib/elevo-store";
 import { getTreinoDoDia } from "@/lib/treinos";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  calcularInsightSemanal,
+  jaMostradoEstaSemana,
+  marcarInsightMostrado,
+  type InsightSemanal,
+} from "@/lib/analytics";
 
 export const Route = createFileRoute("/home")({
   component: HomePage,
