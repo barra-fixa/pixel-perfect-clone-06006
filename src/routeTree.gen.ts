@@ -17,6 +17,7 @@ import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as NutricaoRouteImport } from './routes/nutricao'
 import { Route as LojaRouteImport } from './routes/loja'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as ExercicioDetalheRouteImport } from './routes/exercicio-detalhe'
 import { Route as EvolucaoRouteImport } from './routes/evolucao'
 import { Route as ComunidadeRouteImport } from './routes/comunidade'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -77,6 +78,11 @@ const LojaRoute = LojaRouteImport.update({
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExercicioDetalheRoute = ExercicioDetalheRouteImport.update({
+  id: '/exercicio-detalhe',
+  path: '/exercicio-detalhe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EvolucaoRoute = EvolucaoRouteImport.update({
@@ -191,6 +197,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/comunidade': typeof ComunidadeRoute
   '/evolucao': typeof EvolucaoRoute
+  '/exercicio-detalhe': typeof ExercicioDetalheRoute
   '/home': typeof HomeRoute
   '/loja': typeof LojaRoute
   '/nutricao': typeof NutricaoRoute
@@ -222,6 +229,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/comunidade': typeof ComunidadeRoute
   '/evolucao': typeof EvolucaoRoute
+  '/exercicio-detalhe': typeof ExercicioDetalheRoute
   '/home': typeof HomeRoute
   '/loja': typeof LojaRoute
   '/nutricao': typeof NutricaoRoute
@@ -254,6 +262,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/comunidade': typeof ComunidadeRoute
   '/evolucao': typeof EvolucaoRoute
+  '/exercicio-detalhe': typeof ExercicioDetalheRoute
   '/home': typeof HomeRoute
   '/loja': typeof LojaRoute
   '/nutricao': typeof NutricaoRoute
@@ -287,6 +296,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/comunidade'
     | '/evolucao'
+    | '/exercicio-detalhe'
     | '/home'
     | '/loja'
     | '/nutricao'
@@ -318,6 +328,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/comunidade'
     | '/evolucao'
+    | '/exercicio-detalhe'
     | '/home'
     | '/loja'
     | '/nutricao'
@@ -349,6 +360,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/comunidade'
     | '/evolucao'
+    | '/exercicio-detalhe'
     | '/home'
     | '/loja'
     | '/nutricao'
@@ -381,6 +393,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ComunidadeRoute: typeof ComunidadeRoute
   EvolucaoRoute: typeof EvolucaoRoute
+  ExercicioDetalheRoute: typeof ExercicioDetalheRoute
   HomeRoute: typeof HomeRoute
   LojaRoute: typeof LojaRoute
   NutricaoRoute: typeof NutricaoRoute
@@ -457,6 +470,13 @@ declare module '@tanstack/react-router' {
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exercicio-detalhe': {
+      id: '/exercicio-detalhe'
+      path: '/exercicio-detalhe'
+      fullPath: '/exercicio-detalhe'
+      preLoaderRoute: typeof ExercicioDetalheRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/evolucao': {
@@ -654,6 +674,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ComunidadeRoute: ComunidadeRoute,
   EvolucaoRoute: EvolucaoRoute,
+  ExercicioDetalheRoute: ExercicioDetalheRoute,
   HomeRoute: HomeRoute,
   LojaRoute: LojaRoute,
   NutricaoRoute: NutricaoRoute,
