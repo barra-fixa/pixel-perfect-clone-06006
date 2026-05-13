@@ -167,6 +167,8 @@ function TreinosSoBarraPage() {
           ))}
         </div>
       </section>
+
+      <BottomNav />
     </div>
   );
 }
