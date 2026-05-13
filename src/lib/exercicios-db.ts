@@ -272,7 +272,7 @@ export const EXERCICIOS_BASE: Record<ExercicioId, ExercicioBase> = {
     nome: "Elevação de quadril (ponte)",
     musculo: "Glúteo",
     emoji: "🍑",
-    fxId: "Glute_Bridge",
+    fxId: "Butt_Lift_Bridge",
     instrucoes: [
       "Deite com joelhos flexionados e pés apoiados no chão.",
       "Empurre o quadril para cima contraindo o glúteo no topo.",
