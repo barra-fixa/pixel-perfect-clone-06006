@@ -11,6 +11,7 @@ import {
   marcarInsightMostrado,
   type InsightSemanal,
 } from "@/lib/analytics";
+import { PRODUTOS_BARRA_FIXA } from "@/lib/produtos";
 
 export const Route = createFileRoute("/home")({
   component: HomePage,
