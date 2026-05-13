@@ -149,7 +149,7 @@ function ExercicioDetalhePage() {
         </section>
       )}
 
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-5">
+      <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-5">
         <button
           className="btn-primary"
           style={{
@@ -164,6 +164,8 @@ function ExercicioDetalhePage() {
           {feito ? "Refazer este exercício" : "Começar treino"}
         </button>
       </div>
+
+      <BottomNav />
     </div>
   );
 }
