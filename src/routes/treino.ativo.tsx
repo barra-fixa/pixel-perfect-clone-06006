@@ -5,9 +5,12 @@ import { z } from "zod";
 import { loadUser, saveUser, useElevoUser, addTreinoHistorico } from "@/lib/elevo-store";
 import { alternativasDe, getPlanoSemanal, type Exercicio } from "@/lib/treinos";
 import { checkUnlocks, checkMetaSemanal } from "@/lib/badges";
-import { startProgresso, logSerie, clearProgresso, marcarBateuMeta, sugerirProgresso } from "@/lib/treino-progress";
+import { startProgresso, logSerie, clearProgresso, marcarBateuMeta, sugerirProgresso, marcarExercicioFeito } from "@/lib/treino-progress";
 
-const searchSchema = z.object({ dia: z.coerce.number().optional() });
+const searchSchema = z.object({
+  dia: z.coerce.number().optional(),
+  ex: z.string().optional(),
+});
 
 export const Route = createFileRoute("/treino/ativo")({
   validateSearch: (s) => searchSchema.parse(s),
