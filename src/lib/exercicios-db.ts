@@ -422,7 +422,7 @@ export const EXERCICIOS_BASE: Record<ExercicioId, ExercicioBase> = {
     nome: "Burpee",
     musculo: "Cardio",
     emoji: "💥",
-    fxId: "Burpee",
+    // fxId removido: imagem indisponível no Free Exercise DB.
     instrucoes: [
       "Agache, apoie as mãos no chão e jogue os pés para trás (prancha).",
       "Faça uma flexão (opcional), volte os pés e salte com os braços para cima.",
