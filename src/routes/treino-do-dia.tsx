@@ -169,6 +169,76 @@ function TreinoDoDiaPage() {
       )}
       {!foraDoPlano && <div className="mb-3" />}
 
+      {/* Banner: semana "Só Barra Fixa" ativa */}
+      {semanaAtiva && (
+        <div
+          className="rounded-xl p-3 mb-3 flex items-center gap-3"
+          style={{
+            backgroundColor: "color-mix(in oklab, var(--secondary) 18%, var(--card))",
+            border: "1px solid color-mix(in oklab, var(--secondary) 40%, var(--border))",
+          }}
+        >
+          <div className="text-xl">🏋️</div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "var(--secondary)" }}>
+              Programa ativo
+            </div>
+            <div className="text-sm font-bold capitalize">Só Barra Fixa · {semanaAtiva}</div>
+          </div>
+          <button
+            onClick={() => setSemanaSoBarraAtiva(null)}
+            className="text-[11px] font-semibold px-2.5 py-1.5 rounded-lg"
+            style={{ backgroundColor: "var(--card-elevated)", color: "var(--foreground)" }}
+          >
+            Sair
+          </button>
+        </div>
+      )}
+
+      {/* Toggle: Modo Só Barra Fixa (filtragem leve) */}
+      {!semanaAtiva && (
+        <button
+          onClick={() => setModoBarra(!modoBarra)}
+          className="w-full rounded-xl p-3 mb-3 flex items-center gap-3 text-left transition"
+          style={{
+            backgroundColor: modoBarra
+              ? "color-mix(in oklab, var(--primary) 16%, var(--card))"
+              : "var(--card)",
+            border: modoBarra
+              ? "1px solid var(--primary)"
+              : "1px solid var(--border)",
+          }}
+          aria-pressed={modoBarra}
+        >
+          <div
+            className="size-9 rounded-lg flex items-center justify-center shrink-0"
+            style={{
+              backgroundColor: modoBarra
+                ? "var(--primary)"
+                : "color-mix(in oklab, var(--primary) 14%, transparent)",
+              color: modoBarra ? "var(--primary-foreground)" : "var(--primary)",
+            }}
+          >
+            <Dumbbell size={16} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-bold leading-tight">Treino Só Barra Fixa</div>
+            <div className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+              {modoBarra ? "Ativo — só barra e peso corporal" : "Toque pra filtrar exercícios"}
+            </div>
+          </div>
+          <span
+            className="shrink-0 inline-flex items-center justify-center rounded-full text-[10px] font-bold px-2.5 py-1"
+            style={{
+              backgroundColor: modoBarra ? "var(--primary)" : "var(--card-elevated)",
+              color: modoBarra ? "var(--primary-foreground)" : "var(--muted-foreground)",
+            }}
+          >
+            {modoBarra ? "ON" : "OFF"}
+          </span>
+        </button>
+      )}
+
       {/* Título */}
       <div className="mb-5">
         <div
