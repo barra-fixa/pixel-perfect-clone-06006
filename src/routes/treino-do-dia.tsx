@@ -47,8 +47,10 @@ function TreinoDoDiaPage() {
   const navigate = useNavigate();
   const user = useElevoUser();
   const { dia } = Route.useSearch();
+  const [modoBarra, setModoBarra] = useModoBarraFixa();
+  const semanaAtiva = useSemanaSoBarraAtiva();
 
-  const plano = useMemo(() => getPlanoSemanal(user), [user]);
+  const plano = useMemo(() => getPlanoSemanal(user), [user, modoBarra, semanaAtiva]);
   const hojeIdx = indiceSegunda(new Date().getDay());
   const diaSelecionado = dia ?? hojeIdx;
   const treino = plano[diaSelecionado % plano.length];
