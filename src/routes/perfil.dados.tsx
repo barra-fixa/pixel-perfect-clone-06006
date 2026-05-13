@@ -358,6 +358,78 @@ function DadosPage() {
       <button onClick={onSave} className="btn-primary mt-8">
         {saved ? "Salvo ✓" : "Salvar alterações"}
       </button>
+
+      {/* Modal: pedir equipamento novo */}
+      {pedidoOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
+          style={{ backgroundColor: "color-mix(in oklab, black 60%, transparent)" }}
+          onClick={() => pedidoStatus !== "sending" && setPedidoOpen(false)}
+        >
+          <div
+            className="elevo-card p-5 w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <h3 className="font-bold text-base">Pedir equipamento</h3>
+                <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>
+                  Diz qual equipamento você tem. A gente avalia adicionar.
+                </p>
+              </div>
+              <button
+                onClick={() => setPedidoOpen(false)}
+                className="size-8 rounded-full flex items-center justify-center"
+                aria-label="Fechar"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {pedidoStatus === "ok" ? (
+              <div className="py-6 text-center">
+                <div className="text-3xl mb-2">🙏</div>
+                <div className="font-semibold text-sm">Obrigado!</div>
+                <div className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>
+                  Vamos avaliar e te avisamos quando entrar.
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <Field label="Nome do equipamento">
+                  <input
+                    value={pedidoNome}
+                    onChange={(e) => setPedidoNome(e.target.value)}
+                    placeholder="Ex.: TRX, anilhas, step"
+                    className="w-full bg-transparent outline-none text-sm"
+                  />
+                </Field>
+                <Field label="Como você usa? (opcional)">
+                  <textarea
+                    value={pedidoDesc}
+                    onChange={(e) => setPedidoDesc(e.target.value)}
+                    rows={2}
+                    placeholder="Conta brevemente"
+                    className="w-full bg-transparent outline-none text-sm resize-none"
+                  />
+                </Field>
+                {pedidoStatus === "err" && (
+                  <p className="text-xs" style={{ color: "var(--destructive)" }}>
+                    {pedidoErr}
+                  </p>
+                )}
+                <button
+                  onClick={handlePedirEquipamento}
+                  disabled={pedidoNome.trim().length < 2 || pedidoStatus === "sending"}
+                  className="btn-primary disabled:opacity-50"
+                >
+                  {pedidoStatus === "sending" ? "Enviando…" : "Enviar pedido"}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
