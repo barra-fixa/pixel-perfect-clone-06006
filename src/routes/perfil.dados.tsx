@@ -225,6 +225,29 @@ function DadosPage() {
         </div>
       </Section>
 
+      {/* Trilha da Barra — atalho quando o caminho é barra */}
+      {caminho === "barra" && (
+        <Link
+          to="/trilha-barra"
+          className="elevo-card p-4 mt-4 flex items-center gap-3"
+          style={{ borderColor: "color-mix(in oklab, var(--secondary) 30%, var(--border))" }}
+        >
+          <div
+            className="size-10 rounded-xl flex items-center justify-center shrink-0"
+            style={{ backgroundColor: "color-mix(in oklab, var(--secondary) 25%, transparent)" }}
+          >
+            <Zap size={18} style={{ color: "var(--secondary)" }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-semibold">Trilha da Barra</div>
+            <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+              Veja em qual nível da jornada você está
+            </div>
+          </div>
+          <ChevronLeft size={18} className="rotate-180" style={{ color: "var(--subtle)" }} />
+        </Link>
+      )}
+
       {/* Equipamentos — só mostra se caminho == casa */}
       {caminho === "casa" && (
         <Section title="O que você tem em casa?">
@@ -244,6 +267,14 @@ function DadosPage() {
               </button>
             ))}
           </div>
+          <button
+            onClick={() => setPedidoOpen(true)}
+            className="mt-3 w-full elevo-card p-3 flex items-center justify-center gap-2 text-sm font-semibold"
+            style={{ color: "var(--primary)" }}
+          >
+            <Plus size={16} />
+            Não vejo o meu equipamento aqui
+          </button>
         </Section>
       )}
 
