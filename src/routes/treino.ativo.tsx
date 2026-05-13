@@ -244,8 +244,14 @@ function TreinoAtivoPage() {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <h1 className="text-xl font-bold leading-tight">{ex.nome}</h1>
-          <div className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
-            Série {serie} de {ex.series} · {ex.reps} repetições
+          <div
+            className="mt-2 text-2xl font-black tracking-tight uppercase"
+            style={{ color: "var(--primary)" }}
+          >
+            Série {serie} de {ex.series}
+          </div>
+          <div className="text-xs mt-1 uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+            Meta: {ex.reps} reps
           </div>
         </div>
         {/* Botão "Trocar exercício" — só aparece se há alternativas e
