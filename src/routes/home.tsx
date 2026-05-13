@@ -1,10 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Bell, Calendar, CheckCircle2, ChevronRight, Circle, Dumbbell, Flame, LogOut, Sparkles, Target, TrendingUp, Trophy, X } from "lucide-react";
+import { Bell, Calendar, CheckCircle2, ChevronRight, Dumbbell, Flame, LogOut, Sparkles, Target, TrendingUp, Trophy, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { BottomNav } from "@/components/BottomNav";
 import { META_POR_NIVEL, useElevoUser } from "@/lib/elevo-store";
 import { getTreinoDoDia } from "@/lib/treinos";
-import { exerciciosFeitosHoje } from "@/lib/treino-progress";
 import { supabase } from "@/integrations/supabase/client";
 import {
   calcularInsightSemanal,
