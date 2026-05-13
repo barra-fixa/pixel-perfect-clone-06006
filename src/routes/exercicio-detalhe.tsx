@@ -29,7 +29,7 @@ function ExercicioDetalhePage() {
   const feito = exerciciosFeitosHoje(treino.id).includes(ex.id);
 
   return (
-    <div className="elevo-shell px-5 pt-8 pb-32 min-h-dvh">
+    <div className="elevo-shell px-5 pt-8 pb-44 min-h-dvh">
       <div className="flex items-center justify-between mb-5 mt-2">
         <button
           onClick={() => navigate({ to: "/home" })}
