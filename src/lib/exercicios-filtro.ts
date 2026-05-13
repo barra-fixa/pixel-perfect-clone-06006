@@ -11,6 +11,12 @@ import type { ExercicioId } from "./exercicios-db";
 
 export type EquipReq = "nenhum" | "barra" | "peso" | "corda" | "paralela";
 
+export const EXERCICIOS_COMPATIVEL_BARRA_FIXA_PAREDE: ExercicioId[] = [
+  "barraFixa",
+  "barraFixaSupinada",
+  "remadaAustraliana",
+];
+
 // Equipamento mínimo que cada exercício exige para ser executado bem.
 const EQUIP_REQ: Record<ExercicioId, EquipReq> = {
   flexao: "nenhum",
@@ -104,11 +110,21 @@ export function filtrarExercicios(
   for (const ex of exs) {
     const id = ex.id as ExercicioId;
     const req = EQUIP_REQ[id];
+    const nomeNormalizado = `${ex.nome ?? ""}`.toLowerCase();
+    const ehBarraAustraliana = id === "remadaAustraliana" || nomeNormalizado.includes("australiana");
 
     // Modo "Só Barra Fixa": qualquer coisa que não seja barra ou nenhum vira alternativa.
     if (opts.modoBarraFixa && req !== "barra" && req !== "nenhum") {
+      if (ehBarraAustraliana) {
+        console.warn("❌ Exercício removido: Barra australiana [inversa] (incompatível com barra fixa de parede)");
+      }
       const alt = ALTERNATIVA_BARRA[id];
       if (alt) out.push(builder(alt));
+      continue;
+    }
+
+    if (opts.modoBarraFixa && req === "barra" && ehBarraAustraliana && !EXERCICIOS_COMPATIVEL_BARRA_FIXA_PAREDE.includes(id)) {
+      console.warn("❌ Exercício removido: Barra australiana [inversa] (incompatível com barra fixa de parede)");
       continue;
     }
 
