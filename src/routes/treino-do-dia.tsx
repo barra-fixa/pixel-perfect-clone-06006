@@ -294,6 +294,104 @@ function TreinoDoDiaPage() {
           </div>
         </section>
       )}
+
+      {/* Modal: editar dias da semana */}
+      {editOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
+          style={{ backgroundColor: "color-mix(in oklab, black 60%, transparent)" }}
+          onClick={() => setEditOpen(false)}
+        >
+          <div
+            className="elevo-card w-full max-w-sm p-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <h3 className="font-bold text-base">Escolha seus {freq} dias</h3>
+              <button
+                onClick={() => setEditOpen(false)}
+                className="size-8 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: "var(--card-elevated)" }}
+                aria-label="Fechar"
+              >
+                <X size={14} />
+              </button>
+            </div>
+            <p className="text-xs mb-4" style={{ color: "var(--muted-foreground)" }}>
+              Selecione exatamente {freq} {freq === 1 ? "dia" : "dias"} de treino.
+            </p>
+
+            <div className="space-y-1.5">
+              {DIAS_LONGOS.map((longo, i) => {
+                const sel = editSel.includes(i);
+                const cheio = !sel && editSel.length >= freq;
+                return (
+                  <button
+                    key={i}
+                    onClick={() => toggleDia(i)}
+                    disabled={cheio}
+                    className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 transition text-left"
+                    style={{
+                      backgroundColor: sel
+                        ? "color-mix(in oklab, var(--primary) 18%, var(--card))"
+                        : "var(--card-elevated)",
+                      border: sel
+                        ? "1px solid var(--primary)"
+                        : "1px solid var(--border)",
+                      opacity: cheio ? 0.4 : 1,
+                    }}
+                  >
+                    <span
+                      className="size-5 rounded-md flex items-center justify-center shrink-0"
+                      style={{
+                        backgroundColor: sel ? "var(--primary)" : "transparent",
+                        border: sel ? "1px solid var(--primary)" : "1px solid var(--border)",
+                      }}
+                    >
+                      {sel && <CheckCircle2 size={12} style={{ color: "var(--primary-foreground)" }} />}
+                    </span>
+                    <span className="text-sm font-semibold flex-1">{longo}</span>
+                    <span className="text-[10px] font-bold" style={{ color: "var(--subtle)" }}>
+                      {DIAS_CURTOS[i]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-3 flex items-center justify-between text-xs">
+              <span style={{ color: "var(--muted-foreground)" }}>
+                Selecionados: <span className="font-bold" style={{ color: editSel.length === freq ? "var(--primary)" : "var(--foreground)" }}>{editSel.length}/{freq}</span>
+              </span>
+              {editSel.length > freq && (
+                <span style={{ color: "var(--warning)" }}>Máximo {freq} dias</span>
+              )}
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setEditOpen(false)}
+                className="rounded-xl py-3 text-sm font-semibold"
+                style={{ backgroundColor: "var(--card-elevated)", color: "var(--foreground)" }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={salvarDias}
+                disabled={editSel.length !== freq}
+                className="rounded-xl py-3 text-sm font-bold transition"
+                style={{
+                  backgroundColor: editSel.length === freq ? "var(--primary)" : "var(--card-elevated)",
+                  color: editSel.length === freq ? "var(--primary-foreground)" : "var(--muted-foreground)",
+                  opacity: editSel.length === freq ? 1 : 0.6,
+                }}
+              >
+                Salvar Dias
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
