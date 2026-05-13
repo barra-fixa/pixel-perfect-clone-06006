@@ -9,6 +9,50 @@
 
 export type SerieLog = { reps: number; peso: number };
 
+// ---------- Exercícios concluídos por dia ----------
+// Estrutura: { "YYYY-MM-DD": { [treinoId]: string[] (exIds concluídos) } }
+
+const FEITOS_KEY = "elevo:exs-feitos-dia";
+
+function hojeKey(d = new Date()): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+type FeitosMap = Record<string, Record<string, string[]>>;
+
+function loadFeitosMap(): FeitosMap {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(FEITOS_KEY);
+    return raw ? (JSON.parse(raw) as FeitosMap) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveFeitosMap(m: FeitosMap) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(FEITOS_KEY, JSON.stringify(m));
+}
+
+/** Marca um exercício como feito hoje para um treino. */
+export function marcarExercicioFeito(treinoId: string, exId: string, date = new Date()) {
+  const key = hojeKey(date);
+  const m = loadFeitosMap();
+  const dia = m[key] ?? {};
+  const feitos = new Set(dia[treinoId] ?? []);
+  feitos.add(exId);
+  dia[treinoId] = Array.from(feitos);
+  m[key] = dia;
+  saveFeitosMap(m);
+}
+
+/** Lista exercícios já concluídos hoje pra um treino. */
+export function exerciciosFeitosHoje(treinoId: string, date = new Date()): string[] {
+  const m = loadFeitosMap();
+  return m[hojeKey(date)]?.[treinoId] ?? [];
+}
+
 // ---------- Sessão atual ----------
 
 export type ProgressoTreino = {
