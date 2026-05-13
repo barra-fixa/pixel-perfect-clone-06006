@@ -1,10 +1,16 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Bell, Calendar, CheckCircle2, ChevronRight, Clock, Dumbbell, Flame, LogOut, Play, Target, TrendingUp, Trophy } from "lucide-react";
-import { useMemo } from "react";
+import { Bell, Calendar, CheckCircle2, ChevronRight, Clock, Dumbbell, Flame, LogOut, Play, Sparkles, Target, TrendingUp, Trophy, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { BottomNav } from "@/components/BottomNav";
 import { META_POR_NIVEL, useElevoUser } from "@/lib/elevo-store";
 import { getTreinoDoDia } from "@/lib/treinos";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  calcularInsightSemanal,
+  jaMostradoEstaSemana,
+  marcarInsightMostrado,
+  type InsightSemanal,
+} from "@/lib/analytics";
 
 export const Route = createFileRoute("/home")({
   component: HomePage,
@@ -60,6 +66,26 @@ function HomePage() {
   // Histórico recente (últimos 5)
   const historico = [...(user.historicoTreinos ?? [])].sort((a, b) => b.data - a.data).slice(0, 5);
 
+  // Card "Como você tá" — só segunda-feira, e se ainda não foi mostrado nessa semana.
+  const [insight, setInsight] = useState<InsightSemanal | null>(null);
+  const [insightDismissed, setInsightDismissed] = useState(false);
+  useEffect(() => {
+    const ehSegunda = new Date().getDay() === 1;
+    if (!ehSegunda) return;
+    let cancelado = false;
+    (async () => {
+      const ja = await jaMostradoEstaSemana();
+      if (ja || cancelado) return;
+      const i = calcularInsightSemanal(user);
+      if (!i || cancelado) return;
+      setInsight(i);
+      void marcarInsightMostrado();
+    })();
+    return () => {
+      cancelado = true;
+    };
+  }, [user]);
+
   async function handleLogout() {
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
@@ -99,6 +125,50 @@ function HomePage() {
           </button>
         </div>
       </header>
+
+      {/* Card "Como você tá" — segunda-feira com insight real */}
+      {insight && !insightDismissed && (
+        <button
+          onClick={() => navigate({ to: "/treino" })}
+          className="w-full text-left rounded-2xl p-4 mb-4 relative overflow-hidden"
+          style={{
+            background:
+              "linear-gradient(135deg, color-mix(in oklab, var(--secondary) 22%, var(--card)) 0%, var(--card) 80%)",
+            border: "1px solid color-mix(in oklab, var(--secondary) 35%, var(--border))",
+          }}
+        >
+          <span
+            role="button"
+            tabIndex={0}
+            onClick={(e) => {
+              e.stopPropagation();
+              setInsightDismissed(true);
+            }}
+            className="absolute top-2 right-2 size-7 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: "color-mix(in oklab, var(--card) 80%, transparent)" }}
+            aria-label="Fechar"
+          >
+            <X size={14} />
+          </span>
+          <div className="flex items-start gap-3 pr-8">
+            <div
+              className="size-10 rounded-xl flex items-center justify-center text-xl shrink-0"
+              style={{ backgroundColor: "color-mix(in oklab, var(--secondary) 25%, transparent)" }}
+            >
+              {insight.icon}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider font-semibold" style={{ color: "var(--secondary)" }}>
+                <Sparkles size={11} /> Como você tá
+              </div>
+              <div className="font-bold text-sm mt-0.5">{insight.titulo}</div>
+              <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>
+                {insight.descricao}
+              </p>
+            </div>
+          </div>
+        </button>
+      )}
 
       {/* Cards de resumo */}
       <section className="grid grid-cols-3 gap-3 mb-4">

@@ -44,6 +44,66 @@ export type Database = {
         }
         Relationships: []
       }
+      equipamentos_pedidos: {
+        Row: {
+          categoria: string | null
+          created_at: string
+          data_pedido: string
+          descricao: string | null
+          email_user: string
+          id: string
+          nome_equipamento: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          categoria?: string | null
+          created_at?: string
+          data_pedido?: string
+          descricao?: string | null
+          email_user: string
+          id?: string
+          nome_equipamento: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          categoria?: string | null
+          created_at?: string
+          data_pedido?: string
+          descricao?: string | null
+          email_user?: string
+          id?: string
+          nome_equipamento?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      insights_mostrados: {
+        Row: {
+          created_at: string
+          data_criada: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data_criada?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data_criada?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       post_likes: {
         Row: {
           created_at: string

@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UpgradeRouteImport } from './routes/upgrade'
+import { Route as TrilhaBarraRouteImport } from './routes/trilha-barra'
 import { Route as TreinoRouteImport } from './routes/treino'
 import { Route as TafRouteImport } from './routes/taf'
 import { Route as PerfilRouteImport } from './routes/perfil'
@@ -41,6 +42,11 @@ import { Route as ApiPublicHooksSendRemindersRouteImport } from './routes/api/pu
 const UpgradeRoute = UpgradeRouteImport.update({
   id: '/upgrade',
   path: '/upgrade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrilhaBarraRoute = TrilhaBarraRouteImport.update({
+  id: '/trilha-barra',
+  path: '/trilha-barra',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TreinoRoute = TreinoRouteImport.update({
@@ -191,6 +197,7 @@ export interface FileRoutesByFullPath {
   '/perfil': typeof PerfilRouteWithChildren
   '/taf': typeof TafRouteWithChildren
   '/treino': typeof TreinoRouteWithChildren
+  '/trilha-barra': typeof TrilhaBarraRoute
   '/upgrade': typeof UpgradeRoute
   '/onboarding/caminho': typeof OnboardingCaminhoRoute
   '/onboarding/email': typeof OnboardingEmailRoute
@@ -221,6 +228,7 @@ export interface FileRoutesByTo {
   '/perfil': typeof PerfilRouteWithChildren
   '/taf': typeof TafRouteWithChildren
   '/treino': typeof TreinoRouteWithChildren
+  '/trilha-barra': typeof TrilhaBarraRoute
   '/upgrade': typeof UpgradeRoute
   '/onboarding/caminho': typeof OnboardingCaminhoRoute
   '/onboarding/email': typeof OnboardingEmailRoute
@@ -252,6 +260,7 @@ export interface FileRoutesById {
   '/perfil': typeof PerfilRouteWithChildren
   '/taf': typeof TafRouteWithChildren
   '/treino': typeof TreinoRouteWithChildren
+  '/trilha-barra': typeof TrilhaBarraRoute
   '/upgrade': typeof UpgradeRoute
   '/onboarding/caminho': typeof OnboardingCaminhoRoute
   '/onboarding/email': typeof OnboardingEmailRoute
@@ -284,6 +293,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/taf'
     | '/treino'
+    | '/trilha-barra'
     | '/upgrade'
     | '/onboarding/caminho'
     | '/onboarding/email'
@@ -314,6 +324,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/taf'
     | '/treino'
+    | '/trilha-barra'
     | '/upgrade'
     | '/onboarding/caminho'
     | '/onboarding/email'
@@ -344,6 +355,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/taf'
     | '/treino'
+    | '/trilha-barra'
     | '/upgrade'
     | '/onboarding/caminho'
     | '/onboarding/email'
@@ -375,6 +387,7 @@ export interface RootRouteChildren {
   PerfilRoute: typeof PerfilRouteWithChildren
   TafRoute: typeof TafRouteWithChildren
   TreinoRoute: typeof TreinoRouteWithChildren
+  TrilhaBarraRoute: typeof TrilhaBarraRoute
   UpgradeRoute: typeof UpgradeRoute
   OnboardingCaminhoRoute: typeof OnboardingCaminhoRoute
   OnboardingEmailRoute: typeof OnboardingEmailRoute
@@ -395,6 +408,13 @@ declare module '@tanstack/react-router' {
       path: '/upgrade'
       fullPath: '/upgrade'
       preLoaderRoute: typeof UpgradeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trilha-barra': {
+      id: '/trilha-barra'
+      path: '/trilha-barra'
+      fullPath: '/trilha-barra'
+      preLoaderRoute: typeof TrilhaBarraRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/treino': {
@@ -640,6 +660,7 @@ const rootRouteChildren: RootRouteChildren = {
   PerfilRoute: PerfilRouteWithChildren,
   TafRoute: TafRouteWithChildren,
   TreinoRoute: TreinoRouteWithChildren,
+  TrilhaBarraRoute: TrilhaBarraRoute,
   UpgradeRoute: UpgradeRoute,
   OnboardingCaminhoRoute: OnboardingCaminhoRoute,
   OnboardingEmailRoute: OnboardingEmailRoute,
@@ -655,13 +676,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -1,6 +1,6 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ChevronLeft, Check, Dumbbell, Home as HomeIcon } from "lucide-react";
+import { ChevronLeft, Check, Dumbbell, Home as HomeIcon, Plus, Zap, X } from "lucide-react";
 import {
   loadUser,
   saveUser,
@@ -10,6 +10,7 @@ import {
   type Sexo,
 } from "@/lib/elevo-store";
 import { CARGOS } from "@/lib/taf-data";
+import { pedirEquipamento } from "@/lib/equipamentos-pedidos";
 
 export const Route = createFileRoute("/perfil/dados")({
   component: DadosPage,
@@ -55,6 +56,31 @@ function DadosPage() {
   const [caminho, setCaminho] = useState<Caminho | undefined>();
   const [equipamentos, setEquipamentos] = useState<string[]>([]);
   const [saved, setSaved] = useState(false);
+
+  // Modal "Não vejo meu equipamento"
+  const [pedidoOpen, setPedidoOpen] = useState(false);
+  const [pedidoNome, setPedidoNome] = useState("");
+  const [pedidoDesc, setPedidoDesc] = useState("");
+  const [pedidoStatus, setPedidoStatus] = useState<"idle" | "sending" | "ok" | "err">("idle");
+  const [pedidoErr, setPedidoErr] = useState<string>("");
+
+  async function handlePedirEquipamento() {
+    if (pedidoStatus === "sending") return;
+    setPedidoStatus("sending");
+    const r = await pedirEquipamento(pedidoNome, pedidoDesc);
+    if (r.ok) {
+      setPedidoStatus("ok");
+      setTimeout(() => {
+        setPedidoOpen(false);
+        setPedidoNome("");
+        setPedidoDesc("");
+        setPedidoStatus("idle");
+      }, 1400);
+    } else {
+      setPedidoStatus("err");
+      setPedidoErr(r.erro ?? "Erro ao enviar");
+    }
+  }
 
   useEffect(() => {
     const u = loadUser();
@@ -199,6 +225,29 @@ function DadosPage() {
         </div>
       </Section>
 
+      {/* Trilha da Barra — atalho quando o caminho é barra */}
+      {caminho === "barra" && (
+        <Link
+          to="/trilha-barra"
+          className="elevo-card p-4 mt-4 flex items-center gap-3"
+          style={{ borderColor: "color-mix(in oklab, var(--secondary) 30%, var(--border))" }}
+        >
+          <div
+            className="size-10 rounded-xl flex items-center justify-center shrink-0"
+            style={{ backgroundColor: "color-mix(in oklab, var(--secondary) 25%, transparent)" }}
+          >
+            <Zap size={18} style={{ color: "var(--secondary)" }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-semibold">Trilha da Barra</div>
+            <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+              Veja em qual nível da jornada você está
+            </div>
+          </div>
+          <ChevronLeft size={18} className="rotate-180" style={{ color: "var(--subtle)" }} />
+        </Link>
+      )}
+
       {/* Equipamentos — só mostra se caminho == casa */}
       {caminho === "casa" && (
         <Section title="O que você tem em casa?">
@@ -218,6 +267,14 @@ function DadosPage() {
               </button>
             ))}
           </div>
+          <button
+            onClick={() => setPedidoOpen(true)}
+            className="mt-3 w-full elevo-card p-3 flex items-center justify-center gap-2 text-sm font-semibold"
+            style={{ color: "var(--primary)" }}
+          >
+            <Plus size={16} />
+            Não vejo o meu equipamento aqui
+          </button>
         </Section>
       )}
 
@@ -301,6 +358,78 @@ function DadosPage() {
       <button onClick={onSave} className="btn-primary mt-8">
         {saved ? "Salvo ✓" : "Salvar alterações"}
       </button>
+
+      {/* Modal: pedir equipamento novo */}
+      {pedidoOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
+          style={{ backgroundColor: "color-mix(in oklab, black 60%, transparent)" }}
+          onClick={() => pedidoStatus !== "sending" && setPedidoOpen(false)}
+        >
+          <div
+            className="elevo-card p-5 w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <h3 className="font-bold text-base">Pedir equipamento</h3>
+                <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>
+                  Diz qual equipamento você tem. A gente avalia adicionar.
+                </p>
+              </div>
+              <button
+                onClick={() => setPedidoOpen(false)}
+                className="size-8 rounded-full flex items-center justify-center"
+                aria-label="Fechar"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {pedidoStatus === "ok" ? (
+              <div className="py-6 text-center">
+                <div className="text-3xl mb-2">🙏</div>
+                <div className="font-semibold text-sm">Obrigado!</div>
+                <div className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>
+                  Vamos avaliar e te avisamos quando entrar.
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <Field label="Nome do equipamento">
+                  <input
+                    value={pedidoNome}
+                    onChange={(e) => setPedidoNome(e.target.value)}
+                    placeholder="Ex.: TRX, anilhas, step"
+                    className="w-full bg-transparent outline-none text-sm"
+                  />
+                </Field>
+                <Field label="Como você usa? (opcional)">
+                  <textarea
+                    value={pedidoDesc}
+                    onChange={(e) => setPedidoDesc(e.target.value)}
+                    rows={2}
+                    placeholder="Conta brevemente"
+                    className="w-full bg-transparent outline-none text-sm resize-none"
+                  />
+                </Field>
+                {pedidoStatus === "err" && (
+                  <p className="text-xs" style={{ color: "var(--destructive)" }}>
+                    {pedidoErr}
+                  </p>
+                )}
+                <button
+                  onClick={handlePedirEquipamento}
+                  disabled={pedidoNome.trim().length < 2 || pedidoStatus === "sending"}
+                  className="btn-primary disabled:opacity-50"
+                >
+                  {pedidoStatus === "sending" ? "Enviando…" : "Enviar pedido"}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
