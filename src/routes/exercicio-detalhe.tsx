@@ -5,6 +5,7 @@ import { z } from "zod";
 import { useElevoUser } from "@/lib/elevo-store";
 import { getPlanoSemanal } from "@/lib/treinos";
 import { exerciciosFeitosHoje } from "@/lib/treino-progress";
+import { BottomNav } from "@/components/BottomNav";
 
 const search = z.object({
   dia: z.coerce.number().optional(),
