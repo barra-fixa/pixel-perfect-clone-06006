@@ -237,9 +237,42 @@ function HomePage() {
         </p>
       </section>
 
-      {/* Treino de hoje — grid de exercícios clicáveis */}
-      <TreinoHojeGrid />
-
+      {/* Próximo treino — botão grande */}
+      <section
+        className="rounded-2xl p-5 mb-5 relative overflow-hidden"
+        style={{
+          background:
+            "linear-gradient(135deg, color-mix(in oklab, var(--primary) 22%, var(--card)) 0%, var(--card) 75%)",
+          border: "1px solid color-mix(in oklab, var(--primary) 30%, var(--border))",
+        }}
+      >
+        <div className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "var(--primary)" }}>
+          Próximo treino
+        </div>
+        <h2 className="text-2xl font-bold leading-tight mb-1">{treinoHoje.nome}</h2>
+        <div className="text-xs mb-4" style={{ color: "var(--muted-foreground)" }}>
+          {treinoHoje.exercicios.length} exercícios · ~{treinoHoje.duracaoMin} min
+        </div>
+        <button
+          onClick={() => navigate({ to: "/treino-do-dia" })}
+          className="w-full flex items-center justify-center gap-2 rounded-xl font-bold transition active:scale-[0.98]"
+          style={{
+            backgroundColor: "var(--primary)",
+            color: "var(--primary-foreground)",
+            height: 60,
+            fontSize: 17,
+          }}
+        >
+          🏋️ COMEÇAR TREINO
+        </button>
+        <Link
+          to="/semana"
+          className="block text-center text-xs font-semibold mt-3"
+          style={{ color: "var(--primary)" }}
+        >
+          Ver semana inteira →
+        </Link>
+      </section>
 
       {/* Streak */}
       <div className="grid grid-cols-2 gap-3 mb-5">
