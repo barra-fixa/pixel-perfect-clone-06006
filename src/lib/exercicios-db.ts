@@ -285,7 +285,7 @@ export const EXERCICIOS_BASE: Record<ExercicioId, ExercicioBase> = {
     nome: "Subida no banco",
     musculo: "Pernas",
     emoji: "🪜",
-    fxId: "Step-up_with_knee_raise",
+    fxId: "Dumbbell_Step_Ups",
     instrucoes: [
       "Em frente a um banco firme, suba com um pé empurrando o calcanhar.",
       "No topo, elevar levemente o joelho oposto.",
