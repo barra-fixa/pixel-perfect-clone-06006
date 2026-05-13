@@ -116,7 +116,7 @@ export const EXERCICIOS_BASE: Record<ExercicioId, ExercicioBase> = {
     nome: "Flexão diamante",
     musculo: "Tríceps",
     emoji: "💎",
-    fxId: "Pushups_-_Close_Triceps_Position",
+    fxId: "Close-Grip_Push-Up_off_of_a_Dumbbell",
     instrucoes: [
       "Mãos juntas no chão formando um diamante com polegares e indicadores.",
       "Desça o peito quase tocando as mãos, cotovelos colados ao corpo.",
