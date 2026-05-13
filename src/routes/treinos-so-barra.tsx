@@ -4,6 +4,7 @@ import { useState } from "react";
 import { SEMANAS_SO_BARRA, type SemanaBarra } from "@/lib/treinos-so-barra";
 import { setModoBarraFixa, setSemanaSoBarraAtiva } from "@/lib/modo-barra-fixa";
 import { PRODUTOS_BARRA_FIXA } from "@/lib/produtos";
+import { BottomNav } from "@/components/BottomNav";
 
 export const Route = createFileRoute("/treinos-so-barra")({
   component: TreinosSoBarraPage,
