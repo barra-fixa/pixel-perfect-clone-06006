@@ -38,7 +38,16 @@ function TreinoAtivoPage() {
   const plano = useMemo(() => getPlanoSemanal(user), [user]);
   const treino = plano[(search.dia ?? new Date().getDay()) % plano.length];
 
-  const [exIdx, setExIdx] = useState(0);
+  // Modo single-exercise: se vier ?ex=, foca apenas naquele exercício.
+  const singleMode = !!search.ex;
+  const startIdx = useMemo(() => {
+    if (!search.ex) return 0;
+    const i = treino.exercicios.findIndex((e) => e.id === search.ex);
+    return i >= 0 ? i : 0;
+  }, [search.ex, treino]);
+
+  const [exIdx, setExIdx] = useState(startIdx);
+  const [exercicioConcluido, setExercicioConcluido] = useState(false);
   const [serie, setSerie] = useState(1);
   const [reps, setReps] = useState(0);
   const [peso, setPeso] = useState<number>(0);
