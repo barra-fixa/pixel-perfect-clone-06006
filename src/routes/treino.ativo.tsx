@@ -5,9 +5,12 @@ import { z } from "zod";
 import { loadUser, saveUser, useElevoUser, addTreinoHistorico } from "@/lib/elevo-store";
 import { alternativasDe, getPlanoSemanal, type Exercicio } from "@/lib/treinos";
 import { checkUnlocks, checkMetaSemanal } from "@/lib/badges";
-import { startProgresso, logSerie, clearProgresso, marcarBateuMeta, sugerirProgresso } from "@/lib/treino-progress";
+import { startProgresso, logSerie, clearProgresso, marcarBateuMeta, sugerirProgresso, marcarExercicioFeito } from "@/lib/treino-progress";
 
-const searchSchema = z.object({ dia: z.coerce.number().optional() });
+const searchSchema = z.object({
+  dia: z.coerce.number().optional(),
+  ex: z.string().optional(),
+});
 
 export const Route = createFileRoute("/treino/ativo")({
   validateSearch: (s) => searchSchema.parse(s),
@@ -35,7 +38,16 @@ function TreinoAtivoPage() {
   const plano = useMemo(() => getPlanoSemanal(user), [user]);
   const treino = plano[(search.dia ?? new Date().getDay()) % plano.length];
 
-  const [exIdx, setExIdx] = useState(0);
+  // Modo single-exercise: se vier ?ex=, foca apenas naquele exercício.
+  const singleMode = !!search.ex;
+  const startIdx = useMemo(() => {
+    if (!search.ex) return 0;
+    const i = treino.exercicios.findIndex((e) => e.id === search.ex);
+    return i >= 0 ? i : 0;
+  }, [search.ex, treino]);
+
+  const [exIdx, setExIdx] = useState(startIdx);
+  const [exercicioConcluido, setExercicioConcluido] = useState(false);
   const [serie, setSerie] = useState(1);
   const [reps, setReps] = useState(0);
   const [peso, setPeso] = useState<number>(0);
@@ -105,6 +117,13 @@ function TreinoAtivoPage() {
     } else {
       // Última série deste exercício — registra se bateu a meta em TODAS as séries
       marcarBateuMeta(ex.id, novasSeriesBatidas === ex.series);
+      marcarExercicioFeito(treino.id, ex.id);
+
+      // Modo single-exercise: para aqui e mostra tela de conclusão.
+      if (singleMode) {
+        setExercicioConcluido(true);
+        return;
+      }
 
       if (exIdx < treino.exercicios.length - 1) {
         setExIdx((i) => i + 1);
@@ -135,6 +154,29 @@ function TreinoAtivoPage() {
       navigate({ to: "/treino/concluido", search: { dur: treino.duracaoMin, ex: treino.exercicios.length } });
     }
   };
+
+  // Tela "Exercício concluído" — só em modo single-exercise.
+  if (exercicioConcluido) {
+    return (
+      <div className="elevo-shell flex flex-col items-center justify-center px-5 py-8 min-h-dvh text-center">
+        <div className="text-7xl mb-4">🎉</div>
+        <h1 className="text-3xl font-black mb-2">Exercício concluído!</h1>
+        <p className="text-base mb-1" style={{ color: "var(--muted-foreground)" }}>
+          {ex.nome}
+        </p>
+        <p className="text-sm mb-8" style={{ color: "var(--subtle)" }}>
+          {ex.series} séries completas · Parabéns 💪
+        </p>
+        <button
+          className="btn-primary"
+          style={{ height: 56, fontSize: 16 }}
+          onClick={() => navigate({ to: "/home" })}
+        >
+          ← Voltar pra lista
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="elevo-shell flex flex-col px-5 pt-5 pb-6 min-h-dvh">
@@ -202,8 +244,14 @@ function TreinoAtivoPage() {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <h1 className="text-xl font-bold leading-tight">{ex.nome}</h1>
-          <div className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
-            Série {serie} de {ex.series} · {ex.reps} repetições
+          <div
+            className="mt-2 text-2xl font-black tracking-tight uppercase"
+            style={{ color: "var(--primary)" }}
+          >
+            Série {serie} de {ex.series}
+          </div>
+          <div className="text-xs mt-1 uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+            Meta: {ex.reps} reps
           </div>
         </div>
         {/* Botão "Trocar exercício" — só aparece se há alternativas e
@@ -453,12 +501,14 @@ function TreinoAtivoPage() {
       </div>
 
       {!resting && (
-        <button className="btn-primary" onClick={concluirSerie}>
-          {serie < ex.series
-            ? "Concluir série"
-            : exIdx < treino.exercicios.length - 1
-              ? "Próximo exercício"
-              : "Finalizar treino"}
+        <button className="btn-primary" style={{ height: 56, fontSize: 16 }} onClick={concluirSerie}>
+          ✓ {serie < ex.series
+            ? "Completei esta série"
+            : singleMode
+              ? "Completei a última série"
+              : exIdx < treino.exercicios.length - 1
+                ? "Próximo exercício"
+                : "Finalizar treino"}
         </button>
       )}
     </div>

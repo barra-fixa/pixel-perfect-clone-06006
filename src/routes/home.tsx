@@ -1,9 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Bell, Calendar, CheckCircle2, ChevronRight, Clock, Dumbbell, Flame, LogOut, Play, Sparkles, Target, TrendingUp, Trophy, X } from "lucide-react";
+import { Bell, Calendar, CheckCircle2, ChevronRight, Circle, Dumbbell, Flame, LogOut, Sparkles, Target, TrendingUp, Trophy, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { BottomNav } from "@/components/BottomNav";
 import { META_POR_NIVEL, useElevoUser } from "@/lib/elevo-store";
 import { getTreinoDoDia } from "@/lib/treinos";
+import { exerciciosFeitosHoje } from "@/lib/treino-progress";
 import { supabase } from "@/integrations/supabase/client";
 import {
   calcularInsightSemanal,
@@ -236,57 +237,9 @@ function HomePage() {
         </p>
       </section>
 
-      {/* Próximo treino */}
-      <section
-        className="rounded-2xl p-5 mb-4 relative overflow-hidden"
-        style={{
-          background:
-            "linear-gradient(135deg, color-mix(in oklab, var(--primary) 28%, var(--card)) 0%, var(--card) 70%)",
-          border: "1px solid color-mix(in oklab, var(--primary) 35%, var(--border))",
-        }}
-      >
-        <div
-          className="absolute -right-10 -top-10 size-40 rounded-full opacity-30"
-          style={{ background: "radial-gradient(var(--primary), transparent 70%)" }}
-        />
-        <div className="relative">
-          <div className="flex items-center justify-between mb-1">
-            <div className="text-xs uppercase tracking-wider" style={{ color: "var(--primary)" }}>
-              Próximo treino
-            </div>
-            <div className="flex items-center gap-1 text-xs" style={{ color: "var(--muted-foreground)" }}>
-              <Clock size={12} /> {diaSemana} · 07:00
-            </div>
-          </div>
-          <h2 className="text-2xl font-bold">{treinoHoje.nome}</h2>
-          <div className="flex gap-4 mt-1 text-sm" style={{ color: "var(--muted-foreground)" }}>
-            <span>⏱ {treinoHoje.duracaoMin} min</span>
-            <span>🏋️ {treinoHoje.exercicios.length} exercícios</span>
-          </div>
+      {/* Treino de hoje — grid de exercícios clicáveis */}
+      <TreinoHojeGrid />
 
-          <ul className="mt-3 space-y-1.5">
-            {treinoHoje.exercicios.slice(0, 3).map((ex) => (
-              <li key={ex.id} className="flex items-center gap-2 text-sm">
-                <span className="text-base">{ex.emoji}</span>
-                <span className="truncate">{ex.nome}</span>
-                <span className="ml-auto text-xs shrink-0" style={{ color: "var(--muted-foreground)" }}>
-                  {ex.series}×{ex.reps}
-                </span>
-              </li>
-            ))}
-            {treinoHoje.exercicios.length > 3 && (
-              <li className="text-xs pl-7" style={{ color: "var(--subtle)" }}>
-                + {treinoHoje.exercicios.length - 3} exercícios
-              </li>
-            )}
-          </ul>
-
-          <button className="btn-primary mt-5" onClick={() => navigate({ to: "/treino/ativo" })}>
-            <Play size={18} className="mr-2" />
-            Começar treino agora
-          </button>
-        </div>
-      </section>
 
       {/* Streak */}
       <div className="grid grid-cols-2 gap-3 mb-5">
@@ -350,5 +303,89 @@ function HomePage() {
 
       <BottomNav />
     </div>
+  );
+}
+
+function TreinoHojeGrid() {
+  const user = useElevoUser();
+  const navigate = useNavigate();
+  const treino = useMemo(() => getTreinoDoDia(user), [user]);
+  const diaIdx = new Date().getDay();
+  const feitos = exerciciosFeitosHoje(treino.id);
+  const total = treino.exercicios.length;
+  const completos = treino.exercicios.filter((e) => feitos.includes(e.id)).length;
+
+  return (
+    <section
+      className="rounded-2xl p-4 mb-4 relative overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(135deg, color-mix(in oklab, var(--primary) 22%, var(--card)) 0%, var(--card) 75%)",
+        border: "1px solid color-mix(in oklab, var(--primary) 30%, var(--border))",
+      }}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <div>
+          <div className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "var(--primary)" }}>
+            Treino de hoje
+          </div>
+          <h2 className="text-xl font-bold leading-tight">{treino.nome}</h2>
+        </div>
+        <div className="text-right">
+          <div className="text-2xl font-black tabular-nums leading-none" style={{ color: "var(--primary)" }}>
+            {completos}/{total}
+          </div>
+          <div className="text-[10px] mt-1" style={{ color: "var(--muted-foreground)" }}>
+            completos
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 mb-3">
+        {treino.exercicios.map((ex) => {
+          const feito = feitos.includes(ex.id);
+          return (
+            <button
+              key={ex.id}
+              onClick={() =>
+                navigate({ to: "/exercicio-detalhe", search: { dia: diaIdx, exId: ex.id } })
+              }
+              className="elevo-card p-2.5 text-left flex items-center gap-2 active:scale-[0.98] transition relative"
+              style={feito ? { borderColor: "var(--primary)" } : undefined}
+            >
+              <div
+                className="size-11 rounded-lg flex items-center justify-center text-xl shrink-0 overflow-hidden relative"
+                style={{ backgroundColor: "var(--card-elevated)" }}
+              >
+                {ex.imagem ? (
+                  <img src={ex.imagem} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+                ) : (
+                  <span>{ex.emoji}</span>
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-xs font-semibold leading-tight truncate">{ex.nome}</div>
+                <div className="text-[10px] mt-0.5" style={{ color: "var(--muted-foreground)" }}>
+                  {ex.series}×{ex.reps}
+                </div>
+              </div>
+              {feito ? (
+                <CheckCircle2 size={16} style={{ color: "var(--primary)" }} className="shrink-0" />
+              ) : (
+                <Circle size={16} style={{ color: "var(--subtle)" }} className="shrink-0" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      <Link
+        to="/semana"
+        className="block text-center text-xs font-semibold py-2 rounded-lg"
+        style={{ backgroundColor: "color-mix(in oklab, var(--card-elevated) 80%, transparent)", color: "var(--primary)" }}
+      >
+        Ver semana inteira →
+      </Link>
+    </section>
   );
 }

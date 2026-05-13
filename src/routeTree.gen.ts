@@ -13,10 +13,12 @@ import { Route as UpgradeRouteImport } from './routes/upgrade'
 import { Route as TrilhaBarraRouteImport } from './routes/trilha-barra'
 import { Route as TreinoRouteImport } from './routes/treino'
 import { Route as TafRouteImport } from './routes/taf'
+import { Route as SemanaRouteImport } from './routes/semana'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as NutricaoRouteImport } from './routes/nutricao'
 import { Route as LojaRouteImport } from './routes/loja'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as ExercicioDetalheRouteImport } from './routes/exercicio-detalhe'
 import { Route as EvolucaoRouteImport } from './routes/evolucao'
 import { Route as ComunidadeRouteImport } from './routes/comunidade'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -59,6 +61,11 @@ const TafRoute = TafRouteImport.update({
   path: '/taf',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SemanaRoute = SemanaRouteImport.update({
+  id: '/semana',
+  path: '/semana',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PerfilRoute = PerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',
@@ -77,6 +84,11 @@ const LojaRoute = LojaRouteImport.update({
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExercicioDetalheRoute = ExercicioDetalheRouteImport.update({
+  id: '/exercicio-detalhe',
+  path: '/exercicio-detalhe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EvolucaoRoute = EvolucaoRouteImport.update({
@@ -191,10 +203,12 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/comunidade': typeof ComunidadeRoute
   '/evolucao': typeof EvolucaoRoute
+  '/exercicio-detalhe': typeof ExercicioDetalheRoute
   '/home': typeof HomeRoute
   '/loja': typeof LojaRoute
   '/nutricao': typeof NutricaoRoute
   '/perfil': typeof PerfilRouteWithChildren
+  '/semana': typeof SemanaRoute
   '/taf': typeof TafRouteWithChildren
   '/treino': typeof TreinoRouteWithChildren
   '/trilha-barra': typeof TrilhaBarraRoute
@@ -222,10 +236,12 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/comunidade': typeof ComunidadeRoute
   '/evolucao': typeof EvolucaoRoute
+  '/exercicio-detalhe': typeof ExercicioDetalheRoute
   '/home': typeof HomeRoute
   '/loja': typeof LojaRoute
   '/nutricao': typeof NutricaoRoute
   '/perfil': typeof PerfilRouteWithChildren
+  '/semana': typeof SemanaRoute
   '/taf': typeof TafRouteWithChildren
   '/treino': typeof TreinoRouteWithChildren
   '/trilha-barra': typeof TrilhaBarraRoute
@@ -254,10 +270,12 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/comunidade': typeof ComunidadeRoute
   '/evolucao': typeof EvolucaoRoute
+  '/exercicio-detalhe': typeof ExercicioDetalheRoute
   '/home': typeof HomeRoute
   '/loja': typeof LojaRoute
   '/nutricao': typeof NutricaoRoute
   '/perfil': typeof PerfilRouteWithChildren
+  '/semana': typeof SemanaRoute
   '/taf': typeof TafRouteWithChildren
   '/treino': typeof TreinoRouteWithChildren
   '/trilha-barra': typeof TrilhaBarraRoute
@@ -287,10 +305,12 @@ export interface FileRouteTypes {
     | '/auth'
     | '/comunidade'
     | '/evolucao'
+    | '/exercicio-detalhe'
     | '/home'
     | '/loja'
     | '/nutricao'
     | '/perfil'
+    | '/semana'
     | '/taf'
     | '/treino'
     | '/trilha-barra'
@@ -318,10 +338,12 @@ export interface FileRouteTypes {
     | '/auth'
     | '/comunidade'
     | '/evolucao'
+    | '/exercicio-detalhe'
     | '/home'
     | '/loja'
     | '/nutricao'
     | '/perfil'
+    | '/semana'
     | '/taf'
     | '/treino'
     | '/trilha-barra'
@@ -349,10 +371,12 @@ export interface FileRouteTypes {
     | '/auth'
     | '/comunidade'
     | '/evolucao'
+    | '/exercicio-detalhe'
     | '/home'
     | '/loja'
     | '/nutricao'
     | '/perfil'
+    | '/semana'
     | '/taf'
     | '/treino'
     | '/trilha-barra'
@@ -381,10 +405,12 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ComunidadeRoute: typeof ComunidadeRoute
   EvolucaoRoute: typeof EvolucaoRoute
+  ExercicioDetalheRoute: typeof ExercicioDetalheRoute
   HomeRoute: typeof HomeRoute
   LojaRoute: typeof LojaRoute
   NutricaoRoute: typeof NutricaoRoute
   PerfilRoute: typeof PerfilRouteWithChildren
+  SemanaRoute: typeof SemanaRoute
   TafRoute: typeof TafRouteWithChildren
   TreinoRoute: typeof TreinoRouteWithChildren
   TrilhaBarraRoute: typeof TrilhaBarraRoute
@@ -431,6 +457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TafRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/semana': {
+      id: '/semana'
+      path: '/semana'
+      fullPath: '/semana'
+      preLoaderRoute: typeof SemanaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/perfil': {
       id: '/perfil'
       path: '/perfil'
@@ -457,6 +490,13 @@ declare module '@tanstack/react-router' {
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exercicio-detalhe': {
+      id: '/exercicio-detalhe'
+      path: '/exercicio-detalhe'
+      fullPath: '/exercicio-detalhe'
+      preLoaderRoute: typeof ExercicioDetalheRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/evolucao': {
@@ -654,10 +694,12 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ComunidadeRoute: ComunidadeRoute,
   EvolucaoRoute: EvolucaoRoute,
+  ExercicioDetalheRoute: ExercicioDetalheRoute,
   HomeRoute: HomeRoute,
   LojaRoute: LojaRoute,
   NutricaoRoute: NutricaoRoute,
   PerfilRoute: PerfilRouteWithChildren,
+  SemanaRoute: SemanaRoute,
   TafRoute: TafRouteWithChildren,
   TreinoRoute: TreinoRouteWithChildren,
   TrilhaBarraRoute: TrilhaBarraRoute,
