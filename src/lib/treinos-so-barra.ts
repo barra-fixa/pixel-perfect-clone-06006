@@ -59,7 +59,7 @@ export const SEMANAS_SO_BARRA: SemanaBarra[] = [
         diaIdx: 2,
         nomeTreino: "Peito + Tríceps (Fundação)",
         exercicios: [
-          ex("remadaAustraliana", "Barra australiana inversa", 3, "8-12"),
+          ex("remadaAustraliana", "Barra australiana", 3, "8-12"),
           ex("triceps", "Fundos em cadeira", 3, "10-15"),
           ex("flexao", "Flexão no chão", 3, "12-15"),
           ex("prancha", "Prancha frontal", 3, "20-30s"),

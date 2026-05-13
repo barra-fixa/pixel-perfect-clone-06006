@@ -158,17 +158,18 @@ export const EXERCICIOS_BASE: Record<ExercicioId, ExercicioBase> = {
     equipamentos: ["barra fixa"],
   },
   remadaAustraliana: {
-    nome: "Remada australiana",
+    nome: "Barra australiana",
     musculo: "Costas",
     emoji: "🚣",
     fxId: "Inverted_Row",
     instrucoes: [
-      "Posicione-se sob a barra, corpo reto e calcanhares no chão.",
+      "Posicione-se sob uma barra baixa/de parede, corpo reto e calcanhares no chão.",
       "Puxe o peito em direção à barra mantendo o tronco alinhado.",
       "Desça lentamente até estender os braços.",
     ],
     errosComuns: ["Quebrar a postura quando cansa.", "Não tocar o peito na barra."],
-    equipamentos: ["barra fixa"],
+    dicas: ["Versão compatível com barra fixa de parede/barra baixa; não usar máquina guiada como referência."],
+    equipamentos: ["barra fixa", "barra de parede"],
   },
   remadaCurvada: {
     nome: "Remada curvada com halteres",
