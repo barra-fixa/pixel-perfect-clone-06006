@@ -4,7 +4,8 @@
 import { EXERCICIOS_BASE, imagemDe, imagemFinalDe, type ExercicioId } from "./exercicios-db";
 import type { Caminho, ElevoUser, Nivel, Objetivo } from "./elevo-store";
 import { filtrarExercicios } from "./exercicios-filtro";
-import { getModoBarraFixa } from "./modo-barra-fixa";
+import { getModoBarraFixa, getSemanaSoBarraAtiva } from "./modo-barra-fixa";
+import { SEMANAS_SO_BARRA, type DiaBarra } from "./treinos-so-barra";
 
 export type Exercicio = {
   id: string;
