@@ -13,6 +13,7 @@ import { Route as UpgradeRouteImport } from './routes/upgrade'
 import { Route as TrilhaBarraRouteImport } from './routes/trilha-barra'
 import { Route as TreinoRouteImport } from './routes/treino'
 import { Route as TafRouteImport } from './routes/taf'
+import { Route as SemanaRouteImport } from './routes/semana'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as NutricaoRouteImport } from './routes/nutricao'
 import { Route as LojaRouteImport } from './routes/loja'
@@ -58,6 +59,11 @@ const TreinoRoute = TreinoRouteImport.update({
 const TafRoute = TafRouteImport.update({
   id: '/taf',
   path: '/taf',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SemanaRoute = SemanaRouteImport.update({
+  id: '/semana',
+  path: '/semana',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PerfilRoute = PerfilRouteImport.update({
@@ -202,6 +208,7 @@ export interface FileRoutesByFullPath {
   '/loja': typeof LojaRoute
   '/nutricao': typeof NutricaoRoute
   '/perfil': typeof PerfilRouteWithChildren
+  '/semana': typeof SemanaRoute
   '/taf': typeof TafRouteWithChildren
   '/treino': typeof TreinoRouteWithChildren
   '/trilha-barra': typeof TrilhaBarraRoute
@@ -234,6 +241,7 @@ export interface FileRoutesByTo {
   '/loja': typeof LojaRoute
   '/nutricao': typeof NutricaoRoute
   '/perfil': typeof PerfilRouteWithChildren
+  '/semana': typeof SemanaRoute
   '/taf': typeof TafRouteWithChildren
   '/treino': typeof TreinoRouteWithChildren
   '/trilha-barra': typeof TrilhaBarraRoute
@@ -267,6 +275,7 @@ export interface FileRoutesById {
   '/loja': typeof LojaRoute
   '/nutricao': typeof NutricaoRoute
   '/perfil': typeof PerfilRouteWithChildren
+  '/semana': typeof SemanaRoute
   '/taf': typeof TafRouteWithChildren
   '/treino': typeof TreinoRouteWithChildren
   '/trilha-barra': typeof TrilhaBarraRoute
@@ -301,6 +310,7 @@ export interface FileRouteTypes {
     | '/loja'
     | '/nutricao'
     | '/perfil'
+    | '/semana'
     | '/taf'
     | '/treino'
     | '/trilha-barra'
@@ -333,6 +343,7 @@ export interface FileRouteTypes {
     | '/loja'
     | '/nutricao'
     | '/perfil'
+    | '/semana'
     | '/taf'
     | '/treino'
     | '/trilha-barra'
@@ -365,6 +376,7 @@ export interface FileRouteTypes {
     | '/loja'
     | '/nutricao'
     | '/perfil'
+    | '/semana'
     | '/taf'
     | '/treino'
     | '/trilha-barra'
@@ -398,6 +410,7 @@ export interface RootRouteChildren {
   LojaRoute: typeof LojaRoute
   NutricaoRoute: typeof NutricaoRoute
   PerfilRoute: typeof PerfilRouteWithChildren
+  SemanaRoute: typeof SemanaRoute
   TafRoute: typeof TafRouteWithChildren
   TreinoRoute: typeof TreinoRouteWithChildren
   TrilhaBarraRoute: typeof TrilhaBarraRoute
@@ -442,6 +455,13 @@ declare module '@tanstack/react-router' {
       path: '/taf'
       fullPath: '/taf'
       preLoaderRoute: typeof TafRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/semana': {
+      id: '/semana'
+      path: '/semana'
+      fullPath: '/semana'
+      preLoaderRoute: typeof SemanaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/perfil': {
@@ -679,6 +699,7 @@ const rootRouteChildren: RootRouteChildren = {
   LojaRoute: LojaRoute,
   NutricaoRoute: NutricaoRoute,
   PerfilRoute: PerfilRouteWithChildren,
+  SemanaRoute: SemanaRoute,
   TafRoute: TafRouteWithChildren,
   TreinoRoute: TreinoRouteWithChildren,
   TrilhaBarraRoute: TrilhaBarraRoute,
