@@ -1,4 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, Play, CheckCircle2 } from "lucide-react";
 import { useMemo } from "react";
 import { z } from "zod";
@@ -6,6 +8,9 @@ import { useElevoUser } from "@/lib/elevo-store";
 import { getPlanoSemanal } from "@/lib/treinos";
 import { exerciciosFeitosHoje } from "@/lib/treino-progress";
 import { BottomNav } from "@/components/BottomNav";
+import { MuscleDiagram } from "@/components/MuscleDiagram";
+import { getExerciseDbInfo } from "@/lib/exercisedb.functions";
+import { muscleToRegion, type MuscleRegion } from "@/lib/exercisedb-mapping";
 
 const search = z.object({
   dia: z.coerce.number().optional(),
