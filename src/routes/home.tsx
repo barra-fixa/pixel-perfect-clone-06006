@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Bell, Calendar, ChevronRight, LogOut, Sparkles, Target, TrendingUp, X } from "lucide-react";
+import { Bell, Calendar, ChevronRight, LogOut, Sparkles, Target, TrendingUp, Users, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { BottomNav } from "@/components/BottomNav";
 import { META_POR_NIVEL, useElevoUser } from "@/lib/elevo-store";
@@ -292,6 +292,26 @@ function HomePage() {
           </div>
           <ChevronRight size={16} style={{ color: "var(--secondary)" }} />
         </div>
+      </Link>
+
+      {/* Card minimalista: Comunidade */}
+      <Link
+        to="/comunidade"
+        className="elevo-card p-3 mt-3 flex items-center gap-3 active:scale-[0.99] transition"
+      >
+        <div
+          className="size-10 rounded-xl flex items-center justify-center shrink-0"
+          style={{ backgroundColor: "color-mix(in oklab, var(--primary) 14%, transparent)" }}
+        >
+          <Users size={18} style={{ color: "var(--primary)" }} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-bold leading-tight">Comunidade Elevo</div>
+          <div className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+            3.284 membros · Desafios do mês
+          </div>
+        </div>
+        <ChevronRight size={16} style={{ color: "var(--subtle)" }} />
       </Link>
 
       <BottomNav />

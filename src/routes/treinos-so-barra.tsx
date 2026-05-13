@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { useState } from "react";
 import { SEMANAS_SO_BARRA, type SemanaBarra } from "@/lib/treinos-so-barra";
-import { setModoBarraFixa } from "@/lib/modo-barra-fixa";
+import { setModoBarraFixa, setSemanaSoBarraAtiva } from "@/lib/modo-barra-fixa";
 import { PRODUTOS_BARRA_FIXA } from "@/lib/produtos";
 
 export const Route = createFileRoute("/treinos-so-barra")({
@@ -17,7 +17,7 @@ function TreinosSoBarraPage() {
 
   function comecarAgora(s: SemanaBarra) {
     setModoBarraFixa(true);
-    // Vai para o treino do dia — o modo só barra filtra os exercícios.
+    setSemanaSoBarraAtiva(s.slug);
     navigate({ to: "/treino-do-dia" });
   }
 
