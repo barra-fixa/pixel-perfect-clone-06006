@@ -405,10 +405,16 @@ export function getPlanoSemanal(user: ElevoUser): Treino[] {
   const obj: Objetivo = user.objetivo ?? "saude";
   const freq = user.frequencia ?? 3;
   const equipamentos = user.equipamentos ?? [];
+  const modoBarraFixa = getModoBarraFixa();
 
   const focos = splitSemanal(obj, freq);
   return focos.map((foco, i) => {
-    const exs = montar(foco, nivel, caminho, equipamentos);
+    const exsBrutos = montar(foco, nivel, caminho, equipamentos);
+    const exs = filtrarExercicios(
+      exsBrutos,
+      { equipamentos, caminho, modoBarraFixa },
+      (id) => ex(id, nivel),
+    );
     return {
       id: `t${i}`,
       nome: foco,
@@ -423,6 +429,24 @@ export function getTreinoDoDia(user: ElevoUser, date = new Date()): Treino {
   const plano = getPlanoSemanal(user);
   const idx = date.getDay() % plano.length;
   return plano[idx];
+}
+
+/**
+ * Mapeia frequência semanal -> índices dos dias planejados (segunda=0, domingo=6).
+ * Distribui com descansos espaçados quando possível.
+ */
+export function getDiasTreino(frequencia: number): number[] {
+  const f = Math.max(1, Math.min(7, frequencia));
+  switch (f) {
+    case 1: return [2]; // quarta
+    case 2: return [0, 3]; // seg, qui
+    case 3: return [0, 2, 4]; // seg, qua, sex
+    case 4: return [0, 1, 3, 4]; // seg, ter, qui, sex
+    case 5: return [0, 1, 2, 4, 5]; // seg, ter, qua, sex, sab
+    case 6: return [0, 1, 2, 3, 4, 5]; // todos menos domingo
+    case 7: return [0, 1, 2, 3, 4, 5, 6];
+    default: return [0, 2, 4];
+  }
 }
 
 // ---------- Substituição de exercícios ----------
