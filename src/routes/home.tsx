@@ -66,6 +66,26 @@ function HomePage() {
   // Histórico recente (últimos 5)
   const historico = [...(user.historicoTreinos ?? [])].sort((a, b) => b.data - a.data).slice(0, 5);
 
+  // Card "Como você tá" — só segunda-feira, e se ainda não foi mostrado nessa semana.
+  const [insight, setInsight] = useState<InsightSemanal | null>(null);
+  const [insightDismissed, setInsightDismissed] = useState(false);
+  useEffect(() => {
+    const ehSegunda = new Date().getDay() === 1;
+    if (!ehSegunda) return;
+    let cancelado = false;
+    (async () => {
+      const ja = await jaMostradoEstaSemana();
+      if (ja || cancelado) return;
+      const i = calcularInsightSemanal(user);
+      if (!i || cancelado) return;
+      setInsight(i);
+      void marcarInsightMostrado();
+    })();
+    return () => {
+      cancelado = true;
+    };
+  }, [user]);
+
   async function handleLogout() {
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
