@@ -57,6 +57,31 @@ function DadosPage() {
   const [equipamentos, setEquipamentos] = useState<string[]>([]);
   const [saved, setSaved] = useState(false);
 
+  // Modal "Não vejo meu equipamento"
+  const [pedidoOpen, setPedidoOpen] = useState(false);
+  const [pedidoNome, setPedidoNome] = useState("");
+  const [pedidoDesc, setPedidoDesc] = useState("");
+  const [pedidoStatus, setPedidoStatus] = useState<"idle" | "sending" | "ok" | "err">("idle");
+  const [pedidoErr, setPedidoErr] = useState<string>("");
+
+  async function handlePedirEquipamento() {
+    if (pedidoStatus === "sending") return;
+    setPedidoStatus("sending");
+    const r = await pedirEquipamento(pedidoNome, pedidoDesc);
+    if (r.ok) {
+      setPedidoStatus("ok");
+      setTimeout(() => {
+        setPedidoOpen(false);
+        setPedidoNome("");
+        setPedidoDesc("");
+        setPedidoStatus("idle");
+      }, 1400);
+    } else {
+      setPedidoStatus("err");
+      setPedidoErr(r.erro ?? "Erro ao enviar");
+    }
+  }
+
   useEffect(() => {
     const u = loadUser();
     setNome(u.nome ?? "");
