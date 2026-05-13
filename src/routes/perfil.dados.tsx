@@ -1,6 +1,6 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ChevronLeft, Check, Dumbbell, Home as HomeIcon } from "lucide-react";
+import { ChevronLeft, Check, Dumbbell, Home as HomeIcon, Plus, Zap, X } from "lucide-react";
 import {
   loadUser,
   saveUser,
@@ -10,6 +10,7 @@ import {
   type Sexo,
 } from "@/lib/elevo-store";
 import { CARGOS } from "@/lib/taf-data";
+import { pedirEquipamento } from "@/lib/equipamentos-pedidos";
 
 export const Route = createFileRoute("/perfil/dados")({
   component: DadosPage,
