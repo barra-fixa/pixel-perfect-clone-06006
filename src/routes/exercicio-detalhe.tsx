@@ -1,4 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, Play, CheckCircle2 } from "lucide-react";
 import { useMemo } from "react";
 import { z } from "zod";
@@ -6,6 +8,9 @@ import { useElevoUser } from "@/lib/elevo-store";
 import { getPlanoSemanal } from "@/lib/treinos";
 import { exerciciosFeitosHoje } from "@/lib/treino-progress";
 import { BottomNav } from "@/components/BottomNav";
+import { MuscleDiagram } from "@/components/MuscleDiagram";
+import { getExerciseDbInfo } from "@/lib/exercisedb.functions";
+import { muscleToRegion, type MuscleRegion } from "@/lib/exercisedb-mapping";
 
 const search = z.object({
   dia: z.coerce.number().optional(),
@@ -27,6 +32,31 @@ function ExercicioDetalhePage() {
   const ex = treino.exercicios.find((e) => e.id === exId) ?? treino.exercicios[0];
 
   const feito = exerciciosFeitosHoje(treino.id).includes(ex.id);
+
+  // Busca info do ExerciseDB (GIF + músculos)
+  const fetchInfo = useServerFn(getExerciseDbInfo);
+  const { data: dbInfo } = useQuery({
+    queryKey: ["exercisedb", ex.id],
+    queryFn: () => fetchInfo({ data: { exId: ex.id } }),
+    staleTime: 1000 * 60 * 60 * 12,
+    retry: 1,
+  });
+
+  const primaryMuscles = useMemo<MuscleRegion[]>(() => {
+    if (!dbInfo?.target) return [];
+    const r = muscleToRegion(dbInfo.target);
+    return r ? [r] : [];
+  }, [dbInfo?.target]);
+
+  const secondaryMuscles = useMemo<MuscleRegion[]>(() => {
+    if (!dbInfo?.secondaryMuscles) return [];
+    const set = new Set<MuscleRegion>();
+    for (const m of dbInfo.secondaryMuscles) {
+      const r = muscleToRegion(m);
+      if (r && !primaryMuscles.includes(r)) set.add(r);
+    }
+    return Array.from(set);
+  }, [dbInfo?.secondaryMuscles, primaryMuscles]);
 
   return (
     <div className="elevo-shell px-5 pt-8 pb-44 min-h-dvh">
@@ -106,11 +136,37 @@ function ExercicioDetalhePage() {
         </div>
       )}
 
+      {/* GIF do ExerciseDB (movimento completo) */}
+      {dbInfo?.gifUrl && (
+        <div
+          className="aspect-square rounded-2xl overflow-hidden mb-5 relative"
+          style={{ backgroundColor: "var(--card-elevated)" }}
+        >
+          <img
+            src={dbInfo.gifUrl}
+            alt={`${ex.nome} — animação`}
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-contain"
+          />
+          <span
+            className="absolute top-2 left-2 text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider"
+            style={{ backgroundColor: "var(--primary)", color: "var(--primary-foreground)" }}
+          >
+            Movimento
+          </span>
+        </div>
+      )}
+
       <h1 className="text-2xl font-bold leading-tight">{ex.nome}</h1>
       <div className="text-base mt-1" style={{ color: "var(--muted-foreground)" }}>
         {ex.series} séries × {ex.reps} repetições
         {ex.pesoSugerido ? ` · ${ex.pesoSugerido}kg` : ""}
       </div>
+
+      {/* Diagrama anatômico */}
+      {(primaryMuscles.length > 0 || secondaryMuscles.length > 0) && (
+        <MuscleDiagram primary={primaryMuscles} secondary={secondaryMuscles} />
+      )}
 
       <section className="mt-5 elevo-card p-4">
         <h2 className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: "var(--primary)" }}>
