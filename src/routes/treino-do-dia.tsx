@@ -7,6 +7,7 @@ import { getPlanoSemanal, getDiasTreino } from "@/lib/treinos";
 import { exerciciosFeitosHoje } from "@/lib/treino-progress";
 import { PRODUTOS_BARRA_FIXA } from "@/lib/produtos";
 import { useModoBarraFixa, useSemanaSoBarraAtiva, setSemanaSoBarraAtiva } from "@/lib/modo-barra-fixa";
+import { BottomNav } from "@/components/BottomNav";
 
 const search = z.object({
   dia: z.coerce.number().optional(),
@@ -99,18 +100,18 @@ function TreinoDoDiaPage() {
   }
 
   return (
-    <div className="elevo-shell px-5 pt-5 pb-32 min-h-dvh">
+    <div className="elevo-shell px-5 pt-8 pb-32 min-h-dvh">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-5 mt-2">
         <Link
           to="/home"
-          className="size-10 rounded-full flex items-center justify-center elevo-card"
+          className="size-11 rounded-full flex items-center justify-center elevo-card"
           aria-label="Voltar"
         >
           <ChevronLeft size={20} />
         </Link>
         <h1 className="font-bold">Treino do dia</h1>
-        <div className="size-10" />
+        <div className="size-11" />
       </div>
 
       {/* Abas dos dias escolhidos + botão editar */}
@@ -465,6 +466,8 @@ function TreinoDoDiaPage() {
           </div>
         </div>
       )}
+
+      <BottomNav />
     </div>
   );
 }
