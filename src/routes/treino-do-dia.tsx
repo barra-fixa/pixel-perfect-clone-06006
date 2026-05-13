@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ChevronLeft, Play, CheckCircle2, Plus } from "lucide-react";
+import { ChevronLeft, Play, CheckCircle2, Settings, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { z } from "zod";
-import { useElevoUser } from "@/lib/elevo-store";
+import { saveUser, useElevoUser } from "@/lib/elevo-store";
 import { getPlanoSemanal, getDiasTreino } from "@/lib/treinos";
 import { exerciciosFeitosHoje } from "@/lib/treino-progress";
 import { PRODUTOS_BARRA_FIXA } from "@/lib/produtos";
