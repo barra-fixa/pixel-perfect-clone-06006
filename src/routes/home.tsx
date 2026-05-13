@@ -26,16 +26,6 @@ function saudacao() {
   return "Boa noite";
 }
 
-function tempoRelativo(ms: number) {
-  const diff = Date.now() - ms;
-  const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
-  if (dias === 0) return "Hoje";
-  if (dias === 1) return "Ontem";
-  if (dias < 7) return `${dias} dias atrás`;
-  const semanas = Math.floor(dias / 7);
-  if (semanas === 1) return "1 semana atrás";
-  return `${semanas} semanas atrás`;
-}
 
 function HomePage() {
   const user = useElevoUser();
