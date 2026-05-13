@@ -501,12 +501,14 @@ function TreinoAtivoPage() {
       </div>
 
       {!resting && (
-        <button className="btn-primary" onClick={concluirSerie}>
-          {serie < ex.series
-            ? "Concluir série"
-            : exIdx < treino.exercicios.length - 1
-              ? "Próximo exercício"
-              : "Finalizar treino"}
+        <button className="btn-primary" style={{ height: 56, fontSize: 16 }} onClick={concluirSerie}>
+          ✓ {serie < ex.series
+            ? "Completei esta série"
+            : singleMode
+              ? "Completei a última série"
+              : exIdx < treino.exercicios.length - 1
+                ? "Próximo exercício"
+                : "Finalizar treino"}
         </button>
       )}
     </div>
