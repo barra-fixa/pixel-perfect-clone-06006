@@ -136,11 +136,37 @@ function ExercicioDetalhePage() {
         </div>
       )}
 
+      {/* GIF do ExerciseDB (movimento completo) */}
+      {dbInfo?.gifUrl && (
+        <div
+          className="aspect-square rounded-2xl overflow-hidden mb-5 relative"
+          style={{ backgroundColor: "var(--card-elevated)" }}
+        >
+          <img
+            src={dbInfo.gifUrl}
+            alt={`${ex.nome} — animação`}
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-contain"
+          />
+          <span
+            className="absolute top-2 left-2 text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider"
+            style={{ backgroundColor: "var(--primary)", color: "var(--primary-foreground)" }}
+          >
+            Movimento
+          </span>
+        </div>
+      )}
+
       <h1 className="text-2xl font-bold leading-tight">{ex.nome}</h1>
       <div className="text-base mt-1" style={{ color: "var(--muted-foreground)" }}>
         {ex.series} séries × {ex.reps} repetições
         {ex.pesoSugerido ? ` · ${ex.pesoSugerido}kg` : ""}
       </div>
+
+      {/* Diagrama anatômico */}
+      {(primaryMuscles.length > 0 || secondaryMuscles.length > 0) && (
+        <MuscleDiagram primary={primaryMuscles} secondary={secondaryMuscles} />
+      )}
 
       <section className="mt-5 elevo-card p-4">
         <h2 className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: "var(--primary)" }}>
