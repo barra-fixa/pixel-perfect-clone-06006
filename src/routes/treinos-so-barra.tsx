@@ -17,7 +17,7 @@ function TreinosSoBarraPage() {
 
   function comecarAgora(s: SemanaBarra) {
     setModoBarraFixa(true);
-    // Vai para o treino do dia — o modo só barra filtra os exercícios.
+    setSemanaSoBarraAtiva(s.slug);
     navigate({ to: "/treino-do-dia" });
   }
 
