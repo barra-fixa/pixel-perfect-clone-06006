@@ -58,6 +58,7 @@ function DadosPage() {
   const [caminho, setCaminho] = useState<Caminho | undefined>();
   const [equipamentos, setEquipamentos] = useState<string[]>([]);
   const [saved, setSaved] = useState(false);
+  const [modoBarra, setModoBarra] = useModoBarraFixa();
 
   // Modal "Não vejo meu equipamento"
   const [pedidoOpen, setPedidoOpen] = useState(false);
