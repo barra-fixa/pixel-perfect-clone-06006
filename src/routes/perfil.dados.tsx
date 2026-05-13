@@ -251,6 +251,40 @@ function DadosPage() {
         </Link>
       )}
 
+      {/* Modo "Só Barra Fixa" */}
+      {caminho === "barra" && (
+        <Section title="Modo de treino">
+          <button
+            onClick={() => setModoBarra(!modoBarra)}
+            className="elevo-card p-4 w-full text-left flex items-center gap-3"
+            style={
+              modoBarra
+                ? { borderColor: "var(--secondary)", backgroundColor: "color-mix(in oklab, var(--secondary) 10%, var(--card))" }
+                : undefined
+            }
+          >
+            <div className="text-2xl">🏋️</div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold">Só Barra Fixa</div>
+              <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                Quando ativo, o app monta treinos usando exclusivamente barra fixa e peso corporal.
+              </div>
+            </div>
+            <div
+              className="w-10 h-6 rounded-full relative transition shrink-0"
+              style={{
+                backgroundColor: modoBarra ? "var(--secondary)" : "var(--border)",
+              }}
+            >
+              <div
+                className="absolute top-0.5 size-5 rounded-full bg-white transition-all"
+                style={{ left: modoBarra ? "calc(100% - 22px)" : "2px" }}
+              />
+            </div>
+          </button>
+        </Section>
+      )}
+
       {/* Equipamentos — só mostra se caminho == casa */}
       {caminho === "casa" && (
         <Section title="O que você tem em casa?">
