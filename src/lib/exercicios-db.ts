@@ -116,7 +116,7 @@ export const EXERCICIOS_BASE: Record<ExercicioId, ExercicioBase> = {
     nome: "Flexão diamante",
     musculo: "Tríceps",
     emoji: "💎",
-    fxId: "Pushups_-_Close_Triceps_Position",
+    fxId: "Close-Grip_Push-Up_off_of_a_Dumbbell",
     instrucoes: [
       "Mãos juntas no chão formando um diamante com polegares e indicadores.",
       "Desça o peito quase tocando as mãos, cotovelos colados ao corpo.",
@@ -272,7 +272,7 @@ export const EXERCICIOS_BASE: Record<ExercicioId, ExercicioBase> = {
     nome: "Elevação de quadril (ponte)",
     musculo: "Glúteo",
     emoji: "🍑",
-    fxId: "Glute_Bridge",
+    fxId: "Butt_Lift_Bridge",
     instrucoes: [
       "Deite com joelhos flexionados e pés apoiados no chão.",
       "Empurre o quadril para cima contraindo o glúteo no topo.",
@@ -285,7 +285,7 @@ export const EXERCICIOS_BASE: Record<ExercicioId, ExercicioBase> = {
     nome: "Subida no banco",
     musculo: "Pernas",
     emoji: "🪜",
-    fxId: "Step-up_with_knee_raise",
+    fxId: "Dumbbell_Step_Ups",
     instrucoes: [
       "Em frente a um banco firme, suba com um pé empurrando o calcanhar.",
       "No topo, elevar levemente o joelho oposto.",
@@ -422,7 +422,7 @@ export const EXERCICIOS_BASE: Record<ExercicioId, ExercicioBase> = {
     nome: "Burpee",
     musculo: "Cardio",
     emoji: "💥",
-    fxId: "Burpee",
+    // fxId removido: imagem indisponível no Free Exercise DB.
     instrucoes: [
       "Agache, apoie as mãos no chão e jogue os pés para trás (prancha).",
       "Faça uma flexão (opcional), volte os pés e salte com os braços para cima.",
@@ -435,7 +435,7 @@ export const EXERCICIOS_BASE: Record<ExercicioId, ExercicioBase> = {
     nome: "Polichinelo",
     musculo: "Cardio",
     emoji: "🤸",
-    fxId: "Jumping_Jacks",
+    // fxId removido: imagem indisponível no Free Exercise DB.
     instrucoes: [
       "Em pé, pés juntos, braços ao longo do corpo.",
       "Salte abrindo pernas e elevando braços acima da cabeça.",
