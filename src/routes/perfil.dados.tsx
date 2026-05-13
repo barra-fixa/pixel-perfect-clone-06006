@@ -11,6 +11,8 @@ import {
 } from "@/lib/elevo-store";
 import { CARGOS } from "@/lib/taf-data";
 import { pedirEquipamento } from "@/lib/equipamentos-pedidos";
+import { useModoBarraFixa } from "@/lib/modo-barra-fixa";
+import { PRODUTOS_BARRA_FIXA } from "@/lib/produtos";
 
 export const Route = createFileRoute("/perfil/dados")({
   component: DadosPage,
