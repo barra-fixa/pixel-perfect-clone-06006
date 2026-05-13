@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UpgradeRouteImport } from './routes/upgrade'
 import { Route as TrilhaBarraRouteImport } from './routes/trilha-barra'
+import { Route as TreinoDoDiaRouteImport } from './routes/treino-do-dia'
 import { Route as TreinoRouteImport } from './routes/treino'
 import { Route as TafRouteImport } from './routes/taf'
 import { Route as SemanaRouteImport } from './routes/semana'
@@ -49,6 +50,11 @@ const UpgradeRoute = UpgradeRouteImport.update({
 const TrilhaBarraRoute = TrilhaBarraRouteImport.update({
   id: '/trilha-barra',
   path: '/trilha-barra',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TreinoDoDiaRoute = TreinoDoDiaRouteImport.update({
+  id: '/treino-do-dia',
+  path: '/treino-do-dia',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TreinoRoute = TreinoRouteImport.update({
@@ -211,6 +217,7 @@ export interface FileRoutesByFullPath {
   '/semana': typeof SemanaRoute
   '/taf': typeof TafRouteWithChildren
   '/treino': typeof TreinoRouteWithChildren
+  '/treino-do-dia': typeof TreinoDoDiaRoute
   '/trilha-barra': typeof TrilhaBarraRoute
   '/upgrade': typeof UpgradeRoute
   '/onboarding/caminho': typeof OnboardingCaminhoRoute
@@ -244,6 +251,7 @@ export interface FileRoutesByTo {
   '/semana': typeof SemanaRoute
   '/taf': typeof TafRouteWithChildren
   '/treino': typeof TreinoRouteWithChildren
+  '/treino-do-dia': typeof TreinoDoDiaRoute
   '/trilha-barra': typeof TrilhaBarraRoute
   '/upgrade': typeof UpgradeRoute
   '/onboarding/caminho': typeof OnboardingCaminhoRoute
@@ -278,6 +286,7 @@ export interface FileRoutesById {
   '/semana': typeof SemanaRoute
   '/taf': typeof TafRouteWithChildren
   '/treino': typeof TreinoRouteWithChildren
+  '/treino-do-dia': typeof TreinoDoDiaRoute
   '/trilha-barra': typeof TrilhaBarraRoute
   '/upgrade': typeof UpgradeRoute
   '/onboarding/caminho': typeof OnboardingCaminhoRoute
@@ -313,6 +322,7 @@ export interface FileRouteTypes {
     | '/semana'
     | '/taf'
     | '/treino'
+    | '/treino-do-dia'
     | '/trilha-barra'
     | '/upgrade'
     | '/onboarding/caminho'
@@ -346,6 +356,7 @@ export interface FileRouteTypes {
     | '/semana'
     | '/taf'
     | '/treino'
+    | '/treino-do-dia'
     | '/trilha-barra'
     | '/upgrade'
     | '/onboarding/caminho'
@@ -379,6 +390,7 @@ export interface FileRouteTypes {
     | '/semana'
     | '/taf'
     | '/treino'
+    | '/treino-do-dia'
     | '/trilha-barra'
     | '/upgrade'
     | '/onboarding/caminho'
@@ -413,6 +425,7 @@ export interface RootRouteChildren {
   SemanaRoute: typeof SemanaRoute
   TafRoute: typeof TafRouteWithChildren
   TreinoRoute: typeof TreinoRouteWithChildren
+  TreinoDoDiaRoute: typeof TreinoDoDiaRoute
   TrilhaBarraRoute: typeof TrilhaBarraRoute
   UpgradeRoute: typeof UpgradeRoute
   OnboardingCaminhoRoute: typeof OnboardingCaminhoRoute
@@ -441,6 +454,13 @@ declare module '@tanstack/react-router' {
       path: '/trilha-barra'
       fullPath: '/trilha-barra'
       preLoaderRoute: typeof TrilhaBarraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/treino-do-dia': {
+      id: '/treino-do-dia'
+      path: '/treino-do-dia'
+      fullPath: '/treino-do-dia'
+      preLoaderRoute: typeof TreinoDoDiaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/treino': {
@@ -702,6 +722,7 @@ const rootRouteChildren: RootRouteChildren = {
   SemanaRoute: SemanaRoute,
   TafRoute: TafRouteWithChildren,
   TreinoRoute: TreinoRouteWithChildren,
+  TreinoDoDiaRoute: TreinoDoDiaRoute,
   TrilhaBarraRoute: TrilhaBarraRoute,
   UpgradeRoute: UpgradeRoute,
   OnboardingCaminhoRoute: OnboardingCaminhoRoute,
