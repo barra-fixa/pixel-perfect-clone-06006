@@ -56,6 +56,18 @@ function TreinoDoDiaPage() {
   const ehHoje = diaSelecionado === hojeIdx;
   const feitos = ehHoje ? exerciciosFeitosHoje(treino.id) : [];
 
+  // Frequência do usuário define quais abas aparecem por padrão.
+  const diasPlanejados = useMemo(() => getDiasTreino(user.frequencia ?? 3), [user.frequencia]);
+  // Sempre inclui o dia atualmente selecionado (caso "treinar em outro dia").
+  const diasVisiveisPadrao = useMemo(() => {
+    const set = new Set([...diasPlanejados, diaSelecionado]);
+    return Array.from(set).sort((a, b) => a - b);
+  }, [diasPlanejados, diaSelecionado]);
+
+  const [mostrarTodos, setMostrarTodos] = useState(false);
+  const diasVisiveis = mostrarTodos ? [0, 1, 2, 3, 4, 5, 6] : diasVisiveisPadrao;
+  const foraDoPlano = !diasPlanejados.includes(diaSelecionado);
+
   return (
     <div className="elevo-shell px-5 pt-5 pb-32 min-h-dvh">
       {/* Header */}
@@ -71,14 +83,16 @@ function TreinoDoDiaPage() {
         <div className="size-10" />
       </div>
 
-      {/* Abas de dias */}
-      <div className="flex gap-1.5 mb-5 overflow-x-auto -mx-5 px-5 pb-1">
-        {DIAS_CURTOS.map((label, i) => {
+      {/* Abas de dias (dinâmicas conforme frequência) */}
+      <div className="flex gap-1.5 mb-2 overflow-x-auto -mx-5 px-5 pb-1">
+        {diasVisiveis.map((i) => {
+          const label = DIAS_CURTOS[i];
           const ativo = i === diaSelecionado;
           const eHoje = i === hojeIdx;
+          const ePlanejado = diasPlanejados.includes(i);
           return (
             <button
-              key={label}
+              key={i}
               onClick={() => navigate({ to: "/treino-do-dia", search: { dia: i }, replace: true })}
               className="shrink-0 rounded-xl px-3 py-2 min-w-[44px] text-xs font-bold relative transition"
               style={
@@ -89,8 +103,9 @@ function TreinoDoDiaPage() {
                     }
                   : {
                       backgroundColor: "var(--card)",
-                      color: "var(--foreground)",
+                      color: ePlanejado ? "var(--foreground)" : "var(--muted-foreground)",
                       border: "1px solid var(--border)",
+                      opacity: ePlanejado ? 1 : 0.7,
                     }
               }
             >
@@ -104,7 +119,26 @@ function TreinoDoDiaPage() {
             </button>
           );
         })}
+        {!mostrarTodos && (
+          <button
+            onClick={() => setMostrarTodos(true)}
+            className="shrink-0 rounded-xl px-3 py-2 text-xs font-semibold flex items-center gap-1"
+            style={{
+              backgroundColor: "var(--card)",
+              color: "var(--primary)",
+              border: "1px dashed color-mix(in oklab, var(--primary) 40%, var(--border))",
+            }}
+          >
+            <Plus size={12} /> Outro dia
+          </button>
+        )}
       </div>
+      {foraDoPlano && (
+        <p className="text-[11px] mb-4" style={{ color: "var(--muted-foreground)" }}>
+          ⚡ Treino bônus — este dia está fora da sua frequência habitual ({user.frequencia ?? 3}x/semana).
+        </p>
+      )}
+      {!foraDoPlano && <div className="mb-3" />}
 
       {/* Título */}
       <div className="mb-5">
