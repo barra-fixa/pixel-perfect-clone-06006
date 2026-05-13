@@ -400,6 +400,37 @@ function splitSemanal(obj: Objetivo, freq: number): Foco[] {
 
 // ---------- API pública ----------
 
+function treinoFromDiaBarra(d: DiaBarra, n: Nivel): Treino {
+  const exs: Exercicio[] = d.exercicios.map((e) => {
+    const id = e.id as ExercicioId;
+    const base = EXERCICIOS_BASE[id];
+    const p = paramsDe(id, n);
+    return {
+      id,
+      nome: e.nome,
+      musculo: base?.musculo ?? "",
+      emoji: base?.emoji ?? "🏋️",
+      series: e.series,
+      reps: e.reps,
+      descansoSeg: p.descansoSeg,
+      pesoSugerido: 0,
+      dificuldade: p.dificuldade,
+      instrucoes: base ? [...base.instrucoes] : [],
+      errosComuns: base ? [...base.errosComuns] : [],
+      dicas: base?.dicas ? [...base.dicas] : undefined,
+      imagem: e.imagem ?? imagemDe(id),
+      imagemFinal: imagemFinalDe(id),
+    };
+  });
+  return {
+    id: `sb-${d.chave}`,
+    nome: d.nomeTreino,
+    foco: d.nomeTreino,
+    duracaoMin: duracao(exs),
+    exercicios: exs,
+  };
+}
+
 export function getPlanoSemanal(user: ElevoUser): Treino[] {
   const nivel: Nivel = user.nivel ?? "iniciante";
   const caminho: Caminho = user.caminho ?? "casa";
@@ -407,6 +438,30 @@ export function getPlanoSemanal(user: ElevoUser): Treino[] {
   const freq = user.frequencia ?? 3;
   const equipamentos = user.equipamentos ?? [];
   const modoBarraFixa = getModoBarraFixa();
+
+  // Se houver semana específica do fluxo "Treinos Só Barra Fixa", sobrepõe
+  // o plano: 7 slots indexados por dia da semana (segunda=0..domingo=6),
+  // preenchendo dias não planejados com o treino do dia mais próximo.
+  const semanaSlug = getSemanaSoBarraAtiva();
+  if (semanaSlug) {
+    const semana = SEMANAS_SO_BARRA.find((s) => s.slug === semanaSlug);
+    if (semana) {
+      const treinosPorDia: Treino[] = [];
+      for (let i = 0; i < 7; i++) {
+        let nearest: DiaBarra = semana.dias[0];
+        let best = 99;
+        for (const d of semana.dias) {
+          const dist = Math.abs(d.diaIdx - i);
+          if (dist < best) {
+            best = dist;
+            nearest = d;
+          }
+        }
+        treinosPorDia.push(treinoFromDiaBarra(nearest, nivel));
+      }
+      return treinosPorDia;
+    }
+  }
 
   const focos = splitSemanal(obj, freq);
   return focos.map((foco, i) => {
