@@ -1,10 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ChevronLeft, Play, CheckCircle2 } from "lucide-react";
-import { useMemo } from "react";
+import { ChevronLeft, Play, CheckCircle2, Plus } from "lucide-react";
+import { useMemo, useState } from "react";
 import { z } from "zod";
 import { useElevoUser } from "@/lib/elevo-store";
-import { getPlanoSemanal } from "@/lib/treinos";
+import { getPlanoSemanal, getDiasTreino } from "@/lib/treinos";
 import { exerciciosFeitosHoje } from "@/lib/treino-progress";
+import { PRODUTOS_BARRA_FIXA } from "@/lib/produtos";
 
 const search = z.object({
   dia: z.coerce.number().optional(),
@@ -55,6 +56,18 @@ function TreinoDoDiaPage() {
   const ehHoje = diaSelecionado === hojeIdx;
   const feitos = ehHoje ? exerciciosFeitosHoje(treino.id) : [];
 
+  // Frequência do usuário define quais abas aparecem por padrão.
+  const diasPlanejados = useMemo(() => getDiasTreino(user.frequencia ?? 3), [user.frequencia]);
+  // Sempre inclui o dia atualmente selecionado (caso "treinar em outro dia").
+  const diasVisiveisPadrao = useMemo(() => {
+    const set = new Set([...diasPlanejados, diaSelecionado]);
+    return Array.from(set).sort((a, b) => a - b);
+  }, [diasPlanejados, diaSelecionado]);
+
+  const [mostrarTodos, setMostrarTodos] = useState(false);
+  const diasVisiveis = mostrarTodos ? [0, 1, 2, 3, 4, 5, 6] : diasVisiveisPadrao;
+  const foraDoPlano = !diasPlanejados.includes(diaSelecionado);
+
   return (
     <div className="elevo-shell px-5 pt-5 pb-32 min-h-dvh">
       {/* Header */}
@@ -70,14 +83,16 @@ function TreinoDoDiaPage() {
         <div className="size-10" />
       </div>
 
-      {/* Abas de dias */}
-      <div className="flex gap-1.5 mb-5 overflow-x-auto -mx-5 px-5 pb-1">
-        {DIAS_CURTOS.map((label, i) => {
+      {/* Abas de dias (dinâmicas conforme frequência) */}
+      <div className="flex gap-1.5 mb-2 overflow-x-auto -mx-5 px-5 pb-1">
+        {diasVisiveis.map((i) => {
+          const label = DIAS_CURTOS[i];
           const ativo = i === diaSelecionado;
           const eHoje = i === hojeIdx;
+          const ePlanejado = diasPlanejados.includes(i);
           return (
             <button
-              key={label}
+              key={i}
               onClick={() => navigate({ to: "/treino-do-dia", search: { dia: i }, replace: true })}
               className="shrink-0 rounded-xl px-3 py-2 min-w-[44px] text-xs font-bold relative transition"
               style={
@@ -88,8 +103,9 @@ function TreinoDoDiaPage() {
                     }
                   : {
                       backgroundColor: "var(--card)",
-                      color: "var(--foreground)",
+                      color: ePlanejado ? "var(--foreground)" : "var(--muted-foreground)",
                       border: "1px solid var(--border)",
+                      opacity: ePlanejado ? 1 : 0.7,
                     }
               }
             >
@@ -103,7 +119,26 @@ function TreinoDoDiaPage() {
             </button>
           );
         })}
+        {!mostrarTodos && (
+          <button
+            onClick={() => setMostrarTodos(true)}
+            className="shrink-0 rounded-xl px-3 py-2 text-xs font-semibold flex items-center gap-1"
+            style={{
+              backgroundColor: "var(--card)",
+              color: "var(--primary)",
+              border: "1px dashed color-mix(in oklab, var(--primary) 40%, var(--border))",
+            }}
+          >
+            <Plus size={12} /> Outro dia
+          </button>
+        )}
       </div>
+      {foraDoPlano && (
+        <p className="text-[11px] mb-4" style={{ color: "var(--muted-foreground)" }}>
+          ⚡ Treino bônus — este dia está fora da sua frequência habitual ({user.frequencia ?? 3}x/semana).
+        </p>
+      )}
+      {!foraDoPlano && <div className="mb-3" />}
 
       {/* Título */}
       <div className="mb-5">
@@ -198,6 +233,41 @@ function TreinoDoDiaPage() {
       <p className="text-center text-xs mt-3" style={{ color: "var(--subtle)" }}>
         Toque em qualquer exercício acima pra ver detalhes antes.
       </p>
+
+      {/* Rodapé educativo: barras fixas recomendadas */}
+      {user.caminho !== "barra" && (
+        <section className="mt-8">
+          <div className="text-[10px] uppercase tracking-wider font-semibold mb-2" style={{ color: "var(--secondary)" }}>
+            Quer destravar mais exercícios?
+          </div>
+          <h3 className="text-sm font-bold mb-3">Comece com uma barra fixa</h3>
+          <div className="space-y-2">
+            {PRODUTOS_BARRA_FIXA.slice(0, 2).map((p) => (
+              <a
+                key={p.id}
+                href={p.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="elevo-card p-3 flex items-center gap-3 active:scale-[0.99] transition"
+              >
+                <div
+                  className="size-10 rounded-xl flex items-center justify-center text-xl shrink-0"
+                  style={{ backgroundColor: "color-mix(in oklab, var(--secondary) 22%, transparent)" }}
+                >
+                  {p.emoji}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-semibold leading-tight line-clamp-1">{p.nome}</div>
+                  <div className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+                    {p.preco}
+                  </div>
+                </div>
+                <ChevronLeft size={14} className="rotate-180" style={{ color: "var(--subtle)" }} />
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

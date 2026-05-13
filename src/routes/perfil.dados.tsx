@@ -11,6 +11,8 @@ import {
 } from "@/lib/elevo-store";
 import { CARGOS } from "@/lib/taf-data";
 import { pedirEquipamento } from "@/lib/equipamentos-pedidos";
+import { useModoBarraFixa } from "@/lib/modo-barra-fixa";
+import { PRODUTOS_BARRA_FIXA } from "@/lib/produtos";
 
 export const Route = createFileRoute("/perfil/dados")({
   component: DadosPage,
@@ -56,6 +58,7 @@ function DadosPage() {
   const [caminho, setCaminho] = useState<Caminho | undefined>();
   const [equipamentos, setEquipamentos] = useState<string[]>([]);
   const [saved, setSaved] = useState(false);
+  const [modoBarra, setModoBarra] = useModoBarraFixa();
 
   // Modal "Não vejo meu equipamento"
   const [pedidoOpen, setPedidoOpen] = useState(false);
@@ -248,6 +251,40 @@ function DadosPage() {
         </Link>
       )}
 
+      {/* Modo "Só Barra Fixa" */}
+      {caminho === "barra" && (
+        <Section title="Modo de treino">
+          <button
+            onClick={() => setModoBarra(!modoBarra)}
+            className="elevo-card p-4 w-full text-left flex items-center gap-3"
+            style={
+              modoBarra
+                ? { borderColor: "var(--secondary)", backgroundColor: "color-mix(in oklab, var(--secondary) 10%, var(--card))" }
+                : undefined
+            }
+          >
+            <div className="text-2xl">🏋️</div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold">Só Barra Fixa</div>
+              <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                Quando ativo, o app monta treinos usando exclusivamente barra fixa e peso corporal.
+              </div>
+            </div>
+            <div
+              className="w-10 h-6 rounded-full relative transition shrink-0"
+              style={{
+                backgroundColor: modoBarra ? "var(--secondary)" : "var(--border)",
+              }}
+            >
+              <div
+                className="absolute top-0.5 size-5 rounded-full bg-white transition-all"
+                style={{ left: modoBarra ? "calc(100% - 22px)" : "2px" }}
+              />
+            </div>
+          </button>
+        </Section>
+      )}
+
       {/* Equipamentos — só mostra se caminho == casa */}
       {caminho === "casa" && (
         <Section title="O que você tem em casa?">
@@ -358,6 +395,38 @@ function DadosPage() {
       <button onClick={onSave} className="btn-primary mt-8">
         {saved ? "Salvo ✓" : "Salvar alterações"}
       </button>
+
+      {/* Loja: barras fixas recomendadas */}
+      <Section title="Comprar barra fixa">
+        <p className="text-xs mb-3 -mt-1" style={{ color: "var(--muted-foreground)" }}>
+          Modelos que recomendamos pra destravar todos os exercícios.
+        </p>
+        <div className="space-y-2">
+          {PRODUTOS_BARRA_FIXA.map((p) => (
+            <a
+              key={p.id}
+              href={p.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="elevo-card p-3 flex items-center gap-3"
+            >
+              <div
+                className="size-10 rounded-xl flex items-center justify-center text-xl shrink-0"
+                style={{ backgroundColor: "color-mix(in oklab, var(--secondary) 22%, transparent)" }}
+              >
+                {p.emoji}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs font-semibold leading-tight line-clamp-1">{p.nome}</div>
+                <div className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+                  {p.descricao} · {p.preco}
+                </div>
+              </div>
+              <ChevronLeft size={14} className="rotate-180" style={{ color: "var(--subtle)" }} />
+            </a>
+          ))}
+        </div>
+      </Section>
 
       {/* Modal: pedir equipamento novo */}
       {pedidoOpen && (

@@ -11,6 +11,7 @@ import {
   marcarInsightMostrado,
   type InsightSemanal,
 } from "@/lib/analytics";
+import { PRODUTOS_BARRA_FIXA } from "@/lib/produtos";
 
 export const Route = createFileRoute("/home")({
   component: HomePage,
@@ -332,6 +333,34 @@ function HomePage() {
           </ul>
         )}
       </section>
+
+      {/* Rodapé: barra fixa recomendada (só pra quem ainda não tem) */}
+      {user.caminho !== "barra" && (
+        <a
+          href={PRODUTOS_BARRA_FIXA[0].link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="elevo-card mt-6 p-4 flex items-center gap-3"
+          style={{ borderColor: "color-mix(in oklab, var(--secondary) 30%, var(--border))" }}
+        >
+          <div
+            className="size-11 rounded-xl flex items-center justify-center text-2xl shrink-0"
+            style={{ backgroundColor: "color-mix(in oklab, var(--secondary) 22%, transparent)" }}
+          >
+            🏋️
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "var(--secondary)" }}>
+              Quer uma barra fixa?
+            </div>
+            <div className="text-sm font-bold leading-tight">Veja modelos recomendados</div>
+            <div className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+              Destrave pull-ups e dezenas de exercícios novos
+            </div>
+          </div>
+          <ChevronRight size={16} style={{ color: "var(--subtle)" }} />
+        </a>
+      )}
 
       <BottomNav />
     </div>
