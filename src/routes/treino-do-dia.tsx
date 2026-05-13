@@ -1,10 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ChevronLeft, Play, CheckCircle2 } from "lucide-react";
-import { useMemo } from "react";
+import { ChevronLeft, Play, CheckCircle2, Plus } from "lucide-react";
+import { useMemo, useState } from "react";
 import { z } from "zod";
 import { useElevoUser } from "@/lib/elevo-store";
-import { getPlanoSemanal } from "@/lib/treinos";
+import { getPlanoSemanal, getDiasTreino } from "@/lib/treinos";
 import { exerciciosFeitosHoje } from "@/lib/treino-progress";
+import { PRODUTOS_BARRA_FIXA } from "@/lib/produtos";
 
 const search = z.object({
   dia: z.coerce.number().optional(),
