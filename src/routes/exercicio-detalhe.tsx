@@ -33,6 +33,31 @@ function ExercicioDetalhePage() {
 
   const feito = exerciciosFeitosHoje(treino.id).includes(ex.id);
 
+  // Busca info do ExerciseDB (GIF + músculos)
+  const fetchInfo = useServerFn(getExerciseDbInfo);
+  const { data: dbInfo } = useQuery({
+    queryKey: ["exercisedb", ex.id],
+    queryFn: () => fetchInfo({ data: { exId: ex.id } }),
+    staleTime: 1000 * 60 * 60 * 12,
+    retry: 1,
+  });
+
+  const primaryMuscles = useMemo<MuscleRegion[]>(() => {
+    if (!dbInfo?.target) return [];
+    const r = muscleToRegion(dbInfo.target);
+    return r ? [r] : [];
+  }, [dbInfo?.target]);
+
+  const secondaryMuscles = useMemo<MuscleRegion[]>(() => {
+    if (!dbInfo?.secondaryMuscles) return [];
+    const set = new Set<MuscleRegion>();
+    for (const m of dbInfo.secondaryMuscles) {
+      const r = muscleToRegion(m);
+      if (r && !primaryMuscles.includes(r)) set.add(r);
+    }
+    return Array.from(set);
+  }, [dbInfo?.secondaryMuscles, primaryMuscles]);
+
   return (
     <div className="elevo-shell px-5 pt-8 pb-44 min-h-dvh">
       <div className="flex items-center justify-between mb-5 mt-2">
