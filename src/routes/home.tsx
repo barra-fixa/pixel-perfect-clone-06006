@@ -237,6 +237,38 @@ function HomePage() {
         </p>
       </section>
 
+      {/* Card destacado: Treinos Só Barra Fixa */}
+      <Link
+        to="/treinos-so-barra"
+        className="block rounded-2xl p-4 mb-4 relative overflow-hidden active:scale-[0.99] transition"
+        style={{
+          background:
+            "linear-gradient(135deg, color-mix(in oklab, var(--secondary) 28%, var(--card)) 0%, var(--card) 80%)",
+          border: "1px solid color-mix(in oklab, var(--secondary) 40%, var(--border))",
+        }}
+      >
+        <div className="flex items-start gap-3">
+          <div
+            className="size-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
+            style={{ backgroundColor: "color-mix(in oklab, var(--secondary) 30%, transparent)" }}
+          >
+            🏋️
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-semibold" style={{ color: "var(--secondary)" }}>
+              <Sparkles size={11} /> Exclusivo
+            </div>
+            <div className="font-bold text-sm leading-tight">Treinos Só Barra Fixa</div>
+            <p className="text-[11px] mt-0.5" style={{ color: "var(--muted-foreground)" }}>
+              Sequência completa sem outro equipamento — só barra e peso corporal.
+            </p>
+            <div className="text-[11px] font-semibold mt-2" style={{ color: "var(--secondary)" }}>
+              Ver treinos exclusivos →
+            </div>
+          </div>
+        </div>
+      </Link>
+
       {/* Próximo treino — botão grande */}
       <section
         className="rounded-2xl p-5 mb-5 relative overflow-hidden"

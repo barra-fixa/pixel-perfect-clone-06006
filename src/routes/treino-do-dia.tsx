@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ChevronLeft, Play, CheckCircle2, Plus } from "lucide-react";
+import { ChevronLeft, Play, CheckCircle2, Settings, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { z } from "zod";
-import { useElevoUser } from "@/lib/elevo-store";
+import { saveUser, useElevoUser } from "@/lib/elevo-store";
 import { getPlanoSemanal, getDiasTreino } from "@/lib/treinos";
 import { exerciciosFeitosHoje } from "@/lib/treino-progress";
 import { PRODUTOS_BARRA_FIXA } from "@/lib/produtos";
@@ -56,17 +56,44 @@ function TreinoDoDiaPage() {
   const ehHoje = diaSelecionado === hojeIdx;
   const feitos = ehHoje ? exerciciosFeitosHoje(treino.id) : [];
 
-  // Frequência do usuário define quais abas aparecem por padrão.
-  const diasPlanejados = useMemo(() => getDiasTreino(user.frequencia ?? 3), [user.frequencia]);
-  // Sempre inclui o dia atualmente selecionado (caso "treinar em outro dia").
-  const diasVisiveisPadrao = useMemo(() => {
+  // Frequência alvo (quantos dias por semana). Usuário escolhe quais.
+  const freq = Math.max(1, Math.min(7, user.frequencia ?? 3));
+  // Dias escolhidos pelo usuário; fallback = sugestão automática.
+  const diasPlanejados = useMemo(
+    () => (user.diasTreino && user.diasTreino.length > 0 ? [...user.diasTreino].sort((a, b) => a - b) : getDiasTreino(freq)),
+    [user.diasTreino, freq],
+  );
+
+  // Sempre inclui o dia atual selecionado (se cair fora dos planejados).
+  const diasVisiveis = useMemo(() => {
     const set = new Set([...diasPlanejados, diaSelecionado]);
     return Array.from(set).sort((a, b) => a - b);
   }, [diasPlanejados, diaSelecionado]);
-
-  const [mostrarTodos, setMostrarTodos] = useState(false);
-  const diasVisiveis = mostrarTodos ? [0, 1, 2, 3, 4, 5, 6] : diasVisiveisPadrao;
   const foraDoPlano = !diasPlanejados.includes(diaSelecionado);
+
+  // Modal de edição
+  const [editOpen, setEditOpen] = useState(false);
+  const [editSel, setEditSel] = useState<number[]>(diasPlanejados);
+  function abrirEdit() {
+    setEditSel(diasPlanejados);
+    setEditOpen(true);
+  }
+  function toggleDia(i: number) {
+    setEditSel((cur) => {
+      if (cur.includes(i)) return cur.filter((x) => x !== i);
+      if (cur.length >= freq) return cur; // bloqueia mais que a frequência
+      return [...cur, i];
+    });
+  }
+  function salvarDias() {
+    const ordenados = [...editSel].sort((a, b) => a - b);
+    saveUser({ diasTreino: ordenados });
+    setEditOpen(false);
+    // Se o dia selecionado deixou de fazer parte, navega pro primeiro planejado.
+    if (!ordenados.includes(diaSelecionado) && ordenados.length > 0) {
+      navigate({ to: "/treino-do-dia", search: { dia: ordenados[0] }, replace: true });
+    }
+  }
 
   return (
     <div className="elevo-shell px-5 pt-5 pb-32 min-h-dvh">
@@ -83,8 +110,8 @@ function TreinoDoDiaPage() {
         <div className="size-10" />
       </div>
 
-      {/* Abas de dias (dinâmicas conforme frequência) */}
-      <div className="flex gap-1.5 mb-2 overflow-x-auto -mx-5 px-5 pb-1">
+      {/* Abas dos dias escolhidos + botão editar */}
+      <div className="flex items-center gap-1.5 mb-2 overflow-x-auto -mx-5 px-5 pb-1">
         {diasVisiveis.map((i) => {
           const label = DIAS_CURTOS[i];
           const ativo = i === diaSelecionado;
@@ -94,7 +121,7 @@ function TreinoDoDiaPage() {
             <button
               key={i}
               onClick={() => navigate({ to: "/treino-do-dia", search: { dia: i }, replace: true })}
-              className="shrink-0 rounded-xl px-3 py-2 min-w-[44px] text-xs font-bold relative transition"
+              className="shrink-0 rounded-xl px-3 py-2 min-w-[48px] text-xs font-bold relative transition"
               style={
                 ativo
                   ? {
@@ -105,7 +132,7 @@ function TreinoDoDiaPage() {
                       backgroundColor: "var(--card)",
                       color: ePlanejado ? "var(--foreground)" : "var(--muted-foreground)",
                       border: "1px solid var(--border)",
-                      opacity: ePlanejado ? 1 : 0.7,
+                      opacity: ePlanejado ? 1 : 0.6,
                     }
               }
             >
@@ -119,23 +146,22 @@ function TreinoDoDiaPage() {
             </button>
           );
         })}
-        {!mostrarTodos && (
-          <button
-            onClick={() => setMostrarTodos(true)}
-            className="shrink-0 rounded-xl px-3 py-2 text-xs font-semibold flex items-center gap-1"
-            style={{
-              backgroundColor: "var(--card)",
-              color: "var(--primary)",
-              border: "1px dashed color-mix(in oklab, var(--primary) 40%, var(--border))",
-            }}
-          >
-            <Plus size={12} /> Outro dia
-          </button>
-        )}
+        <button
+          onClick={abrirEdit}
+          className="shrink-0 rounded-xl px-3 py-2 text-xs font-semibold flex items-center gap-1.5"
+          style={{
+            backgroundColor: "var(--card)",
+            color: "var(--primary)",
+            border: "1px dashed color-mix(in oklab, var(--primary) 45%, var(--border))",
+          }}
+          aria-label="Editar dias de treino"
+        >
+          <Settings size={13} /> Editar
+        </button>
       </div>
       {foraDoPlano && (
         <p className="text-[11px] mb-4" style={{ color: "var(--muted-foreground)" }}>
-          ⚡ Treino bônus — este dia está fora da sua frequência habitual ({user.frequencia ?? 3}x/semana).
+          ⚡ Treino bônus — este dia não está nos seus {freq} dias habituais.
         </p>
       )}
       {!foraDoPlano && <div className="mb-3" />}
@@ -267,6 +293,104 @@ function TreinoDoDiaPage() {
             ))}
           </div>
         </section>
+      )}
+
+      {/* Modal: editar dias da semana */}
+      {editOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
+          style={{ backgroundColor: "color-mix(in oklab, black 60%, transparent)" }}
+          onClick={() => setEditOpen(false)}
+        >
+          <div
+            className="elevo-card w-full max-w-sm p-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <h3 className="font-bold text-base">Escolha seus {freq} dias</h3>
+              <button
+                onClick={() => setEditOpen(false)}
+                className="size-8 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: "var(--card-elevated)" }}
+                aria-label="Fechar"
+              >
+                <X size={14} />
+              </button>
+            </div>
+            <p className="text-xs mb-4" style={{ color: "var(--muted-foreground)" }}>
+              Selecione exatamente {freq} {freq === 1 ? "dia" : "dias"} de treino.
+            </p>
+
+            <div className="space-y-1.5">
+              {DIAS_LONGOS.map((longo, i) => {
+                const sel = editSel.includes(i);
+                const cheio = !sel && editSel.length >= freq;
+                return (
+                  <button
+                    key={i}
+                    onClick={() => toggleDia(i)}
+                    disabled={cheio}
+                    className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 transition text-left"
+                    style={{
+                      backgroundColor: sel
+                        ? "color-mix(in oklab, var(--primary) 18%, var(--card))"
+                        : "var(--card-elevated)",
+                      border: sel
+                        ? "1px solid var(--primary)"
+                        : "1px solid var(--border)",
+                      opacity: cheio ? 0.4 : 1,
+                    }}
+                  >
+                    <span
+                      className="size-5 rounded-md flex items-center justify-center shrink-0"
+                      style={{
+                        backgroundColor: sel ? "var(--primary)" : "transparent",
+                        border: sel ? "1px solid var(--primary)" : "1px solid var(--border)",
+                      }}
+                    >
+                      {sel && <CheckCircle2 size={12} style={{ color: "var(--primary-foreground)" }} />}
+                    </span>
+                    <span className="text-sm font-semibold flex-1">{longo}</span>
+                    <span className="text-[10px] font-bold" style={{ color: "var(--subtle)" }}>
+                      {DIAS_CURTOS[i]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-3 flex items-center justify-between text-xs">
+              <span style={{ color: "var(--muted-foreground)" }}>
+                Selecionados: <span className="font-bold" style={{ color: editSel.length === freq ? "var(--primary)" : "var(--foreground)" }}>{editSel.length}/{freq}</span>
+              </span>
+              {editSel.length > freq && (
+                <span style={{ color: "var(--warning)" }}>Máximo {freq} dias</span>
+              )}
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setEditOpen(false)}
+                className="rounded-xl py-3 text-sm font-semibold"
+                style={{ backgroundColor: "var(--card-elevated)", color: "var(--foreground)" }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={salvarDias}
+                disabled={editSel.length !== freq}
+                className="rounded-xl py-3 text-sm font-bold transition"
+                style={{
+                  backgroundColor: editSel.length === freq ? "var(--primary)" : "var(--card-elevated)",
+                  color: editSel.length === freq ? "var(--primary-foreground)" : "var(--muted-foreground)",
+                  opacity: editSel.length === freq ? 1 : 0.6,
+                }}
+              >
+                Salvar Dias
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
