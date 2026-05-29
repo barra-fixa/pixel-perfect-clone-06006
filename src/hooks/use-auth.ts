@@ -3,6 +3,21 @@ import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { saveUser, hydrateFromSupabase, clearLocalCache } from "@/lib/elevo-store";
 
+async function carregarSessaoInicial() {
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data.user) {
+    const { data: sessionData } = await supabase.auth.getSession();
+    return sessionData.session ?? null;
+  }
+
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+  if (sessionError) {
+    return null;
+  }
+
+  return sessionData.session ?? null;
+}
+
 export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -23,13 +38,15 @@ export function useAuth() {
       } else if (event === "SIGNED_OUT") {
         clearLocalCache();
       }
+
+      setLoading(false);
     });
 
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
+    void carregarSessaoInicial().then((sessao) => {
+      setSession(sessao);
+      setUser(sessao?.user ?? null);
       setLoading(false);
-      if (data.session) void hydrateFromSupabase();
+      if (sessao) void hydrateFromSupabase();
     });
 
     return () => sub.subscription.unsubscribe();

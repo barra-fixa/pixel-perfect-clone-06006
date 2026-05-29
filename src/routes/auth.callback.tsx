@@ -24,12 +24,21 @@ async function aguardarSessaoPronta(timeoutMs = SESSION_TIMEOUT_MS) {
   const startedAt = Date.now();
 
   while (Date.now() - startedAt < timeoutMs) {
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (!userError && userData.user) {
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+      if (sessionData.session) {
+        return sessionData.session;
+      }
+    }
+
     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
     if (sessionError) throw sessionError;
 
     if (sessionData.session) {
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      if (!userError && userData.user) {
+      const { data: hydratedUserData, error: hydratedUserError } = await supabase.auth.getUser();
+      if (!hydratedUserError && hydratedUserData.user) {
         return sessionData.session;
       }
     }
@@ -50,11 +59,18 @@ function AuthCallback() {
 
   useEffect(() => {
     let cancelado = false;
+    let subscription: ReturnType<typeof supabase.auth.onAuthStateChange>["data"]["subscription"] | null = null;
 
     async function processar() {
       try {
         const { code, accessToken, refreshToken, erro } = lerParametrosDoCallback();
         if (erro) throw new Error(erro);
+
+        subscription = supabase.auth.onAuthStateChange((_event, session) => {
+          if (!cancelado && session?.user) {
+            window.location.replace("/home");
+          }
+        }).data.subscription;
 
         let sessao = await aguardarSessaoPronta(600);
 
@@ -67,6 +83,12 @@ function AuthCallback() {
             refresh_token: refreshToken,
           });
           if (error) throw error;
+        } else if (!sessao && accessToken) {
+          const { data: hashSessionData, error } = await supabase.auth.getSession();
+          if (error) throw error;
+          if (!hashSessionData.session) {
+            throw new Error("Não foi possível concluir o login. Peça um novo link.");
+          }
         }
 
         sessao = sessao ?? (await aguardarSessaoPronta());
@@ -89,6 +111,7 @@ function AuthCallback() {
     void processar();
     return () => {
       cancelado = true;
+      subscription?.unsubscribe();
     };
   }, [navigate]);
 
