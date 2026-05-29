@@ -1,10 +1,17 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { processarSessaoDaUrl } from "@/lib/auth-url-session";
+import { supabase } from "@/integrations/supabase/client";
+import { processarSessaoDaUrl, temParametrosAuthNaUrl } from "@/lib/auth-url-session";
 
 export const Route = createFileRoute("/auth/callback")({
   component: AuthCallback,
 });
+
+function irPara(destino: string) {
+  if (typeof window !== "undefined") {
+    window.location.replace(destino);
+  }
+}
 
 function AuthCallback() {
   const navigate = useNavigate();
@@ -13,27 +20,57 @@ function AuthCallback() {
   useEffect(() => {
     let cancelado = false;
 
+    // Salvaguarda absoluta: nunca deixa o usuário travado mais que 8s.
+    const timeoutFallback = window.setTimeout(() => {
+      if (!cancelado) irPara("/auth");
+    }, 8000);
+
     async function processar() {
       try {
+        // 1) Se já existe sessão, redireciona imediatamente.
+        const { data: existente } = await supabase.auth.getSession();
+        if (existente.session) {
+          irPara("/home");
+          return;
+        }
+
+        // 2) Sem token nem sessão? Volta para /auth.
+        if (!temParametrosAuthNaUrl()) {
+          irPara("/auth");
+          return;
+        }
+
+        // 3) Processa o token (hash ou code) e estabelece a sessão.
         const sessao = await processarSessaoDaUrl();
 
-        if (!sessao) {
-          throw new Error("Não foi possível concluir o login. Peça um novo link.");
+        if (cancelado) return;
+
+        if (sessao) {
+          irPara("/home");
+          return;
         }
 
-        if (!cancelado) {
-          window.location.replace("/home");
+        // 4) Última tentativa: relê a sessão.
+        const { data: novo } = await supabase.auth.getSession();
+        if (novo.session) {
+          irPara("/home");
+          return;
         }
+
+        throw new Error("Não foi possível concluir o login. Peça um novo link.");
       } catch (err) {
         if (!cancelado) {
           setErro(err instanceof Error ? err.message : "Erro ao validar link");
         }
+      } finally {
+        window.clearTimeout(timeoutFallback);
       }
     }
 
     void processar();
     return () => {
       cancelado = true;
+      window.clearTimeout(timeoutFallback);
     };
   }, [navigate]);
 

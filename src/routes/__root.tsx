@@ -132,7 +132,8 @@ function AuthGate() {
   const location = useLocation();
   const navigate = useNavigate();
   const pub = isPublic(location.pathname);
-  const emFluxoDeAuth = location.pathname === "/auth/callback" || temParametrosAuthNaUrl();
+  const naRotaDeCallback = location.pathname === "/auth/callback";
+  const emFluxoDeAuth = naRotaDeCallback || temParametrosAuthNaUrl();
 
   useEffect(() => {
     if (loading) return;
@@ -143,6 +144,9 @@ function AuthGate() {
       navigate({ to: "/home", replace: true });
     }
   }, [loading, isAuthenticated, pub, navigate, location.pathname, emFluxoDeAuth]);
+
+  // A rota /auth/callback deve renderizar para processar o token e redirecionar.
+  if (naRotaDeCallback) return <Outlet />;
 
   if (loading || emFluxoDeAuth) {
     return (
