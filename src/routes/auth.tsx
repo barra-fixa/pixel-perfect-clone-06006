@@ -1,3 +1,4 @@
+import type { Session } from "@supabase/supabase-js";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Mail, ArrowLeft } from "lucide-react";
@@ -19,7 +20,7 @@ function AuthPage() {
   useEffect(() => {
     let ativo = true;
 
-    const redirecionarSeAutenticado = (session: Awaited<ReturnType<typeof supabase.auth.getSession>>["data"]["session"]) => {
+    const redirecionarSeAutenticado = (session: Session | null) => {
       if (!ativo || !session?.user) return false;
       navigate({ to: "/home", replace: true });
       return true;
@@ -30,10 +31,15 @@ function AuthPage() {
       if (ativo) setCheckingSession(false);
     });
 
-    void supabase.auth.getSession().then(({ data }) => {
-      if (redirecionarSeAutenticado(data.session)) return;
-      if (ativo) setCheckingSession(false);
-    });
+    void supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (redirecionarSeAutenticado(data.session)) return;
+        if (ativo) setCheckingSession(false);
+      })
+      .catch(() => {
+        if (ativo) setCheckingSession(false);
+      });
 
     return () => {
       ativo = false;
