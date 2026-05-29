@@ -83,6 +83,60 @@ export type Database = {
         }
         Relationships: []
       }
+      exercicios: {
+        Row: {
+          ativo: boolean | null
+          body_part: string
+          categoria: string | null
+          criado_em: string | null
+          dificuldade: string | null
+          equipment: string
+          exercisedb_id: string
+          gif_url_local: string | null
+          id: string
+          instrucoes_pt: string[] | null
+          nome_en: string
+          nome_pt: string
+          secondary_muscles: string[] | null
+          target: string
+          video_url: string | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          body_part: string
+          categoria?: string | null
+          criado_em?: string | null
+          dificuldade?: string | null
+          equipment: string
+          exercisedb_id: string
+          gif_url_local?: string | null
+          id?: string
+          instrucoes_pt?: string[] | null
+          nome_en: string
+          nome_pt: string
+          secondary_muscles?: string[] | null
+          target: string
+          video_url?: string | null
+        }
+        Update: {
+          ativo?: boolean | null
+          body_part?: string
+          categoria?: string | null
+          criado_em?: string | null
+          dificuldade?: string | null
+          equipment?: string
+          exercisedb_id?: string
+          gif_url_local?: string | null
+          id?: string
+          instrucoes_pt?: string[] | null
+          nome_en?: string
+          nome_pt?: string
+          secondary_muscles?: string[] | null
+          target?: string
+          video_url?: string | null
+        }
+        Relationships: []
+      }
       insights_mostrados: {
         Row: {
           created_at: string
