@@ -2,8 +2,11 @@ import { useEffect, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { saveUser, hydrateFromSupabase, clearLocalCache } from "@/lib/elevo-store";
+import { processarSessaoDaUrl } from "@/lib/auth-url-session";
 
 async function carregarSessaoInicial() {
+  await processarSessaoDaUrl();
+
   const { data, error } = await supabase.auth.getUser();
   if (error || !data.user) {
     const { data: sessionData } = await supabase.auth.getSession();
@@ -42,12 +45,15 @@ export function useAuth() {
       setLoading(false);
     });
 
-    void carregarSessaoInicial().then((sessao) => {
-      setSession(sessao);
-      setUser(sessao?.user ?? null);
-      setLoading(false);
-      if (sessao) void hydrateFromSupabase();
-    });
+    void carregarSessaoInicial()
+      .then((sessao) => {
+        setSession(sessao);
+        setUser(sessao?.user ?? null);
+        if (sessao) void hydrateFromSupabase();
+      })
+      .finally(() => {
+        setLoading(false);
+      });
 
     return () => sub.subscription.unsubscribe();
   }, []);
