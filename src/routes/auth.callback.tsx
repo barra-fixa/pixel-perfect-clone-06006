@@ -26,7 +26,7 @@ function temTokenDeSessaoNoHash() {
   );
 }
 
-async function aguardarSessaoNoCallback(timeoutMs: number) {
+async function aguardarSessaoNoCallback(timeoutMs: number): Promise<Session | null> {
   const startedAt = Date.now();
 
   while (Date.now() - startedAt < timeoutMs) {
@@ -34,7 +34,7 @@ async function aguardarSessaoNoCallback(timeoutMs: number) {
     if (error) throw error;
 
     if (data.session?.user) {
-      return data.session satisfies Session;
+      return data.session;
     }
 
     await new Promise((resolve) => setTimeout(resolve, 120));
