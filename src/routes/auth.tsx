@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Mail, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { saveUser } from "@/lib/elevo-store";
@@ -9,10 +9,37 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [enviado, setEnviado] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
+
+  useEffect(() => {
+    let ativo = true;
+
+    const redirecionarSeAutenticado = (session: Awaited<ReturnType<typeof supabase.auth.getSession>>["data"]["session"]) => {
+      if (!ativo || !session?.user) return false;
+      navigate({ to: "/home", replace: true });
+      return true;
+    };
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (redirecionarSeAutenticado(session)) return;
+      if (ativo) setCheckingSession(false);
+    });
+
+    void supabase.auth.getSession().then(({ data }) => {
+      if (redirecionarSeAutenticado(data.session)) return;
+      if (ativo) setCheckingSession(false);
+    });
+
+    return () => {
+      ativo = false;
+      authListener.subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   const handleEnviar = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +62,20 @@ function AuthPage() {
       setLoading(false);
     }
   };
+
+  if (checkingSession) {
+    return (
+      <div className="elevo-shell px-6 pt-14 pb-8 min-h-dvh flex flex-col items-center justify-center text-center">
+        <div
+          className="size-12 rounded-full animate-pulse mb-4"
+          style={{ background: "color-mix(in oklab, var(--primary) 30%, transparent)" }}
+        />
+        <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
+          Carregando...
+        </p>
+      </div>
+    );
+  }
 
   if (enviado) {
     return (
