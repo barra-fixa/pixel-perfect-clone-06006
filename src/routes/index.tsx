@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { Flame, Shield, Trophy } from "lucide-react";
+import { processarSessaoDaUrl, temParametrosAuthNaUrl } from "@/lib/auth-url-session";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -48,6 +50,15 @@ const HIGHLIGHTS = [
 ];
 
 function Splash() {
+  useEffect(() => {
+    if (!temParametrosAuthNaUrl()) return;
+    void processarSessaoDaUrl().then((sessao) => {
+      if (sessao?.user) {
+        window.location.replace("/home");
+      }
+    });
+  }, []);
+
   return (
     <div className="elevo-shell elevo-grid-bg flex flex-col px-6 pt-14 pb-8 min-h-dvh">
       {/* Logo */}

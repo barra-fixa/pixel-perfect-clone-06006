@@ -14,6 +14,7 @@ import { useEffect } from "react";
 import appCss from "../styles.css?url";
 import { useAuth } from "@/hooks/use-auth";
 import { Toaster } from "@/components/ui/sonner";
+import { temParametrosAuthNaUrl } from "@/lib/auth-url-session";
 
 const PUBLIC_ROUTES = ["/", "/auth", "/auth/callback"];
 function isPublic(pathname: string) {
@@ -131,19 +132,19 @@ function AuthGate() {
   const location = useLocation();
   const navigate = useNavigate();
   const pub = isPublic(location.pathname);
-  const emCallbackAuth = location.pathname === "/auth/callback";
+  const emFluxoDeAuth = location.pathname === "/auth/callback" || temParametrosAuthNaUrl();
 
   useEffect(() => {
     if (loading) return;
-    if (emCallbackAuth) return;
+    if (emFluxoDeAuth) return;
     if (!isAuthenticated && !pub) {
       navigate({ to: "/auth", replace: true });
     } else if (isAuthenticated && (location.pathname === "/auth" || location.pathname === "/")) {
       navigate({ to: "/home", replace: true });
     }
-  }, [loading, isAuthenticated, pub, navigate, location.pathname, emCallbackAuth]);
+  }, [loading, isAuthenticated, pub, navigate, location.pathname, emFluxoDeAuth]);
 
-  if (loading && !pub) {
+  if (loading || emFluxoDeAuth) {
     return (
       <div className="min-h-dvh flex items-center justify-center text-sm" style={{ color: "var(--muted-foreground)" }}>
         Carregando...
