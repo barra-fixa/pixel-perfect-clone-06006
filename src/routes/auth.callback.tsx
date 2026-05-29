@@ -1,3 +1,4 @@
+import type { Session } from "@supabase/supabase-js";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,66 +14,128 @@ function irPara(destino: string) {
   }
 }
 
+function temTokenDeSessaoNoHash() {
+  if (typeof window === "undefined") return false;
+
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  return Boolean(
+    hashParams.get("access_token") ||
+      hashParams.get("refresh_token") ||
+      hashParams.get("error") ||
+      hashParams.get("error_description"),
+  );
+}
+
+async function aguardarSessaoNoCallback(timeoutMs: number): Promise<Session | null> {
+  const startedAt = Date.now();
+
+  while (Date.now() - startedAt < timeoutMs) {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) throw error;
+
+    if (data.session?.user) {
+      return data.session;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 120));
+  }
+
+  return null;
+}
+
 function AuthCallback() {
   const navigate = useNavigate();
   const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelado = false;
+    let timeoutFallback: number | null = null;
 
-    // Salvaguarda absoluta: nunca deixa o usuário travado mais que 8s.
-    const timeoutFallback = window.setTimeout(() => {
-      if (!cancelado) irPara("/auth");
-    }, 8000);
+    function limparFallback() {
+      if (timeoutFallback !== null) {
+        window.clearTimeout(timeoutFallback);
+        timeoutFallback = null;
+      }
+    }
+
+    function redirecionar(destino: string) {
+      if (cancelado) return;
+      cancelado = true;
+      limparFallback();
+      irPara(destino);
+    }
+
+    function agendarFallbackParaAuth() {
+      limparFallback();
+      timeoutFallback = window.setTimeout(async () => {
+        if (cancelado) return;
+
+        const sessao = await aguardarSessaoNoCallback(400);
+        if (sessao?.user) {
+          redirecionar("/home");
+          return;
+        }
+
+        if (!temTokenDeSessaoNoHash()) {
+          redirecionar("/auth");
+        }
+      }, 8000);
+    }
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, sessao) => {
+      if (sessao?.user) {
+        redirecionar("/home");
+      }
+    });
 
     async function processar() {
       try {
-        // 1) Se já existe sessão, redireciona imediatamente.
-        const { data: existente } = await supabase.auth.getSession();
-        if (existente.session) {
-          irPara("/home");
+        const sessaoExistente = await aguardarSessaoNoCallback(400);
+        if (sessaoExistente?.user) {
+          redirecionar("/home");
           return;
         }
 
-        // 2) Sem token nem sessão? Volta para /auth.
-        if (!temParametrosAuthNaUrl()) {
-          irPara("/auth");
+        const haviaTokenNoHash = temTokenDeSessaoNoHash();
+        const haCredencialNaUrl = haviaTokenNoHash || temParametrosAuthNaUrl();
+
+        if (!haCredencialNaUrl) {
+          agendarFallbackParaAuth();
           return;
         }
 
-        // 3) Processa o token (hash ou code) e estabelece a sessão.
-        const sessao = await processarSessaoDaUrl();
-
+        await processarSessaoDaUrl();
         if (cancelado) return;
 
-        if (sessao) {
-          irPara("/home");
+        const sessao = await aguardarSessaoNoCallback(5000);
+        if (sessao?.user) {
+          redirecionar("/home");
           return;
         }
 
-        // 4) Última tentativa: relê a sessão.
-        const { data: novo } = await supabase.auth.getSession();
-        if (novo.session) {
-          irPara("/home");
+        if (!temTokenDeSessaoNoHash()) {
+          agendarFallbackParaAuth();
           return;
         }
 
-        throw new Error("Não foi possível concluir o login. Peça um novo link.");
+        setErro("Ainda não foi possível concluir o login. Tente pedir um novo link.");
       } catch (err) {
         if (!cancelado) {
           setErro(err instanceof Error ? err.message : "Erro ao validar link");
+          if (!temTokenDeSessaoNoHash()) {
+            agendarFallbackParaAuth();
+          }
         }
-      } finally {
-        window.clearTimeout(timeoutFallback);
       }
     }
 
     void processar();
     return () => {
       cancelado = true;
-      window.clearTimeout(timeoutFallback);
+      limparFallback();
+      authListener.subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, []);
 
   return (
     <div className="elevo-shell px-6 pt-14 pb-8 min-h-dvh flex flex-col items-center justify-center text-center">
@@ -96,7 +159,7 @@ function AuthCallback() {
             style={{ background: "color-mix(in oklab, var(--primary) 30%, transparent)" }}
           />
           <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-            Validando seu acesso...
+            Entrando...
           </p>
         </>
       )}
