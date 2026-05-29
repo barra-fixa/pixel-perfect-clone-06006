@@ -104,8 +104,13 @@ function AuthCallback() {
           return;
         }
 
-        await processarSessaoDaUrl();
+        const sessaoProcessada = await processarSessaoDaUrl();
         if (cancelado) return;
+
+        if (sessaoProcessada?.user) {
+          redirecionar("/home");
+          return;
+        }
 
         const sessao = await aguardarSessaoNoCallback(5000);
         if (sessao?.user) {
