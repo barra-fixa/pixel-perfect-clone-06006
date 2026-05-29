@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { saveUser, hydrateFromSupabase, clearLocalCache } from "@/lib/elevo-store";
@@ -25,6 +25,7 @@ export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const bootstrapConcluido = useRef(false);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
@@ -42,16 +43,20 @@ export function useAuth() {
         clearLocalCache();
       }
 
-      setLoading(false);
+      if (bootstrapConcluido.current) {
+        setLoading(false);
+      }
     });
 
     void carregarSessaoInicial()
       .then((sessao) => {
+        bootstrapConcluido.current = true;
         setSession(sessao);
         setUser(sessao?.user ?? null);
         if (sessao) void hydrateFromSupabase();
       })
       .finally(() => {
+        bootstrapConcluido.current = true;
         setLoading(false);
       });
 
