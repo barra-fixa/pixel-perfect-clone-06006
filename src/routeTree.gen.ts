@@ -41,6 +41,7 @@ import { Route as OnboardingFrequenciaRouteImport } from './routes/onboarding.fr
 import { Route as OnboardingEquipamentosRouteImport } from './routes/onboarding.equipamentos'
 import { Route as OnboardingEmailRouteImport } from './routes/onboarding.email'
 import { Route as OnboardingCaminhoRouteImport } from './routes/onboarding.caminho'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as ApiPublicHooksSendRemindersRouteImport } from './routes/api/public/hooks/send-reminders'
 
 const UpgradeRoute = UpgradeRouteImport.update({
@@ -203,6 +204,11 @@ const OnboardingCaminhoRoute = OnboardingCaminhoRouteImport.update({
   path: '/onboarding/caminho',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/callback',
+  path: '/callback',
+  getParentRoute: () => AuthRoute,
+} as any)
 const ApiPublicHooksSendRemindersRoute =
   ApiPublicHooksSendRemindersRouteImport.update({
     id: '/api/public/hooks/send-reminders',
@@ -212,7 +218,7 @@ const ApiPublicHooksSendRemindersRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/comunidade': typeof ComunidadeRoute
   '/evolucao': typeof EvolucaoRoute
   '/exercicio-detalhe': typeof ExercicioDetalheRoute
@@ -227,6 +233,7 @@ export interface FileRoutesByFullPath {
   '/treinos-so-barra': typeof TreinosSoBarraRoute
   '/trilha-barra': typeof TrilhaBarraRoute
   '/upgrade': typeof UpgradeRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/onboarding/caminho': typeof OnboardingCaminhoRoute
   '/onboarding/email': typeof OnboardingEmailRoute
   '/onboarding/equipamentos': typeof OnboardingEquipamentosRoute
@@ -247,7 +254,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/comunidade': typeof ComunidadeRoute
   '/evolucao': typeof EvolucaoRoute
   '/exercicio-detalhe': typeof ExercicioDetalheRoute
@@ -262,6 +269,7 @@ export interface FileRoutesByTo {
   '/treinos-so-barra': typeof TreinosSoBarraRoute
   '/trilha-barra': typeof TrilhaBarraRoute
   '/upgrade': typeof UpgradeRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/onboarding/caminho': typeof OnboardingCaminhoRoute
   '/onboarding/email': typeof OnboardingEmailRoute
   '/onboarding/equipamentos': typeof OnboardingEquipamentosRoute
@@ -283,7 +291,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/comunidade': typeof ComunidadeRoute
   '/evolucao': typeof EvolucaoRoute
   '/exercicio-detalhe': typeof ExercicioDetalheRoute
@@ -298,6 +306,7 @@ export interface FileRoutesById {
   '/treinos-so-barra': typeof TreinosSoBarraRoute
   '/trilha-barra': typeof TrilhaBarraRoute
   '/upgrade': typeof UpgradeRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/onboarding/caminho': typeof OnboardingCaminhoRoute
   '/onboarding/email': typeof OnboardingEmailRoute
   '/onboarding/equipamentos': typeof OnboardingEquipamentosRoute
@@ -335,6 +344,7 @@ export interface FileRouteTypes {
     | '/treinos-so-barra'
     | '/trilha-barra'
     | '/upgrade'
+    | '/auth/callback'
     | '/onboarding/caminho'
     | '/onboarding/email'
     | '/onboarding/equipamentos'
@@ -370,6 +380,7 @@ export interface FileRouteTypes {
     | '/treinos-so-barra'
     | '/trilha-barra'
     | '/upgrade'
+    | '/auth/callback'
     | '/onboarding/caminho'
     | '/onboarding/email'
     | '/onboarding/equipamentos'
@@ -405,6 +416,7 @@ export interface FileRouteTypes {
     | '/treinos-so-barra'
     | '/trilha-barra'
     | '/upgrade'
+    | '/auth/callback'
     | '/onboarding/caminho'
     | '/onboarding/email'
     | '/onboarding/equipamentos'
@@ -426,7 +438,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthRoute: typeof AuthRoute
+  AuthRoute: typeof AuthRouteWithChildren
   ComunidadeRoute: typeof ComunidadeRoute
   EvolucaoRoute: typeof EvolucaoRoute
   ExercicioDetalheRoute: typeof ExercicioDetalheRoute
@@ -679,6 +691,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingCaminhoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/api/public/hooks/send-reminders': {
       id: '/api/public/hooks/send-reminders'
       path: '/api/public/hooks/send-reminders'
@@ -688,6 +707,16 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AuthRouteChildren {
+  AuthCallbackRoute: typeof AuthCallbackRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthCallbackRoute: AuthCallbackRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface PerfilRouteChildren {
   PerfilDadosRoute: typeof PerfilDadosRoute
@@ -731,7 +760,7 @@ const TreinoRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthRoute: AuthRoute,
+  AuthRoute: AuthRouteWithChildren,
   ComunidadeRoute: ComunidadeRoute,
   EvolucaoRoute: EvolucaoRoute,
   ExercicioDetalheRoute: ExercicioDetalheRoute,

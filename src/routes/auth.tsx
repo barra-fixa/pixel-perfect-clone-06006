@@ -1,88 +1,96 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { Mail, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { saveUser } from "@/lib/elevo-store";
-import { normalizePassword } from "@/lib/password";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
 function AuthPage() {
-  const navigate = useNavigate();
-  const [mode, setMode] = useState<"login" | "signup">("login");
-  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  const [enviado, setEnviado] = useState(false);
 
-  const handleEmail = async (e: React.FormEvent) => {
+  const handleEnviar = async (e: React.FormEvent) => {
     e.preventDefault();
     setErro(null);
     setLoading(true);
     try {
-      const pwd = normalizePassword(senha);
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password: pwd,
-          options: {
-            emailRedirectTo: `${window.location.origin}/home`,
-            data: { nome },
-          },
-        });
-        if (error) throw error;
-        saveUser({ nome, email });
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password: pwd });
-        if (error) throw error;
-      }
-      navigate({ to: "/home" });
+      const emailLimpo = email.trim().toLowerCase();
+      const { error } = await supabase.auth.signInWithOtp({
+        email: emailLimpo,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
+      saveUser({ email: emailLimpo });
+      setEnviado(true);
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "Erro ao autenticar");
+      setErro(err instanceof Error ? err.message : "Erro ao enviar link");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogle = async () => {
-    setErro(null);
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo: `${window.location.origin}/home` },
-      });
-      if (error) throw error;
-    } catch (err) {
-      setErro(err instanceof Error ? err.message : "Erro com Google");
-    }
-  };
+  if (enviado) {
+    return (
+      <div className="elevo-shell px-6 pt-14 pb-8 min-h-dvh flex flex-col">
+        <div className="flex-1 flex flex-col items-center justify-center text-center">
+          <div
+            className="size-20 rounded-2xl flex items-center justify-center mb-6"
+            style={{
+              background:
+                "color-mix(in oklab, var(--primary) 18%, transparent)",
+            }}
+          >
+            <Mail size={36} style={{ color: "var(--primary)" }} />
+          </div>
+          <h1 className="text-2xl font-bold">Verifique seu email</h1>
+          <p className="mt-3 text-sm max-w-[300px]" style={{ color: "var(--muted-foreground)" }}>
+            Enviamos um link de acesso para
+          </p>
+          <p className="mt-1 text-sm font-semibold">{email}</p>
+          <p className="mt-6 text-xs max-w-[280px]" style={{ color: "var(--subtle)" }}>
+            Abra o email e toque no link para entrar. Pode demorar até 1 minuto pra chegar.
+          </p>
+
+          <button
+            onClick={() => {
+              setEnviado(false);
+              setErro(null);
+            }}
+            className="mt-8 text-sm"
+            style={{ color: "var(--primary)" }}
+          >
+            Usar outro email
+          </button>
+        </div>
+
+        <Link to="/" className="mt-4 text-center text-xs" style={{ color: "var(--subtle)" }}>
+          ← Voltar
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="elevo-shell px-6 pt-14 pb-8 min-h-dvh flex flex-col">
-      <div className="text-center">
-        <h1 className="text-3xl font-black">Elevo</h1>
+      <Link to="/" className="inline-flex items-center gap-1 text-sm" style={{ color: "var(--muted-foreground)" }}>
+        <ArrowLeft size={16} /> Voltar
+      </Link>
+
+      <div className="mt-10 text-center">
+        <h1 className="text-3xl font-black">Entrar no Elevo</h1>
         <p className="mt-2 text-sm" style={{ color: "var(--muted-foreground)" }}>
-          {mode === "login" ? "Entre na sua conta" : "Crie sua conta grátis"}
+          Digite seu email e enviamos um link de acesso. Sem senha.
         </p>
       </div>
 
-      <form onSubmit={handleEmail} className="mt-8 space-y-4">
-        {mode === "signup" && (
-          <div>
-            <label className="text-xs font-medium mb-1.5 block" style={{ color: "var(--muted-foreground)" }}>
-              Nome
-            </label>
-            <input
-              className="input-field"
-              required
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-              placeholder="Como prefere ser chamado?"
-            />
-          </div>
-        )}
+      <form onSubmit={handleEnviar} className="mt-8 space-y-4">
         <div>
           <label className="text-xs font-medium mb-1.5 block" style={{ color: "var(--muted-foreground)" }}>
             E-mail
@@ -90,24 +98,12 @@ function AuthPage() {
           <input
             type="email"
             inputMode="email"
+            autoComplete="email"
             required
             className="input-field"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="seu@email.com"
-          />
-        </div>
-        <div>
-          <label className="text-xs font-medium mb-1.5 block" style={{ color: "var(--muted-foreground)" }}>
-            Senha
-          </label>
-          <input
-            type="password"
-            required
-            className="input-field"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-            placeholder="Sua senha"
           />
         </div>
 
@@ -117,39 +113,14 @@ function AuthPage() {
           </p>
         )}
 
-        <button className="btn-primary" disabled={loading}>
-          {loading ? "Aguarde..." : mode === "login" ? "Entrar" : "Criar conta"}
+        <button className="btn-primary" disabled={loading || !email}>
+          {loading ? "Enviando link..." : "Entrar"}
         </button>
+
+        <p className="text-center text-[11px]" style={{ color: "var(--subtle)" }}>
+          Ao continuar, você concorda com nossos termos. Sem cartão de crédito.
+        </p>
       </form>
-
-      <div className="my-5 flex items-center gap-3 text-xs" style={{ color: "var(--subtle)" }}>
-        <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
-        ou
-        <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
-      </div>
-
-      <button onClick={handleGoogle} className="btn-outline">
-        Continuar com Google
-      </button>
-
-      <button
-        onClick={() => {
-          setErro(null);
-          setMode(mode === "login" ? "signup" : "login");
-        }}
-        className="mt-6 text-center text-sm"
-        style={{ color: "var(--muted-foreground)" }}
-      >
-        {mode === "login" ? (
-          <>Não tem conta? <span style={{ color: "var(--primary)" }}>Cadastre-se</span></>
-        ) : (
-          <>Já tem conta? <span style={{ color: "var(--primary)" }}>Entrar</span></>
-        )}
-      </button>
-
-      <Link to="/" className="mt-4 text-center text-xs" style={{ color: "var(--subtle)" }}>
-        ← Voltar
-      </Link>
     </div>
   );
 }

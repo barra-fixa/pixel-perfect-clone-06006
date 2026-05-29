@@ -117,12 +117,13 @@ function Splash() {
 
       {/* CTAs */}
       <div className="w-full mt-auto pt-6 space-y-2">
-        <Link to="/onboarding/objetivo" className="btn-primary">
+        <Link to="/auth" className="btn-primary">
           Começar agora — grátis
         </Link>
         <Link to="/auth" className="btn-ghost w-full block text-center">
           Já tenho conta
         </Link>
+
         <p className="text-center text-[11px] mt-1" style={{ color: "var(--subtle)" }}>
           Sem cartão de crédito · Cancele quando quiser
         </p>

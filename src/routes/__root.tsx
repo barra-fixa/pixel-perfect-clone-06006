@@ -15,12 +15,13 @@ import appCss from "../styles.css?url";
 import { useAuth } from "@/hooks/use-auth";
 import { Toaster } from "@/components/ui/sonner";
 
-const PUBLIC_ROUTES = ["/", "/auth"];
+const PUBLIC_ROUTES = ["/", "/auth", "/auth/callback"];
 function isPublic(pathname: string) {
   if (PUBLIC_ROUTES.includes(pathname)) return true;
   if (pathname.startsWith("/onboarding")) return true;
   return false;
 }
+
 
 function NotFoundComponent() {
   return (
