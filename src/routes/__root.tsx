@@ -131,15 +131,17 @@ function AuthGate() {
   const location = useLocation();
   const navigate = useNavigate();
   const pub = isPublic(location.pathname);
+  const emCallbackAuth = location.pathname === "/auth/callback";
 
   useEffect(() => {
     if (loading) return;
+    if (emCallbackAuth) return;
     if (!isAuthenticated && !pub) {
       navigate({ to: "/auth", replace: true });
     } else if (isAuthenticated && (location.pathname === "/auth" || location.pathname === "/")) {
       navigate({ to: "/home", replace: true });
     }
-  }, [loading, isAuthenticated, pub, navigate, location.pathname]);
+  }, [loading, isAuthenticated, pub, navigate, location.pathname, emCallbackAuth]);
 
   if (loading && !pub) {
     return (
