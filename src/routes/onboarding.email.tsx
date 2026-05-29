@@ -1,22 +1,21 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { Mail } from "lucide-react";
 import { OnboardingShell } from "@/components/OnboardingShell";
 import { saveUser } from "@/lib/elevo-store";
 import { supabase } from "@/integrations/supabase/client";
-import { normalizePassword } from "@/lib/password";
 
 export const Route = createFileRoute("/onboarding/email")({
   component: EmailPage,
 });
 
 function EmailPage() {
-  const navigate = useNavigate();
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
   const [opt, setOpt] = useState(true);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  const [enviado, setEnviado] = useState(false);
 
   const valido = nome.trim().length >= 2 && /\S+@\S+\.\S+/.test(email);
 
@@ -24,47 +23,65 @@ function EmailPage() {
     setErro(null);
     setLoading(true);
     try {
-      const pwd = normalizePassword(senha);
-      const { error } = await supabase.auth.signUp({
-        email: email.trim(),
-        password: pwd,
+      const emailLimpo = email.trim().toLowerCase();
+      const nomeLimpo = nome.trim();
+      const { error } = await supabase.auth.signInWithOtp({
+        email: emailLimpo,
         options: {
-          emailRedirectTo: `${window.location.origin}/onboarding/preview`,
-          data: { nome: nome.trim() },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: { nome: nomeLimpo },
         },
       });
-      if (error) {
-        // Se já existe, tenta logar com a senha informada
-        if ((error as { code?: string }).code === "user_already_exists") {
-          const { error: signInErr } = await supabase.auth.signInWithPassword({
-            email: email.trim(),
-            password: pwd,
-          });
-          if (signInErr) {
-            setErro("Esse e-mail já tem conta. Verifique a senha ou faça login.");
-            return;
-          }
-        } else {
-          throw error;
-        }
-      }
-      saveUser({ nome: nome.trim(), email: email.trim() });
-      navigate({ to: "/onboarding/preview" });
+      if (error) throw error;
+      saveUser({ nome: nomeLimpo, email: emailLimpo });
+      setEnviado(true);
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "Não foi possível criar a conta");
+      setErro(err instanceof Error ? err.message : "Não foi possível enviar o link");
     } finally {
       setLoading(false);
     }
   };
 
+  if (enviado) {
+    return (
+      <OnboardingShell
+        title="Verifique seu email"
+        subtitle={`Enviamos um link de acesso para ${email}`}
+        footer={
+          <button
+            onClick={() => {
+              setEnviado(false);
+              setErro(null);
+            }}
+            className="btn-ghost w-full"
+          >
+            Usar outro email
+          </button>
+        }
+      >
+        <div className="flex flex-col items-center text-center py-6">
+          <div
+            className="size-20 rounded-2xl flex items-center justify-center mb-6"
+            style={{ background: "color-mix(in oklab, var(--primary) 18%, transparent)" }}
+          >
+            <Mail size={36} style={{ color: "var(--primary)" }} />
+          </div>
+          <p className="text-xs max-w-[280px]" style={{ color: "var(--subtle)" }}>
+            Abra o email e toque no link para entrar. Pode demorar até 1 minuto pra chegar.
+          </p>
+        </div>
+      </OnboardingShell>
+    );
+  }
+
   return (
     <OnboardingShell
       title="Para onde enviamos seu plano?"
-      subtitle="Crie sua conta grátis para salvar seu plano"
+      subtitle="Sem senha. Enviamos um link de acesso pro seu email."
       footer={
         <>
           <button className="btn-primary" disabled={!valido || loading} onClick={handleSubmit}>
-            {loading ? "Criando..." : "Receber meu plano grátis"}
+            {loading ? "Enviando link..." : "Receber meu plano grátis"}
           </button>
           {erro && (
             <p className="text-center mt-2 text-xs" style={{ color: "var(--destructive)" }}>
@@ -96,22 +113,11 @@ function EmailPage() {
           <input
             type="email"
             inputMode="email"
+            autoComplete="email"
             className="input-field"
             placeholder="seu@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div>
-          <label className="text-xs font-medium mb-1.5 block" style={{ color: "var(--muted-foreground)" }}>
-            Senha
-          </label>
-          <input
-            type="password"
-            className="input-field"
-            placeholder="Sua senha"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
           />
         </div>
         <label className="flex items-start gap-3 mt-2 cursor-pointer">
