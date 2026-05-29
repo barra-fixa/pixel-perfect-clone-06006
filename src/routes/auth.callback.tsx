@@ -2,6 +2,44 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
+const SESSION_TIMEOUT_MS = 5000;
+
+function lerParametrosDoCallback() {
+  const searchParams = new URLSearchParams(window.location.search);
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+
+  return {
+    code: searchParams.get("code"),
+    accessToken: hashParams.get("access_token"),
+    refreshToken: hashParams.get("refresh_token"),
+    erro:
+      searchParams.get("error_description") ??
+      hashParams.get("error_description") ??
+      searchParams.get("error") ??
+      hashParams.get("error"),
+  };
+}
+
+async function aguardarSessaoPronta(timeoutMs = SESSION_TIMEOUT_MS) {
+  const startedAt = Date.now();
+
+  while (Date.now() - startedAt < timeoutMs) {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) throw sessionError;
+
+    if (sessionData.session) {
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (!userError && userData.user) {
+        return sessionData.session;
+      }
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  return null;
+}
+
 export const Route = createFileRoute("/auth/callback")({
   component: AuthCallback,
 });
@@ -15,35 +53,32 @@ function AuthCallback() {
 
     async function processar() {
       try {
-        // supabase-js processa o hash do magic link automaticamente
-        // (detectSessionInUrl está ligado por padrão). Damos um tick e checamos.
-        await new Promise((r) => setTimeout(r, 50));
+        const { code, accessToken, refreshToken, erro } = lerParametrosDoCallback();
+        if (erro) throw new Error(erro);
 
-        const { data, error } = await supabase.auth.getSession();
-        if (error) throw error;
+        let sessao = await aguardarSessaoPronta(600);
 
-        if (data.session) {
-          if (!cancelado) navigate({ to: "/home", replace: true });
-          return;
+        if (!sessao && code) {
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) throw error;
+        } else if (!sessao && accessToken && refreshToken) {
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          if (error) throw error;
         }
 
-        // Aguarda o evento de auth caso o processamento do hash demore
-        const { data: sub } = supabase.auth.onAuthStateChange((_e, sess) => {
-          if (sess && !cancelado) {
-            sub.subscription.unsubscribe();
-            navigate({ to: "/home", replace: true });
-          }
-        });
+        sessao = sessao ?? (await aguardarSessaoPronta());
 
-        // Timeout de segurança
-        setTimeout(() => {
-          if (cancelado) return;
-          supabase.auth.getSession().then(({ data: d }) => {
-            if (cancelado) return;
-            if (d.session) navigate({ to: "/home", replace: true });
-            else setErro("Não foi possível validar o link. Tente novamente.");
-          });
-        }, 4000);
+        if (!sessao) {
+          throw new Error("Não foi possível concluir o login. Peça um novo link.");
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        if (!cancelado) {
+          window.location.replace("/home");
+        }
       } catch (err) {
         if (!cancelado) {
           setErro(err instanceof Error ? err.message : "Erro ao validar link");
