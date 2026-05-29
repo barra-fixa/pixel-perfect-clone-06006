@@ -57,6 +57,9 @@ function AuthPage() {
           <p className="mt-6 text-xs max-w-[280px]" style={{ color: "var(--subtle)" }}>
             Abra o email e toque no link para entrar. Pode demorar até 1 minuto pra chegar.
           </p>
+          <p className="mt-3 text-xs max-w-[280px]" style={{ color: "var(--subtle)" }}>
+            Não recebeu? Verifique a caixa de spam, lixeira ou promoções.
+          </p>
 
           <button
             onClick={() => {
