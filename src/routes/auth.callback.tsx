@@ -76,7 +76,9 @@ function AuthCallback() {
         }
 
         await new Promise((resolve) => setTimeout(resolve, 0));
-        if (!cancelado) navigate({ to: "/home", replace: true });
+        if (!cancelado) {
+          window.location.replace("/home");
+        }
       } catch (err) {
         if (!cancelado) {
           setErro(err instanceof Error ? err.message : "Erro ao validar link");
