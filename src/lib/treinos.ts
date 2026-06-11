@@ -92,6 +92,8 @@ function paramsDe(id: ExercicioId, n: Nivel): Params {
       };
     case "remadaAustraliana":
       return { series: 3, reps: "10-12", descansoSeg: 60, dificuldade: "Iniciante" };
+    case "pullUpNegativo":
+      return { series: 3, reps: "4-6", descansoSeg: 75, dificuldade: isIniciante ? "Intermediário" : "Intermediário" };
     case "remadaCurvada":
       return {
         series: 4,
