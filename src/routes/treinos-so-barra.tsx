@@ -1,8 +1,7 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ChevronLeft, ChevronRight, Play } from "lucide-react";
-import { useState } from "react";
-import { SEMANAS_SO_BARRA, type SemanaBarra } from "@/lib/treinos-so-barra";
-import { setModoBarraFixa, setSemanaSoBarraAtiva } from "@/lib/modo-barra-fixa";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { PRODUTOS_BARRA_FIXA } from "@/lib/produtos";
 import { BottomNav } from "@/components/BottomNav";
 
@@ -10,17 +9,67 @@ export const Route = createFileRoute("/treinos-so-barra")({
   component: TreinosSoBarraPage,
 });
 
-const DIAS_LABEL: Record<number, string> = { 0: "SEG", 2: "QUA", 4: "SEX" };
+type ExercicioBarra = {
+  id: string;
+  nome_pt: string;
+  nome_en: string;
+  target: string | null;
+  categoria: string | null;
+  dificuldade: string | null;
+  instrucoes_pt: string[] | null;
+  gif_url_local: string | null;
+};
+
+const ORDEM_CATEGORIA: Record<string, number> = {
+  preparatorio: 0,
+  principal: 1,
+  finalizador: 2,
+};
+
+const LABEL_CATEGORIA: Record<string, string> = {
+  preparatorio: "Preparatório",
+  principal: "Principal",
+  finalizador: "Finalizador",
+};
+
+const LABEL_DIFICULDADE: Record<string, string> = {
+  beginner: "Iniciante",
+  intermediate: "Intermediário",
+  advanced: "Avançado",
+};
 
 function TreinosSoBarraPage() {
-  const navigate = useNavigate();
-  const [aberta, setAberta] = useState<number | null>(1);
+  const [itens, setItens] = useState<ExercicioBarra[] | null>(null);
+  const [erro, setErro] = useState<string | null>(null);
+  const [aberto, setAberto] = useState<string | null>(null);
 
-  function comecarAgora(s: SemanaBarra) {
-    setModoBarraFixa(true);
-    setSemanaSoBarraAtiva(s.slug);
-    navigate({ to: "/treino-do-dia" });
-  }
+  useEffect(() => {
+    let ativo = true;
+    void (async () => {
+      const { data, error } = await supabase
+        .from("exercicios")
+        .select("id, nome_pt, nome_en, target, categoria, dificuldade, instrucoes_pt, gif_url_local")
+        .eq("equipment", "barra_fixa_parede")
+        .eq("ativo", true)
+        .order("nome_pt");
+      if (!ativo) return;
+      if (error) {
+        setErro(error.message);
+        setItens([]);
+        return;
+      }
+      const ordenados = [...(data ?? [])].sort((a, b) => {
+        const ca = ORDEM_CATEGORIA[a.categoria ?? ""] ?? 99;
+        const cb = ORDEM_CATEGORIA[b.categoria ?? ""] ?? 99;
+        if (ca !== cb) return ca - cb;
+        return (a.nome_pt ?? "").localeCompare(b.nome_pt ?? "");
+      });
+      setItens(ordenados as ExercicioBarra[]);
+    })();
+    return () => {
+      ativo = false;
+    };
+  }, []);
 
   return (
     <div className="elevo-shell px-5 pt-8 pb-32 min-h-dvh">
@@ -37,107 +86,106 @@ function TreinosSoBarraPage() {
       </div>
 
       <div className="mb-5">
-        <div className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "var(--secondary)" }}>
-          🏋️ Exclusivo
+        <div
+          className="text-[10px] uppercase tracking-wider font-semibold"
+          style={{ color: "var(--secondary)" }}
+        >
+          🏋️ Catálogo
         </div>
-        <h2 className="text-2xl font-bold leading-tight">Treinos Só com Barra Fixa</h2>
+        <h2 className="text-2xl font-bold leading-tight">Exercícios na Barra Fixa</h2>
         <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-          Sequências completas para começar — só barra e peso corporal.
+          Todos os movimentos e pegadas possíveis na sua barra de parede.
         </p>
       </div>
 
-      <div className="space-y-3 mb-8">
-        {SEMANAS_SO_BARRA.map((s) => {
-          const open = aberta === s.id;
-          return (
-            <div
-              key={s.id}
-              className="elevo-card overflow-hidden"
-              style={open ? { borderColor: "color-mix(in oklab, var(--primary) 40%, var(--border))" } : undefined}
-            >
-              <button
-                onClick={() => setAberta(open ? null : s.id)}
-                className="w-full p-4 flex items-center gap-3 text-left"
-              >
-                <div
-                  className="size-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
-                  style={{ backgroundColor: "color-mix(in oklab, var(--primary) 18%, transparent)" }}
-                >
-                  {s.icone}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "var(--primary)" }}>
-                    Nível {s.id} · {s.dificuldade}
-                  </div>
-                  <div className="font-bold text-base leading-tight">{s.nome}</div>
-                  <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-                    {s.descricao}
-                  </div>
-                </div>
-                <ChevronRight
-                  size={18}
-                  style={{ color: "var(--subtle)", transform: open ? "rotate(90deg)" : undefined, transition: "transform .2s" }}
-                />
-              </button>
+      {itens === null && (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="animate-spin" size={22} style={{ color: "var(--muted-foreground)" }} />
+        </div>
+      )}
 
-              {open && (
-                <div className="px-4 pb-4 fade-up">
-                  <p className="text-xs mb-3" style={{ color: "var(--subtle)" }}>
-                    {s.resumo}
-                  </p>
-                  <div className="space-y-3">
-                    {s.dias.map((d) => (
-                      <div key={d.chave} className="rounded-xl p-3" style={{ backgroundColor: "var(--card-elevated)" }}>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span
-                            className="text-[10px] font-bold px-2 py-0.5 rounded-md"
-                            style={{ backgroundColor: "var(--primary)", color: "var(--primary-foreground)" }}
-                          >
-                            {DIAS_LABEL[d.diaIdx]}
-                          </span>
-                          <span className="text-sm font-semibold">{d.nomeTreino}</span>
-                        </div>
-                        <ul className="space-y-1.5">
-                          {d.exercicios.map((e, i) => (
-                            <li key={i} className="flex items-center gap-2 text-xs">
-                              <span className="size-7 rounded-md overflow-hidden shrink-0" style={{ backgroundColor: "var(--card)" }}>
-                                {e.imagem ? (
-                                  <img src={e.imagem} alt="" loading="lazy" className="w-full h-full object-cover" />
-                                ) : null}
-                              </span>
-                              <span className="flex-1 truncate">{e.nome}</span>
-                              <span style={{ color: "var(--muted-foreground)" }}>
-                                {e.series} × {e.reps}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    onClick={() => comecarAgora(s)}
-                    className="btn-primary w-full mt-4"
-                    style={{
-                      backgroundColor: "var(--primary)",
-                      color: "var(--primary-foreground)",
-                      height: 52,
-                      fontWeight: 700,
-                      borderRadius: 14,
-                    }}
+      {erro && (
+        <p className="text-xs mb-4" style={{ color: "var(--destructive)" }}>
+          Não foi possível carregar o catálogo: {erro}
+        </p>
+      )}
+
+      {itens && itens.length > 0 && (
+        <div className="space-y-2 mb-8">
+          {itens.map((e) => {
+            const open = aberto === e.id;
+            return (
+              <div key={e.id} className="elevo-card overflow-hidden">
+                <button
+                  onClick={() => setAberto(open ? null : e.id)}
+                  className="w-full p-3 flex items-center gap-3 text-left"
+                >
+                  <span
+                    className="size-12 rounded-xl overflow-hidden shrink-0 flex items-center justify-center text-xl"
+                    style={{ backgroundColor: "color-mix(in oklab, var(--primary) 18%, transparent)" }}
                   >
-                    <Play size={18} className="mr-2" />
-                    Começar agora
-                  </button>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                    {e.gif_url_local ? (
+                      <img src={e.gif_url_local} alt="" loading="lazy" className="w-full h-full object-cover" />
+                    ) : (
+                      "🏋️"
+                    )}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-sm leading-tight">{e.nome_pt}</div>
+                    <div className="text-[11px] truncate" style={{ color: "var(--muted-foreground)" }}>
+                      {[e.categoria ? LABEL_CATEGORIA[e.categoria] ?? e.categoria : null,
+                        e.dificuldade ? LABEL_DIFICULDADE[e.dificuldade] ?? e.dificuldade : null,
+                        e.target,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </div>
+                  </div>
+                  <ChevronRight
+                    size={16}
+                    style={{
+                      color: "var(--subtle)",
+                      transform: open ? "rotate(90deg)" : undefined,
+                      transition: "transform .2s",
+                    }}
+                  />
+                </button>
+
+                {open && (
+                  <div className="px-3 pb-4 fade-up">
+                    {e.instrucoes_pt && e.instrucoes_pt.length > 0 ? (
+                      <ol
+                        className="space-y-1.5 text-xs list-decimal pl-5"
+                        style={{ color: "var(--muted-foreground)" }}
+                      >
+                        {e.instrucoes_pt.map((linha, i) => (
+                          <li key={i}>{linha}</li>
+                        ))}
+                      </ol>
+                    ) : (
+                      <p className="text-xs" style={{ color: "var(--subtle)" }}>
+                        Sem instruções cadastradas.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {itens && itens.length === 0 && !erro && (
+        <p className="text-sm py-8 text-center" style={{ color: "var(--muted-foreground)" }}>
+          Nenhum exercício de barra fixa cadastrado.
+        </p>
+      )}
 
       <section>
-        <div className="text-[10px] uppercase tracking-wider font-semibold mb-2" style={{ color: "var(--secondary)" }}>
+        <div
+          className="text-[10px] uppercase tracking-wider font-semibold mb-2"
+          style={{ color: "var(--secondary)" }}
+        >
           Compre sua barra fixa
         </div>
         <h3 className="text-base font-bold mb-3">Modelos recomendados</h3>
