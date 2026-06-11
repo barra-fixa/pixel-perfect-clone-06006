@@ -141,7 +141,7 @@ async function handle(request: Request) {
     if (payerId) update.mp_payer_id = payerId;
     if (ciclo) update.plano_ciclo = ciclo;
     if (Object.keys(update).length > 0) {
-      await supabaseAdmin.from("profiles").update(update).eq("id", userId);
+      await supabaseAdmin.from("profiles").update(update as never).eq("id", userId);
     }
   }
 
@@ -150,7 +150,7 @@ async function handle(request: Request) {
     tipo: type,
     resource_id: dataId,
     user_id: userId,
-    payload: body,
+    payload: body as never,
   });
 
   return new Response("ok", { status: 200, headers: CORS });
