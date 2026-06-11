@@ -43,6 +43,7 @@ import { Route as OnboardingEmailRouteImport } from './routes/onboarding.email'
 import { Route as OnboardingCaminhoRouteImport } from './routes/onboarding.caminho'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as ApiPublicHooksSendRemindersRouteImport } from './routes/api/public/hooks/send-reminders'
+import { Route as ApiPublicExerciseGifIdRouteImport } from './routes/api/public/exercise-gif.$id'
 
 const UpgradeRoute = UpgradeRouteImport.update({
   id: '/upgrade',
@@ -215,6 +216,11 @@ const ApiPublicHooksSendRemindersRoute =
     path: '/api/public/hooks/send-reminders',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicExerciseGifIdRoute = ApiPublicExerciseGifIdRouteImport.update({
+  id: '/api/public/exercise-gif/$id',
+  path: '/api/public/exercise-gif/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -250,6 +256,7 @@ export interface FileRoutesByFullPath {
   '/taf/simulado': typeof TafSimuladoRoute
   '/treino/ativo': typeof TreinoAtivoRoute
   '/treino/concluido': typeof TreinoConcluidoRoute
+  '/api/public/exercise-gif/$id': typeof ApiPublicExerciseGifIdRoute
   '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
 }
 export interface FileRoutesByTo {
@@ -286,6 +293,7 @@ export interface FileRoutesByTo {
   '/taf/simulado': typeof TafSimuladoRoute
   '/treino/ativo': typeof TreinoAtivoRoute
   '/treino/concluido': typeof TreinoConcluidoRoute
+  '/api/public/exercise-gif/$id': typeof ApiPublicExerciseGifIdRoute
   '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
 }
 export interface FileRoutesById {
@@ -323,6 +331,7 @@ export interface FileRoutesById {
   '/taf/simulado': typeof TafSimuladoRoute
   '/treino/ativo': typeof TreinoAtivoRoute
   '/treino/concluido': typeof TreinoConcluidoRoute
+  '/api/public/exercise-gif/$id': typeof ApiPublicExerciseGifIdRoute
   '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
 }
 export interface FileRouteTypes {
@@ -361,6 +370,7 @@ export interface FileRouteTypes {
     | '/taf/simulado'
     | '/treino/ativo'
     | '/treino/concluido'
+    | '/api/public/exercise-gif/$id'
     | '/api/public/hooks/send-reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -397,6 +407,7 @@ export interface FileRouteTypes {
     | '/taf/simulado'
     | '/treino/ativo'
     | '/treino/concluido'
+    | '/api/public/exercise-gif/$id'
     | '/api/public/hooks/send-reminders'
   id:
     | '__root__'
@@ -433,6 +444,7 @@ export interface FileRouteTypes {
     | '/taf/simulado'
     | '/treino/ativo'
     | '/treino/concluido'
+    | '/api/public/exercise-gif/$id'
     | '/api/public/hooks/send-reminders'
   fileRoutesById: FileRoutesById
 }
@@ -462,6 +474,7 @@ export interface RootRouteChildren {
   OnboardingPreviewRoute: typeof OnboardingPreviewRoute
   OnboardingProcessandoRoute: typeof OnboardingProcessandoRoute
   OnboardingSacoRoute: typeof OnboardingSacoRoute
+  ApiPublicExerciseGifIdRoute: typeof ApiPublicExerciseGifIdRoute
   ApiPublicHooksSendRemindersRoute: typeof ApiPublicHooksSendRemindersRoute
 }
 
@@ -705,6 +718,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksSendRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/exercise-gif/$id': {
+      id: '/api/public/exercise-gif/$id'
+      path: '/api/public/exercise-gif/$id'
+      fullPath: '/api/public/exercise-gif/$id'
+      preLoaderRoute: typeof ApiPublicExerciseGifIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -784,6 +804,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingPreviewRoute: OnboardingPreviewRoute,
   OnboardingProcessandoRoute: OnboardingProcessandoRoute,
   OnboardingSacoRoute: OnboardingSacoRoute,
+  ApiPublicExerciseGifIdRoute: ApiPublicExerciseGifIdRoute,
   ApiPublicHooksSendRemindersRoute: ApiPublicHooksSendRemindersRoute,
 }
 export const routeTree = rootRouteImport

@@ -4,20 +4,22 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 // Mapeia exercisedb_id (chave manual/custom usada na nossa tabela) -> termo de busca no ExerciseDB.
+// Termos que dão match no endpoint /exercises/name/{term} do ExerciseDB.
+// "dead hang" não existe no catálogo — fica sem GIF.
 const SEARCH_BY_EXDB_ID: Record<string, string> = {
   manual_pull_up: "pull up",
-  manual_chin_up: "chin up",
-  manual_wide_pull_up: "wide grip pull up",
+  manual_chin_up: "chin-up",
+  manual_wide_pull_up: "wide grip pull-up",
   manual_archer_pull_up: "archer pull up",
   manual_negative_pull_up: "pull up",
-  manual_scapular_pull_up: "scapula pull up",
-  manual_pull_up_assistido_elastico: "band assisted pull up",
+  manual_scapular_pull_up: "scapular pull-up",
+  manual_pull_up_assistido_elastico: "assisted pull-up",
   manual_hanging_knee_raise: "hanging leg raise",
-  manual_dead_hang: "dead hang",
-  manual_active_hang: "scapula pull up",
+  manual_active_hang: "scapular pull-up",
   custom_explosive_pullup: "pull up",
   custom_tuck_hold: "hanging leg raise",
 };
+const PROXY_BASE = "/api/public/exercise-gif";
 
 export const ensureBarraGifs = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -52,12 +54,13 @@ export const ensureBarraGifs = createServerFn({ method: "POST" })
           console.error(`[barra-gifs] ${r.exercisedb_id} "${term}" → HTTP ${res.status} ${body.slice(0, 200)}`);
           continue;
         }
-        const arr = (await res.json()) as Array<{ gifUrl?: string }>;
-        const gif = arr[0]?.gifUrl;
-        if (!gif) {
-          console.warn(`[barra-gifs] ${r.exercisedb_id} "${term}" → sem gifUrl`);
+        const arr = (await res.json()) as Array<{ id?: string }>;
+        const exId = arr[0]?.id;
+        if (!exId) {
+          console.warn(`[barra-gifs] ${r.exercisedb_id} "${term}" → sem match`);
           continue;
         }
+        const gif = `${PROXY_BASE}/${exId}`;
         const { error } = await supabaseAdmin
           .from("exercicios")
           .update({ gif_url_local: gif })
