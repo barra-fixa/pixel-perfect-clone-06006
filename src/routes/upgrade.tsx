@@ -30,9 +30,30 @@ function UpgradePage() {
   const navigate = useNavigate();
   const user = useElevoUser();
   const pitch = pitchProPorObjetivo(user.objetivo);
+  const criar = useServerFn(criarAssinaturaMP);
+  const [loading, setLoading] = useState<null | "mensal" | "anual">(null);
+
+  async function ativar(plano: "mensal" | "anual") {
+    if (!user.email) {
+      toast.error("Faltando email", { description: "Cadastre seu email no onboarding/perfil antes." });
+      navigate({ to: "/onboarding/email" });
+      return;
+    }
+    setLoading(plano);
+    try {
+      const r = await criar({ data: { plano, email: user.email, nome: user.nome } });
+      window.location.href = r.init_point;
+    } catch (e) {
+      toast.error("Não foi possível iniciar a assinatura", {
+        description: e instanceof Error ? e.message : "Tente novamente em instantes.",
+      });
+      setLoading(null);
+    }
+  }
 
   return (
     <div className="elevo-shell px-5 pt-5 pb-10 min-h-dvh">
+
       <div className="flex items-center mb-6">
         <button
           onClick={() => navigate({ to: "/home" })}
