@@ -91,7 +91,7 @@ function AuthCallback() {
 
         const sessao = await aguardarSessaoNoCallback(400);
         if (sessao?.user) {
-          redirecionar("/home");
+          redirecionar(destinoPosLogin());
           return;
         }
 
@@ -103,7 +103,7 @@ function AuthCallback() {
 
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, sessao) => {
       if (sessao?.user) {
-        redirecionar("/home");
+        redirecionar(destinoPosLogin());
       }
     });
 
@@ -111,7 +111,7 @@ function AuthCallback() {
       try {
         const sessaoExistente = await aguardarSessaoNoCallback(400);
         if (sessaoExistente?.user) {
-          redirecionar("/home");
+          redirecionar(destinoPosLogin());
           return;
         }
 
@@ -127,13 +127,13 @@ function AuthCallback() {
         if (cancelado) return;
 
         if (sessaoProcessada?.user) {
-          redirecionar("/home");
+          redirecionar(destinoPosLogin());
           return;
         }
 
         const sessao = await aguardarSessaoNoCallback(5000);
         if (sessao?.user) {
-          redirecionar("/home");
+          redirecionar(destinoPosLogin());
           return;
         }
 
