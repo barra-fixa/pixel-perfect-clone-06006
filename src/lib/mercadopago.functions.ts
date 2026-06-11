@@ -110,7 +110,8 @@ export const criarAssinaturaMP = createServerFn({ method: "POST" })
 export const cancelarAssinaturaMP = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const token = process.env.MERCADOPAGO_ACCESS_TOKEN;
+    const rawToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+    const token = rawToken?.trim();
     if (!token) throw new Error("MERCADOPAGO_ACCESS_TOKEN não configurado");
     const { supabase, userId } = context;
     const { data: profile } = await supabase
