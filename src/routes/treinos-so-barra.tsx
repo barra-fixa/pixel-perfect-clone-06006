@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { PRODUTOS_BARRA_FIXA } from "@/lib/produtos";
 import { BottomNav } from "@/components/BottomNav";
+import { ensureBarraGifs } from "@/lib/barra-gifs.functions";
 
 export const Route = createFileRoute("/treinos-so-barra")({
   component: TreinosSoBarraPage,
