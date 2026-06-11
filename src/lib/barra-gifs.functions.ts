@@ -22,7 +22,10 @@ const SEARCH_BY_EXDB_ID: Record<string, string> = {
 export const ensureBarraGifs = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const apiKey = process.env.RAPID_KEY;
+    // Runtime: Cloudflare Worker (TanStack Start serverFn) → process.env é o correto.
+    // Nome real do segredo no projeto: RAPIDAPI_KEY (mantemos RAPID_KEY como fallback).
+    const apiKey = process.env.RAPIDAPI_KEY ?? process.env.RAPID_KEY;
+    console.log("[barra-gifs] apiKey?", apiKey ? `present(len=${apiKey.length})` : "MISSING");
     const { data: rows } = await context.supabase
       .from("exercicios")
       .select("id, exercisedb_id, gif_url_local")
@@ -44,17 +47,25 @@ export const ensureBarraGifs = createServerFn({ method: "POST" })
         const res = await fetch(url, {
           headers: { "x-rapidapi-key": apiKey, "x-rapidapi-host": "exercisedb.p.rapidapi.com" },
         });
-        if (!res.ok) continue;
+        if (!res.ok) {
+          const body = await res.text().catch(() => "");
+          console.error(`[barra-gifs] ${r.exercisedb_id} "${term}" → HTTP ${res.status} ${body.slice(0, 200)}`);
+          continue;
+        }
         const arr = (await res.json()) as Array<{ gifUrl?: string }>;
         const gif = arr[0]?.gifUrl;
-        if (!gif) continue;
+        if (!gif) {
+          console.warn(`[barra-gifs] ${r.exercisedb_id} "${term}" → sem gifUrl`);
+          continue;
+        }
         const { error } = await supabaseAdmin
           .from("exercicios")
           .update({ gif_url_local: gif })
           .eq("id", r.id);
-        if (!error) updated++;
-      } catch {
-        // ignora erros individuais
+        if (error) console.error(`[barra-gifs] update falhou`, error);
+        else updated++;
+      } catch (e) {
+        console.error(`[barra-gifs] fetch erro`, e);
       }
     }
     return { ok: true, updated };
