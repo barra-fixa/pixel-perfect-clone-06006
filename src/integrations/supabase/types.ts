@@ -200,6 +200,36 @@ export type Database = {
         }
         Relationships: []
       }
+      mp_eventos: {
+        Row: {
+          evento_id: string | null
+          id: string
+          payload: Json | null
+          processado_em: string
+          resource_id: string | null
+          tipo: string | null
+          user_id: string | null
+        }
+        Insert: {
+          evento_id?: string | null
+          id?: string
+          payload?: Json | null
+          processado_em?: string
+          resource_id?: string | null
+          tipo?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          evento_id?: string | null
+          id?: string
+          payload?: Json | null
+          processado_em?: string
+          resource_id?: string | null
+          tipo?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       post_likes: {
         Row: {
           created_at: string
@@ -235,11 +265,17 @@ export type Database = {
           equipamentos: string[] | null
           frequencia: number | null
           id: string
+          mp_payer_id: string | null
+          mp_preapproval_id: string | null
+          mp_status: string | null
           nivel: string | null
           nome: string | null
           notificacoes: Json | null
           objetivo: string | null
           plano: string | null
+          plano_ciclo: string | null
+          plano_fim: string | null
+          plano_inicio: string | null
           streak: number | null
           taf_cargo_id: string | null
           taf_sexo: string | null
@@ -256,11 +292,17 @@ export type Database = {
           equipamentos?: string[] | null
           frequencia?: number | null
           id: string
+          mp_payer_id?: string | null
+          mp_preapproval_id?: string | null
+          mp_status?: string | null
           nivel?: string | null
           nome?: string | null
           notificacoes?: Json | null
           objetivo?: string | null
           plano?: string | null
+          plano_ciclo?: string | null
+          plano_fim?: string | null
+          plano_inicio?: string | null
           streak?: number | null
           taf_cargo_id?: string | null
           taf_sexo?: string | null
@@ -277,11 +319,17 @@ export type Database = {
           equipamentos?: string[] | null
           frequencia?: number | null
           id?: string
+          mp_payer_id?: string | null
+          mp_preapproval_id?: string | null
+          mp_status?: string | null
           nivel?: string | null
           nome?: string | null
           notificacoes?: Json | null
           objetivo?: string | null
           plano?: string | null
+          plano_ciclo?: string | null
+          plano_fim?: string | null
+          plano_inicio?: string | null
           streak?: number | null
           taf_cargo_id?: string | null
           taf_sexo?: string | null
