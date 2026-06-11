@@ -204,6 +204,7 @@ export type Database = {
           tem_saco_pancada: boolean | null
           treinos_feitos: number | null
           updated_at: string
+          whatsapp: string | null
         }
         Insert: {
           caminho?: string | null
@@ -224,6 +225,7 @@ export type Database = {
           tem_saco_pancada?: boolean | null
           treinos_feitos?: number | null
           updated_at?: string
+          whatsapp?: string | null
         }
         Update: {
           caminho?: string | null
@@ -244,6 +246,7 @@ export type Database = {
           tem_saco_pancada?: boolean | null
           treinos_feitos?: number | null
           updated_at?: string
+          whatsapp?: string | null
         }
         Relationships: []
       }
