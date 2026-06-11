@@ -44,21 +44,22 @@ function TreinosSoBarraPage() {
   const [itens, setItens] = useState<ExercicioBarra[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [aberto, setAberto] = useState<string | null>(null);
+  const enrich = useServerFn(ensureBarraGifs);
 
   useEffect(() => {
     let ativo = true;
-    void (async () => {
+    async function carregar() {
       const { data, error } = await supabase
         .from("exercicios")
         .select("id, nome_pt, nome_en, target, categoria, dificuldade, instrucoes_pt, gif_url_local")
         .eq("equipment", "barra_fixa_parede")
         .eq("ativo", true)
         .order("nome_pt");
-      if (!ativo) return;
+      if (!ativo) return null;
       if (error) {
         setErro(error.message);
         setItens([]);
-        return;
+        return null;
       }
       const ordenados = [...(data ?? [])].sort((a, b) => {
         const ca = ORDEM_CATEGORIA[a.categoria ?? ""] ?? 99;
@@ -67,11 +68,29 @@ function TreinosSoBarraPage() {
         return (a.nome_pt ?? "").localeCompare(b.nome_pt ?? "");
       });
       setItens(ordenados as ExercicioBarra[]);
+      return ordenados as ExercicioBarra[];
+    }
+
+    void (async () => {
+      const lista = await carregar();
+      if (!ativo || !lista) return;
+      const faltamGifs = lista.some((e) => !e.gif_url_local);
+      if (!faltamGifs) return;
+      try {
+        const r = await enrich({ data: undefined as never });
+        if (!ativo) return;
+        if (r?.updated && r.updated > 0) {
+          await carregar();
+        }
+      } catch {
+        // ignora — segue com placeholders
+      }
     })();
+
     return () => {
       ativo = false;
     };
-  }, []);
+  }, [enrich]);
 
   return (
     <div className="elevo-shell px-5 pt-8 pb-32 min-h-dvh">
