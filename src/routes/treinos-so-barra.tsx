@@ -173,7 +173,20 @@ function TreinosSoBarraPage() {
                 </button>
 
                 {open && (
-                  <div className="px-3 pb-4 fade-up">
+                  <div className="px-3 pb-4 fade-up space-y-3">
+                    {e.gif_url_local && (
+                      <div
+                        className="aspect-video rounded-xl overflow-hidden flex items-center justify-center"
+                        style={{ backgroundColor: "color-mix(in oklab, var(--primary) 8%, var(--card-elevated))" }}
+                      >
+                        <img
+                          src={e.gif_url_local}
+                          alt={`Demonstração: ${e.nome_pt}`}
+                          loading="lazy"
+                          className="max-h-full max-w-full object-contain"
+                        />
+                      </div>
+                    )}
                     {e.instrucoes_pt && e.instrucoes_pt.length > 0 ? (
                       <ol
                         className="space-y-1.5 text-xs list-decimal pl-5"
