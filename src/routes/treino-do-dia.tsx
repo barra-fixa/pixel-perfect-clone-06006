@@ -19,7 +19,9 @@ export const Route = createFileRoute("/treino-do-dia")({
 });
 
 // Segunda = 0 ... Domingo = 6
-const DIAS_CURTOS = ["SEG", "TER", "QUA", "QUI", "SEX", "SÁB", "DOM"];
+// IMPORTANTE: nunca usar "SEX" — tradutores automáticos do navegador podem
+// converter para "SEXO". Usamos formato ordinal "6a" para sexta.
+const DIAS_CURTOS = ["2a", "3a", "4a", "5a", "6a", "SÁB", "DOM"];
 const DIAS_LONGOS = [
   "Segunda-feira",
   "Terça-feira",
