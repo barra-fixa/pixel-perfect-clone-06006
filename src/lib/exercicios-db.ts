@@ -277,11 +277,14 @@ export const EXERCICIOS_BASE: Record<ExercicioId, ExercicioBase> = {
     emoji: "🦶",
     fxId: "Standing_Calf_Raises",
     instrucoes: [
-      "Em pé, pontas dos pés em uma elevação (degrau opcional).",
-      "Suba o máximo na ponta dos pés.",
-      "Desça lentamente até alongar a panturrilha.",
+      "Em pé na borda de um degrau ou escada, com os calcanhares pra fora da borda.",
+      "Suba devagar na ponta dos pés até o máximo de altura possível.",
+      "Desça lentamente, deixando o calcanhar passar abaixo da linha do degrau pra alongar bem a panturrilha.",
+      "Pode se apoiar na parede ou no corrimão pra manter o equilíbrio.",
+      "Pra mais intensidade, faça a versão unilateral: uma perna por vez.",
     ],
-    errosComuns: ["Movimento curto.", "Não alongar lá embaixo."],
+    errosComuns: ["Movimento curto.", "Não alongar embaixo.", "Subir rápido sem controle."],
+    dicas: ["3-4 séries de 15-20 repetições; na versão unilateral, 8-12 por perna."],
     equipamentos: ["nenhum"],
   },
   glutePonte: {
