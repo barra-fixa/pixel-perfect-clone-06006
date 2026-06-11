@@ -29,8 +29,16 @@ export const criarAssinaturaMP = createServerFn({ method: "POST" })
       .parse(input)
   )
   .handler(async ({ data, context }) => {
-    const token = process.env.MERCADOPAGO_ACCESS_TOKEN;
+    const rawToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+    const token = rawToken?.trim();
     if (!token) throw new Error("MERCADOPAGO_ACCESS_TOKEN não configurado");
+
+    console.log("[mp] token info", {
+      length: token.length,
+      prefix: token.slice(0, 12),
+      suffix: token.slice(-4),
+      env: token.startsWith("TEST-") ? "sandbox" : token.startsWith("APP_USR-") ? "live" : "unknown",
+    });
 
     const { supabase, userId } = context;
     const { data: profile } = await supabase
@@ -68,11 +76,17 @@ export const criarAssinaturaMP = createServerFn({ method: "POST" })
       },
       body: JSON.stringify(body),
     });
-    const json = (await res.json()) as Record<string, unknown>;
+    const rawBody = await res.text();
+    let json: Record<string, unknown> = {};
+    try { json = JSON.parse(rawBody) as Record<string, unknown>; } catch { /* not json */ }
     if (!res.ok) {
-      console.error("[mp] criar preapproval falhou", res.status, json);
+      console.error("[mp] criar preapproval falhou", {
+        status: res.status,
+        statusText: res.statusText,
+        body: rawBody,
+      });
       throw new Error(
-        `Mercado Pago retornou ${res.status}: ${(json as { message?: string }).message ?? "erro"}`
+        `Mercado Pago retornou ${res.status}: ${(json as { message?: string }).message ?? rawBody.slice(0, 200)}`
       );
     }
 
@@ -96,7 +110,8 @@ export const criarAssinaturaMP = createServerFn({ method: "POST" })
 export const cancelarAssinaturaMP = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const token = process.env.MERCADOPAGO_ACCESS_TOKEN;
+    const rawToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+    const token = rawToken?.trim();
     if (!token) throw new Error("MERCADOPAGO_ACCESS_TOKEN não configurado");
     const { supabase, userId } = context;
     const { data: profile } = await supabase
