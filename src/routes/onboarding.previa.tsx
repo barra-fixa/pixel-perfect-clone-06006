@@ -9,7 +9,8 @@ export const Route = createFileRoute("/onboarding/previa")({
   component: PreviaPage,
 });
 
-const DIAS_CURTOS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+// Ordinal "6a" para sexta — evita tradução automática "Sex" → "Sexo".
+const DIAS_CURTOS = ["2a", "3a", "4a", "5a", "6a", "Sáb", "Dom"];
 
 function PreviaPage() {
   const navigate = useNavigate();
