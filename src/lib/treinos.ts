@@ -281,7 +281,7 @@ function montar(foco: Foco, n: Nivel, c: Caminho, equipamentos: string[]): Exerc
         return [
           ex("barraFixa", n), // principal — costas
           ex("barraFixaSupinada", n), // principal — bíceps
-          ex("remadaAustraliana", n), // complementar (mesma barra)
+          ex("pullUpNegativo", n), // complementar — usa só a barra fixa de parede (sem barra baixa)
           ex("prancha", n), // core como fechamento
         ];
       }
