@@ -1,12 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Check, ChevronLeft, X, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { Check, ChevronLeft, X, Sparkles, Loader2, CreditCard, QrCode } from "lucide-react";
 import { toast } from "sonner";
 import { useElevoUser } from "@/lib/elevo-store";
 import { pitchProPorObjetivo } from "@/lib/objetivo-labels";
+import { criarAssinaturaMP } from "@/lib/mercadopago.functions";
 
 export const Route = createFileRoute("/upgrade")({
   component: UpgradePage,
 });
+
 
 type Linha = readonly [string, boolean, boolean, string?];
 const features: readonly Linha[] = [
@@ -26,9 +30,30 @@ function UpgradePage() {
   const navigate = useNavigate();
   const user = useElevoUser();
   const pitch = pitchProPorObjetivo(user.objetivo);
+  const criar = useServerFn(criarAssinaturaMP);
+  const [loading, setLoading] = useState<null | "mensal" | "anual">(null);
+
+  async function ativar(plano: "mensal" | "anual") {
+    if (!user.email) {
+      toast.error("Faltando email", { description: "Cadastre seu email no onboarding/perfil antes." });
+      navigate({ to: "/onboarding/email" });
+      return;
+    }
+    setLoading(plano);
+    try {
+      const r = await criar({ data: { plano, email: user.email, nome: user.nome } });
+      window.location.href = r.init_point;
+    } catch (e) {
+      toast.error("Não foi possível iniciar a assinatura", {
+        description: e instanceof Error ? e.message : "Tente novamente em instantes.",
+      });
+      setLoading(null);
+    }
+  }
 
   return (
     <div className="elevo-shell px-5 pt-5 pb-10 min-h-dvh">
+
       <div className="flex items-center mb-6">
         <button
           onClick={() => navigate({ to: "/home" })}
@@ -127,31 +152,41 @@ function UpgradePage() {
           Treina = mês grátis. Cancela quando quiser.
         </p>
         <button
-          className="btn-primary mt-4"
+          className="btn-primary mt-4 disabled:opacity-60"
           style={{
             background:
               "linear-gradient(135deg, var(--secondary), color-mix(in oklab, var(--secondary) 70%, var(--primary)))",
           }}
-          onClick={() =>
-            toast.info("Pagamento em breve 🚀", {
-              description: "A ativação do plano Pro estará disponível em breve. Te avisamos por e-mail!",
-            })
-          }
+          disabled={loading !== null}
+          onClick={() => ativar("mensal")}
         >
-          Começar 14 dias grátis
+          {loading === "mensal" ? (
+            <span className="inline-flex items-center gap-2"><Loader2 size={16} className="animate-spin" /> Abrindo checkout…</span>
+          ) : (
+            "Ativar Pro — 14 dias grátis"
+          )}
         </button>
+        <div className="mt-2 flex items-center justify-center gap-3 text-[10px]" style={{ color: "var(--muted-foreground)" }}>
+          <span className="inline-flex items-center gap-1"><CreditCard size={11}/> Cartão</span>
+          <span className="inline-flex items-center gap-1" style={{ color: "var(--secondary)" }}>
+            <QrCode size={11}/> <strong>Pix automático</strong>
+          </span>
+        </div>
         <p className="text-center text-[10px] mt-2" style={{ color: "var(--subtle)" }}>
-          Sem cobrança hoje · cartão só pra confirmar
+          Sem cobrança hoje · só é cobrado depois dos 14 dias · treina = mês grátis
         </p>
       </div>
 
       {/* anual */}
       <button
-        className="mt-3 elevo-card p-4 w-full text-left transition hover:opacity-90"
-        onClick={() => toast.info("Pagamento em breve 🚀", { description: "O plano anual estará disponível em breve." })}
+        className="mt-3 elevo-card p-4 w-full text-left transition hover:opacity-90 disabled:opacity-60"
+        disabled={loading !== null}
+        onClick={() => ativar("anual")}
       >
         <div className="flex items-baseline justify-between">
-          <span className="font-semibold">Pro Anual</span>
+          <span className="font-semibold">
+            Pro Anual {loading === "anual" && <Loader2 size={12} className="inline animate-spin ml-1" />}
+          </span>
           <span
             className="text-[10px] font-bold px-2 py-0.5 rounded-full"
             style={{
@@ -169,6 +204,7 @@ function UpgradePage() {
           </span>
         </div>
       </button>
+
 
       <p className="text-center mt-5 text-[10px]" style={{ color: "var(--subtle)" }}>
         Cancele quando quiser. Sem fidelidade.
