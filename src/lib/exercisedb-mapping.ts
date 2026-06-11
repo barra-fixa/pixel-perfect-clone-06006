@@ -21,6 +21,7 @@ export const EXERCISEDB_MAPPING: Record<ExercicioId, ExerciseDbInfo> = {
   barraFixa:        { searchName: "pull up",                fallback: { target: "lats", secondary: ["biceps", "traps", "forearms"] } },
   barraFixaSupinada:{ searchName: "chin up",                fallback: { target: "biceps", secondary: ["lats", "traps"] } },
   remadaAustraliana:{ searchName: "inverted row",           fallback: { target: "upper back", secondary: ["biceps", "lats"] } },
+  pullUpNegativo:   { searchName: "pull up",                fallback: { target: "lats", secondary: ["biceps", "upper back", "forearms"] } },
   remadaCurvada:    { searchName: "barbell bent over row",  fallback: { target: "upper back", secondary: ["biceps", "lats"] } },
   rosca:            { searchName: "dumbbell biceps curl",   fallback: { target: "biceps", secondary: ["forearms"] } },
   roscaMartelo:     { searchName: "hammer curl",            fallback: { target: "biceps", secondary: ["forearms"] } },

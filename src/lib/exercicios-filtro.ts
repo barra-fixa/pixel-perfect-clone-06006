@@ -14,6 +14,7 @@ export type EquipReq = "nenhum" | "barra" | "peso" | "corda" | "paralela";
 export const EXERCICIOS_COMPATIVEL_BARRA_FIXA_PAREDE: ExercicioId[] = [
   "barraFixa",
   "barraFixaSupinada",
+  "pullUpNegativo",
   "remadaAustraliana",
 ];
 
@@ -27,6 +28,7 @@ const EQUIP_REQ: Record<ExercicioId, EquipReq> = {
   barraFixa: "barra",
   barraFixaSupinada: "barra",
   remadaAustraliana: "barra",
+  pullUpNegativo: "barra",
   remadaCurvada: "peso",
 
   rosca: "peso",

@@ -92,6 +92,8 @@ function paramsDe(id: ExercicioId, n: Nivel): Params {
       };
     case "remadaAustraliana":
       return { series: 3, reps: "10-12", descansoSeg: 60, dificuldade: "Iniciante" };
+    case "pullUpNegativo":
+      return { series: 3, reps: "4-6", descansoSeg: 75, dificuldade: isIniciante ? "Intermediário" : "Intermediário" };
     case "remadaCurvada":
       return {
         series: 4,
@@ -279,7 +281,7 @@ function montar(foco: Foco, n: Nivel, c: Caminho, equipamentos: string[]): Exerc
         return [
           ex("barraFixa", n), // principal — costas
           ex("barraFixaSupinada", n), // principal — bíceps
-          ex("remadaAustraliana", n), // complementar (mesma barra)
+          ex("pullUpNegativo", n), // complementar — usa só a barra fixa de parede (sem barra baixa)
           ex("prancha", n), // core como fechamento
         ];
       }
@@ -548,7 +550,7 @@ export function alternativasDe(excluir: ExercicioId, user: ElevoUser): Exercicio
 
     // - "barraFixa", "barraFixaSupinada", "remadaAustraliana" precisam da barra fixa.
     const precisaBarra = (
-      ["barraFixa", "barraFixaSupinada", "remadaAustraliana"] as ExercicioId[]
+      ["barraFixa", "barraFixaSupinada", "remadaAustraliana", "pullUpNegativo"] as ExercicioId[]
     ).includes(id as ExercicioId);
     if (precisaBarra && !temBarra) continue;
 
@@ -562,7 +564,7 @@ export function alternativasDe(excluir: ExercicioId, user: ElevoUser): Exercicio
 // IDs completos (cópia local pra iterar — evita expor _IDS de exercicios-db).
 const _IDS_TREINOS: ExercicioId[] = [
   "flexao", "supino", "triceps", "flexaoDiamante",
-  "barraFixa", "barraFixaSupinada", "remadaAustraliana", "remadaCurvada",
+  "barraFixa", "barraFixaSupinada", "remadaAustraliana", "pullUpNegativo", "remadaCurvada",
   "rosca", "roscaMartelo",
   "agachamento", "agachamentoBulgaro", "afundo", "panturrilha", "glutePonte", "steup",
   "desenvolvimento", "elevacaoLateral", "elevacaoFrontal",

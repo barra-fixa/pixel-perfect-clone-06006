@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { PRODUTOS_BARRA_FIXA } from "@/lib/produtos";
 import { BottomNav } from "@/components/BottomNav";
+import { ensureBarraGifs } from "@/lib/barra-gifs.functions";
 
 export const Route = createFileRoute("/treinos-so-barra")({
   component: TreinosSoBarraPage,
@@ -42,21 +44,22 @@ function TreinosSoBarraPage() {
   const [itens, setItens] = useState<ExercicioBarra[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [aberto, setAberto] = useState<string | null>(null);
+  const enrich = useServerFn(ensureBarraGifs);
 
   useEffect(() => {
     let ativo = true;
-    void (async () => {
+    async function carregar() {
       const { data, error } = await supabase
         .from("exercicios")
         .select("id, nome_pt, nome_en, target, categoria, dificuldade, instrucoes_pt, gif_url_local")
         .eq("equipment", "barra_fixa_parede")
         .eq("ativo", true)
         .order("nome_pt");
-      if (!ativo) return;
+      if (!ativo) return null;
       if (error) {
         setErro(error.message);
         setItens([]);
-        return;
+        return null;
       }
       const ordenados = [...(data ?? [])].sort((a, b) => {
         const ca = ORDEM_CATEGORIA[a.categoria ?? ""] ?? 99;
@@ -65,11 +68,29 @@ function TreinosSoBarraPage() {
         return (a.nome_pt ?? "").localeCompare(b.nome_pt ?? "");
       });
       setItens(ordenados as ExercicioBarra[]);
+      return ordenados as ExercicioBarra[];
+    }
+
+    void (async () => {
+      const lista = await carregar();
+      if (!ativo || !lista) return;
+      const faltamGifs = lista.some((e) => !e.gif_url_local);
+      if (!faltamGifs) return;
+      try {
+        const r = await enrich();
+        if (!ativo) return;
+        if (r?.updated && r.updated > 0) {
+          await carregar();
+        }
+      } catch {
+        // ignora — segue com placeholders
+      }
     })();
+
     return () => {
       ativo = false;
     };
-  }, []);
+  }, [enrich]);
 
   return (
     <div className="elevo-shell px-5 pt-8 pb-32 min-h-dvh">
@@ -152,7 +173,20 @@ function TreinosSoBarraPage() {
                 </button>
 
                 {open && (
-                  <div className="px-3 pb-4 fade-up">
+                  <div className="px-3 pb-4 fade-up space-y-3">
+                    {e.gif_url_local && (
+                      <div
+                        className="aspect-video rounded-xl overflow-hidden flex items-center justify-center"
+                        style={{ backgroundColor: "color-mix(in oklab, var(--primary) 8%, var(--card-elevated))" }}
+                      >
+                        <img
+                          src={e.gif_url_local}
+                          alt={`Demonstração: ${e.nome_pt}`}
+                          loading="lazy"
+                          className="max-h-full max-w-full object-contain"
+                        />
+                      </div>
+                    )}
                     {e.instrucoes_pt && e.instrucoes_pt.length > 0 ? (
                       <ol
                         className="space-y-1.5 text-xs list-decimal pl-5"
