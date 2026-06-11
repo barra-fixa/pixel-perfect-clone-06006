@@ -59,6 +59,13 @@ function ContatoPage() {
         email: emailLimpo,
         whatsapp: whatsLimpo || undefined,
       });
+      // Sinaliza ao /auth/callback que, ao voltar do magic link, o proximo
+      // passo do onboarding e a oferta Pro (nao /home).
+      try {
+        localStorage.setItem("elevo:pending-pro-offer", "1");
+      } catch {
+        // ignora storage indisponivel
+      }
       setEnviado(true);
     } catch (err) {
       setErro(err instanceof Error ? err.message : "Não foi possível enviar o link");

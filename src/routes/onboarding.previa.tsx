@@ -4,6 +4,7 @@ import { CheckCircle2, Sparkles, Lock } from "lucide-react";
 import { loadUser, useElevoUser } from "@/lib/elevo-store";
 import { getPlanoSemanal } from "@/lib/treinos";
 import { tituloPlanoPorObjetivo } from "@/lib/objetivo-labels";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/onboarding/previa")({
   component: PreviaPage,
@@ -15,6 +16,7 @@ const DIAS_CURTOS = ["2a", "3a", "4a", "5a", "6a", "Sáb", "Dom"];
 function PreviaPage() {
   const navigate = useNavigate();
   const user = useElevoUser();
+  const { isAuthenticated } = useAuth();
 
   const plano = useMemo(() => {
     try {
@@ -116,7 +118,12 @@ function PreviaPage() {
       </div>
 
       <div className="mt-6 space-y-2">
-        <button className="btn-primary" onClick={() => navigate({ to: "/onboarding/email" })}>
+        <button
+          className="btn-primary"
+          onClick={() =>
+            navigate({ to: isAuthenticated ? "/onboarding/preview" : "/onboarding/email" })
+          }
+        >
           Quero meu plano completo
         </button>
         <p className="text-center text-[11px]" style={{ color: "var(--subtle)" }}>

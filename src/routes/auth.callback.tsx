@@ -14,6 +14,25 @@ function irPara(destino: string) {
   }
 }
 
+/**
+ * Apos magic link: se o usuario veio do onboarding (flag setada em
+ * /onboarding/email) e ainda nao viu a oferta Pro, manda pra /onboarding/preview
+ * em vez de /home. A flag e consumida na primeira leitura.
+ */
+function destinoPosLogin(): string {
+  if (typeof window === "undefined") return "/home";
+  try {
+    const pendente = localStorage.getItem("elevo:pending-pro-offer");
+    if (pendente === "1") {
+      localStorage.removeItem("elevo:pending-pro-offer");
+      return "/onboarding/preview";
+    }
+  } catch {
+    // ignora storage indisponivel
+  }
+  return "/home";
+}
+
 function temTokenDeSessaoNoHash() {
   if (typeof window === "undefined") return false;
 
@@ -72,7 +91,7 @@ function AuthCallback() {
 
         const sessao = await aguardarSessaoNoCallback(400);
         if (sessao?.user) {
-          redirecionar("/home");
+          redirecionar(destinoPosLogin());
           return;
         }
 
@@ -84,7 +103,7 @@ function AuthCallback() {
 
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, sessao) => {
       if (sessao?.user) {
-        redirecionar("/home");
+        redirecionar(destinoPosLogin());
       }
     });
 
@@ -92,7 +111,7 @@ function AuthCallback() {
       try {
         const sessaoExistente = await aguardarSessaoNoCallback(400);
         if (sessaoExistente?.user) {
-          redirecionar("/home");
+          redirecionar(destinoPosLogin());
           return;
         }
 
@@ -108,13 +127,13 @@ function AuthCallback() {
         if (cancelado) return;
 
         if (sessaoProcessada?.user) {
-          redirecionar("/home");
+          redirecionar(destinoPosLogin());
           return;
         }
 
         const sessao = await aguardarSessaoNoCallback(5000);
         if (sessao?.user) {
-          redirecionar("/home");
+          redirecionar(destinoPosLogin());
           return;
         }
 
