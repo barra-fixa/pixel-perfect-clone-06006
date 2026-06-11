@@ -427,8 +427,8 @@ function TreinoDoDiaPage() {
                     >
                       {sel && <CheckCircle2 size={12} style={{ color: "var(--primary-foreground)" }} />}
                     </span>
-                    <span className="text-sm font-semibold flex-1">{longo}</span>
-                    <span className="text-[10px] font-bold" style={{ color: "var(--subtle)" }}>
+                    <span translate="no" className="notranslate text-sm font-semibold flex-1">{longo}</span>
+                    <span translate="no" className="notranslate text-[10px] font-bold" style={{ color: "var(--subtle)" }}>
                       {DIAS_CURTOS[i]}
                     </span>
                   </button>
