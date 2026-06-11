@@ -9,7 +9,8 @@ export const Route = createFileRoute("/treino")({
   component: TreinoLayout,
 });
 
-const DIAS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+// Ordinal "6a" para sexta evita que tradutores convertam "Sex" em "Sexo".
+const DIAS = ["Dom", "2a", "3a", "4a", "5a", "6a", "Sáb"];
 
 /**
  * Wrapper que decide o que renderizar:
@@ -65,7 +66,7 @@ function TreinoPage() {
                 border: `1px solid ${active ? "var(--primary)" : "var(--border)"}`,
               }}
             >
-              <div className="text-[10px] uppercase tracking-wider opacity-80">
+              <div translate="no" className="notranslate text-[10px] uppercase tracking-wider opacity-80">
                 {DIAS[i % 7]} {i === hojeIdx && "· hoje"}
               </div>
               <div className="text-xs font-semibold mt-0.5 leading-tight">{t.nome}</div>

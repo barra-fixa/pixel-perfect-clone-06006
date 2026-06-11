@@ -19,7 +19,9 @@ export const Route = createFileRoute("/treino-do-dia")({
 });
 
 // Segunda = 0 ... Domingo = 6
-const DIAS_CURTOS = ["SEG", "TER", "QUA", "QUI", "SEX", "SÁB", "DOM"];
+// IMPORTANTE: nunca usar "SEX" — tradutores automáticos do navegador podem
+// converter para "SEXO". Usamos formato ordinal "6a" para sexta.
+const DIAS_CURTOS = ["2a", "3a", "4a", "5a", "6a", "SÁB", "DOM"];
 const DIAS_LONGOS = [
   "Segunda-feira",
   "Terça-feira",
@@ -125,7 +127,8 @@ function TreinoDoDiaPage() {
             <button
               key={i}
               onClick={() => navigate({ to: "/treino-do-dia", search: { dia: i }, replace: true })}
-              className="shrink-0 rounded-xl px-3 py-2 min-w-[48px] text-xs font-bold relative transition"
+              translate="no"
+              className="notranslate shrink-0 rounded-xl px-3 py-2 min-w-[48px] text-xs font-bold relative transition"
               style={
                 ativo
                   ? {
@@ -250,7 +253,7 @@ function TreinoDoDiaPage() {
         </div>
         <h2 className="text-2xl font-bold leading-tight">{treino.nome}</h2>
         <div className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-          {DIAS_LONGOS[diaSelecionado]}, {dataSel.getDate()} de{" "}
+          <span translate="no" className="notranslate">{DIAS_LONGOS[diaSelecionado]}</span>, {dataSel.getDate()} de{" "}
           {dataSel.toLocaleDateString("pt-BR", { month: "long" })} · ~{treino.duracaoMin} min
         </div>
       </div>
@@ -424,8 +427,8 @@ function TreinoDoDiaPage() {
                     >
                       {sel && <CheckCircle2 size={12} style={{ color: "var(--primary-foreground)" }} />}
                     </span>
-                    <span className="text-sm font-semibold flex-1">{longo}</span>
-                    <span className="text-[10px] font-bold" style={{ color: "var(--subtle)" }}>
+                    <span translate="no" className="notranslate text-sm font-semibold flex-1">{longo}</span>
+                    <span translate="no" className="notranslate text-[10px] font-bold" style={{ color: "var(--subtle)" }}>
                       {DIAS_CURTOS[i]}
                     </span>
                   </button>
