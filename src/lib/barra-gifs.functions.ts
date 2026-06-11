@@ -22,7 +22,7 @@ const SEARCH_BY_EXDB_ID: Record<string, string> = {
 export const ensureBarraGifs = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const apiKey = process.env.RAPIDAPI_KEY;
+    const apiKey = process.env.RAPID_KEY;
     const { data: rows } = await context.supabase
       .from("exercicios")
       .select("id, exercisedb_id, gif_url_local")
