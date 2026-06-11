@@ -16,6 +16,7 @@ const DIAS_CURTOS = ["2a", "3a", "4a", "5a", "6a", "Sáb", "Dom"];
 function PreviaPage() {
   const navigate = useNavigate();
   const user = useElevoUser();
+  const { isAuthenticated } = useAuth();
 
   const plano = useMemo(() => {
     try {
