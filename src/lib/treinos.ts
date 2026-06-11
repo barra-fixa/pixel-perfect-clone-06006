@@ -550,7 +550,7 @@ export function alternativasDe(excluir: ExercicioId, user: ElevoUser): Exercicio
 
     // - "barraFixa", "barraFixaSupinada", "remadaAustraliana" precisam da barra fixa.
     const precisaBarra = (
-      ["barraFixa", "barraFixaSupinada", "remadaAustraliana"] as ExercicioId[]
+      ["barraFixa", "barraFixaSupinada", "remadaAustraliana", "pullUpNegativo"] as ExercicioId[]
     ).includes(id as ExercicioId);
     if (precisaBarra && !temBarra) continue;
 
