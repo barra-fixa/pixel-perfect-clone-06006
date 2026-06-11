@@ -172,6 +172,20 @@ export const EXERCICIOS_BASE: Record<ExercicioId, ExercicioBase> = {
     dicas: ["Versão compatível com barra fixa de parede/barra baixa; não usar máquina guiada como referência."],
     equipamentos: ["barra fixa", "barra de parede"],
   },
+  pullUpNegativo: {
+    nome: "Pull-up negativo",
+    musculo: "Costas",
+    emoji: "⬇️",
+    fxId: "Pullups",
+    instrucoes: [
+      "Suba até o queixo passar da barra (use um banco ou um pulo curto pra chegar lá).",
+      "Solte o apoio e desça com o máximo de controle (3-5 segundos).",
+      "Repita: subir com ajuda, descer devagar e firme.",
+    ],
+    errosComuns: ["Descer rápido demais.", "Soltar a pegada antes de estender os braços."],
+    dicas: ["Ótimo pra ganhar força e destravar a primeira barra fixa completa, sem precisar passar o corpo por baixo de uma barra baixa."],
+    equipamentos: ["barra fixa"],
+  },
   remadaCurvada: {
     nome: "Remada curvada com halteres",
     musculo: "Costas",
