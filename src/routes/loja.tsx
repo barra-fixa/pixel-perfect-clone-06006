@@ -1,17 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ExternalLink, Tag } from "lucide-react";
+import { ChevronLeft, ExternalLink, Tag } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { BottomNav } from "@/components/BottomNav";
+import { PRODUTOS_BARRA_FIXA } from "@/lib/produtos";
 
 export const Route = createFileRoute("/loja")({
   component: LojaPage,
 });
-
-const produtos = [
-  { nome: "Barra fixa de porta", preco: "R$ 189", emoji: "🏋️", tag: "Mais vendido" },
-  { nome: "Suporte saco de pancada", preco: "R$ 249", emoji: "🥊" },
-  { nome: "Suporte de bicicleta", preco: "R$ 159", emoji: "🚴" },
-];
 
 const parceiros = [
   { nome: "Growth Supplements", desc: "20% OFF em whey", emoji: "💊" },
@@ -22,30 +18,37 @@ const parceiros = [
 function copiarCupom() {
   if (typeof navigator !== "undefined" && navigator.clipboard) {
     void navigator.clipboard.writeText("PRO15");
-    toast.success("Cupom copiado! 🎟️", {
-      description: "Use PRO15 para 15% OFF",
-    });
+    toast.success("Cupom copiado! 🎟️", { description: "Use PRO15 para 15% OFF" });
   }
 }
 
 function abrirEmBreve(nome: string) {
-  toast.info(`${nome} 🛒`, {
-    description: "Em breve você poderá comprar direto pelo app.",
-  });
+  toast.info(`${nome} 🛒`, { description: "Em breve você poderá comprar direto pelo app." });
 }
 
 function LojaPage() {
   return (
     <div className="elevo-shell px-5 pt-6 pb-32 min-h-dvh">
-      <h1 className="text-2xl font-bold">Loja Barra Fixa</h1>
-      <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
-        Equipamentos e benefícios para quem treina.
-      </p>
+      <div className="flex items-center gap-3 mb-4">
+        <Link
+          to="/perfil"
+          className="size-10 rounded-full flex items-center justify-center elevo-card"
+          aria-label="Voltar"
+        >
+          <ChevronLeft size={18} />
+        </Link>
+        <div>
+          <h1 className="text-xl font-bold">Equipamentos & parceiros</h1>
+          <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+            Tudo que recomendamos pra quem treina em casa.
+          </p>
+        </div>
+      </div>
 
       {/* cupom Pro */}
       <button
         onClick={copiarCupom}
-        className="rounded-2xl p-4 mt-5 flex items-center gap-3 w-full text-left transition hover:opacity-90"
+        className="rounded-2xl p-4 mt-2 flex items-center gap-3 w-full text-left transition hover:opacity-90"
         style={{
           background:
             "linear-gradient(135deg, color-mix(in oklab, var(--secondary) 30%, var(--card)), var(--card))",
@@ -66,10 +69,16 @@ function LojaPage() {
         </div>
       </button>
 
-      <h2 className="text-sm font-semibold mt-7 mb-3">Produtos Barra Fixa</h2>
+      <h2 className="text-sm font-semibold mt-7 mb-3">Barras fixas de parede</h2>
       <div className="space-y-3">
-        {produtos.map((p) => (
-          <div key={p.nome} className="elevo-card p-3 flex items-center gap-3">
+        {PRODUTOS_BARRA_FIXA.map((p) => (
+          <a
+            key={p.id}
+            href={p.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="elevo-card p-3 flex items-center gap-3 active:scale-[0.99] transition"
+          >
             <div
               className="size-16 rounded-xl flex items-center justify-center text-3xl shrink-0"
               style={{ backgroundColor: "var(--card-elevated)" }}
@@ -77,29 +86,14 @@ function LojaPage() {
               {p.emoji}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-semibold truncate">{p.nome}</div>
-              {p.tag && (
-                <span
-                  className="inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full"
-                  style={{
-                    backgroundColor: "color-mix(in oklab, var(--primary) 20%, transparent)",
-                    color: "var(--primary)",
-                  }}
-                >
-                  {p.tag}
-                </span>
-              )}
-              <div className="text-base font-bold mt-1">{p.preco}</div>
+              <div className="text-sm font-semibold leading-tight line-clamp-2">{p.nome}</div>
+              <div className="text-[11px] mt-0.5" style={{ color: "var(--muted-foreground)" }}>
+                {p.descricao}
+              </div>
+              <div className="text-sm font-bold mt-1">{p.preco}</div>
             </div>
-            <button
-              className="size-10 rounded-full flex items-center justify-center"
-              style={{ backgroundColor: "var(--card-elevated)" }}
-              aria-label="Ver na loja"
-              onClick={() => abrirEmBreve(p.nome)}
-            >
-              <ExternalLink size={16} />
-            </button>
-          </div>
+            <ExternalLink size={16} style={{ color: "var(--subtle)" }} />
+          </a>
         ))}
       </div>
 

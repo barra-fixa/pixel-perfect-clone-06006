@@ -503,16 +503,25 @@ export const EXERCICIOS_BASE: Record<ExercicioId, ExercicioBase> = {
   },
 };
 
-/** Retorna a URL da primeira imagem do exercício (ou null se não houver). */
+// Resolve a URL animada do exercício. Prioriza o proxy do ExerciseDB (GIF
+// animado de movimento completo) pelo searchName do EXERCISEDB_MAPPING.
+// Fallback: imagem estática do Free Exercise DB (frame inicial), se houver fxId.
+import { EXERCISEDB_MAPPING } from "./exercisedb-mapping";
+
 export function imagemDe(id: ExercicioId): string | null {
+  const m = EXERCISEDB_MAPPING[id];
+  if (m?.searchName) {
+    return `/api/public/exercise-gif-by-name/${encodeURIComponent(m.searchName)}`;
+  }
   const e = EXERCICIOS_BASE[id];
   if (!e.fxId) return null;
   return `${FX_BASE}/${e.fxId}/0.jpg`;
 }
 
-/** Retorna a URL da segunda imagem (final do movimento), pra mostrar "antes/depois". */
+/** Frame "fim do movimento" do Free Exercise DB (estático). Usado em /exercicio-detalhe. */
 export function imagemFinalDe(id: ExercicioId): string | null {
   const e = EXERCICIOS_BASE[id];
   if (!e.fxId) return null;
   return `${FX_BASE}/${e.fxId}/1.jpg`;
 }
+

@@ -22,6 +22,7 @@ import { Route as LojaRouteImport } from './routes/loja'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as ExercicioDetalheRouteImport } from './routes/exercicio-detalhe'
 import { Route as EvolucaoRouteImport } from './routes/evolucao'
+import { Route as DietaRouteImport } from './routes/dieta'
 import { Route as ComunidadeRouteImport } from './routes/comunidade'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
@@ -35,6 +36,7 @@ import { Route as PerfilDadosRouteImport } from './routes/perfil.dados'
 import { Route as OnboardingSacoRouteImport } from './routes/onboarding.saco'
 import { Route as OnboardingProcessandoRouteImport } from './routes/onboarding.processando'
 import { Route as OnboardingPreviewRouteImport } from './routes/onboarding.preview'
+import { Route as OnboardingPreviaRouteImport } from './routes/onboarding.previa'
 import { Route as OnboardingObjetivoRouteImport } from './routes/onboarding.objetivo'
 import { Route as OnboardingNivelRouteImport } from './routes/onboarding.nivel'
 import { Route as OnboardingFrequenciaRouteImport } from './routes/onboarding.frequencia'
@@ -44,6 +46,7 @@ import { Route as OnboardingCaminhoRouteImport } from './routes/onboarding.camin
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as ApiPublicHooksSendRemindersRouteImport } from './routes/api/public/hooks/send-reminders'
 import { Route as ApiPublicExerciseGifIdRouteImport } from './routes/api/public/exercise-gif.$id'
+import { Route as ApiPublicExerciseGifByNameNameRouteImport } from './routes/api/public/exercise-gif-by-name.$name'
 
 const UpgradeRoute = UpgradeRouteImport.update({
   id: '/upgrade',
@@ -108,6 +111,11 @@ const ExercicioDetalheRoute = ExercicioDetalheRouteImport.update({
 const EvolucaoRoute = EvolucaoRouteImport.update({
   id: '/evolucao',
   path: '/evolucao',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DietaRoute = DietaRouteImport.update({
+  id: '/dieta',
+  path: '/dieta',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ComunidadeRoute = ComunidadeRouteImport.update({
@@ -175,6 +183,11 @@ const OnboardingPreviewRoute = OnboardingPreviewRouteImport.update({
   path: '/onboarding/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OnboardingPreviaRoute = OnboardingPreviaRouteImport.update({
+  id: '/onboarding/previa',
+  path: '/onboarding/previa',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingObjetivoRoute = OnboardingObjetivoRouteImport.update({
   id: '/onboarding/objetivo',
   path: '/onboarding/objetivo',
@@ -221,11 +234,18 @@ const ApiPublicExerciseGifIdRoute = ApiPublicExerciseGifIdRouteImport.update({
   path: '/api/public/exercise-gif/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicExerciseGifByNameNameRoute =
+  ApiPublicExerciseGifByNameNameRouteImport.update({
+    id: '/api/public/exercise-gif-by-name/$name',
+    path: '/api/public/exercise-gif-by-name/$name',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
   '/comunidade': typeof ComunidadeRoute
+  '/dieta': typeof DietaRoute
   '/evolucao': typeof EvolucaoRoute
   '/exercicio-detalhe': typeof ExercicioDetalheRoute
   '/home': typeof HomeRoute
@@ -246,6 +266,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/frequencia': typeof OnboardingFrequenciaRoute
   '/onboarding/nivel': typeof OnboardingNivelRoute
   '/onboarding/objetivo': typeof OnboardingObjetivoRoute
+  '/onboarding/previa': typeof OnboardingPreviaRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/processando': typeof OnboardingProcessandoRoute
   '/onboarding/saco': typeof OnboardingSacoRoute
@@ -256,6 +277,7 @@ export interface FileRoutesByFullPath {
   '/taf/simulado': typeof TafSimuladoRoute
   '/treino/ativo': typeof TreinoAtivoRoute
   '/treino/concluido': typeof TreinoConcluidoRoute
+  '/api/public/exercise-gif-by-name/$name': typeof ApiPublicExerciseGifByNameNameRoute
   '/api/public/exercise-gif/$id': typeof ApiPublicExerciseGifIdRoute
   '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
 }
@@ -263,6 +285,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
   '/comunidade': typeof ComunidadeRoute
+  '/dieta': typeof DietaRoute
   '/evolucao': typeof EvolucaoRoute
   '/exercicio-detalhe': typeof ExercicioDetalheRoute
   '/home': typeof HomeRoute
@@ -283,6 +306,7 @@ export interface FileRoutesByTo {
   '/onboarding/frequencia': typeof OnboardingFrequenciaRoute
   '/onboarding/nivel': typeof OnboardingNivelRoute
   '/onboarding/objetivo': typeof OnboardingObjetivoRoute
+  '/onboarding/previa': typeof OnboardingPreviaRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/processando': typeof OnboardingProcessandoRoute
   '/onboarding/saco': typeof OnboardingSacoRoute
@@ -293,6 +317,7 @@ export interface FileRoutesByTo {
   '/taf/simulado': typeof TafSimuladoRoute
   '/treino/ativo': typeof TreinoAtivoRoute
   '/treino/concluido': typeof TreinoConcluidoRoute
+  '/api/public/exercise-gif-by-name/$name': typeof ApiPublicExerciseGifByNameNameRoute
   '/api/public/exercise-gif/$id': typeof ApiPublicExerciseGifIdRoute
   '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
 }
@@ -301,6 +326,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
   '/comunidade': typeof ComunidadeRoute
+  '/dieta': typeof DietaRoute
   '/evolucao': typeof EvolucaoRoute
   '/exercicio-detalhe': typeof ExercicioDetalheRoute
   '/home': typeof HomeRoute
@@ -321,6 +347,7 @@ export interface FileRoutesById {
   '/onboarding/frequencia': typeof OnboardingFrequenciaRoute
   '/onboarding/nivel': typeof OnboardingNivelRoute
   '/onboarding/objetivo': typeof OnboardingObjetivoRoute
+  '/onboarding/previa': typeof OnboardingPreviaRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/processando': typeof OnboardingProcessandoRoute
   '/onboarding/saco': typeof OnboardingSacoRoute
@@ -331,6 +358,7 @@ export interface FileRoutesById {
   '/taf/simulado': typeof TafSimuladoRoute
   '/treino/ativo': typeof TreinoAtivoRoute
   '/treino/concluido': typeof TreinoConcluidoRoute
+  '/api/public/exercise-gif-by-name/$name': typeof ApiPublicExerciseGifByNameNameRoute
   '/api/public/exercise-gif/$id': typeof ApiPublicExerciseGifIdRoute
   '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
 }
@@ -340,6 +368,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/comunidade'
+    | '/dieta'
     | '/evolucao'
     | '/exercicio-detalhe'
     | '/home'
@@ -360,6 +389,7 @@ export interface FileRouteTypes {
     | '/onboarding/frequencia'
     | '/onboarding/nivel'
     | '/onboarding/objetivo'
+    | '/onboarding/previa'
     | '/onboarding/preview'
     | '/onboarding/processando'
     | '/onboarding/saco'
@@ -370,6 +400,7 @@ export interface FileRouteTypes {
     | '/taf/simulado'
     | '/treino/ativo'
     | '/treino/concluido'
+    | '/api/public/exercise-gif-by-name/$name'
     | '/api/public/exercise-gif/$id'
     | '/api/public/hooks/send-reminders'
   fileRoutesByTo: FileRoutesByTo
@@ -377,6 +408,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/comunidade'
+    | '/dieta'
     | '/evolucao'
     | '/exercicio-detalhe'
     | '/home'
@@ -397,6 +429,7 @@ export interface FileRouteTypes {
     | '/onboarding/frequencia'
     | '/onboarding/nivel'
     | '/onboarding/objetivo'
+    | '/onboarding/previa'
     | '/onboarding/preview'
     | '/onboarding/processando'
     | '/onboarding/saco'
@@ -407,6 +440,7 @@ export interface FileRouteTypes {
     | '/taf/simulado'
     | '/treino/ativo'
     | '/treino/concluido'
+    | '/api/public/exercise-gif-by-name/$name'
     | '/api/public/exercise-gif/$id'
     | '/api/public/hooks/send-reminders'
   id:
@@ -414,6 +448,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/comunidade'
+    | '/dieta'
     | '/evolucao'
     | '/exercicio-detalhe'
     | '/home'
@@ -434,6 +469,7 @@ export interface FileRouteTypes {
     | '/onboarding/frequencia'
     | '/onboarding/nivel'
     | '/onboarding/objetivo'
+    | '/onboarding/previa'
     | '/onboarding/preview'
     | '/onboarding/processando'
     | '/onboarding/saco'
@@ -444,6 +480,7 @@ export interface FileRouteTypes {
     | '/taf/simulado'
     | '/treino/ativo'
     | '/treino/concluido'
+    | '/api/public/exercise-gif-by-name/$name'
     | '/api/public/exercise-gif/$id'
     | '/api/public/hooks/send-reminders'
   fileRoutesById: FileRoutesById
@@ -452,6 +489,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
   ComunidadeRoute: typeof ComunidadeRoute
+  DietaRoute: typeof DietaRoute
   EvolucaoRoute: typeof EvolucaoRoute
   ExercicioDetalheRoute: typeof ExercicioDetalheRoute
   HomeRoute: typeof HomeRoute
@@ -471,9 +509,11 @@ export interface RootRouteChildren {
   OnboardingFrequenciaRoute: typeof OnboardingFrequenciaRoute
   OnboardingNivelRoute: typeof OnboardingNivelRoute
   OnboardingObjetivoRoute: typeof OnboardingObjetivoRoute
+  OnboardingPreviaRoute: typeof OnboardingPreviaRoute
   OnboardingPreviewRoute: typeof OnboardingPreviewRoute
   OnboardingProcessandoRoute: typeof OnboardingProcessandoRoute
   OnboardingSacoRoute: typeof OnboardingSacoRoute
+  ApiPublicExerciseGifByNameNameRoute: typeof ApiPublicExerciseGifByNameNameRoute
   ApiPublicExerciseGifIdRoute: typeof ApiPublicExerciseGifIdRoute
   ApiPublicHooksSendRemindersRoute: typeof ApiPublicHooksSendRemindersRoute
 }
@@ -571,6 +611,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EvolucaoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dieta': {
+      id: '/dieta'
+      path: '/dieta'
+      fullPath: '/dieta'
+      preLoaderRoute: typeof DietaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/comunidade': {
       id: '/comunidade'
       path: '/comunidade'
@@ -662,6 +709,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/onboarding/previa': {
+      id: '/onboarding/previa'
+      path: '/onboarding/previa'
+      fullPath: '/onboarding/previa'
+      preLoaderRoute: typeof OnboardingPreviaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding/objetivo': {
       id: '/onboarding/objetivo'
       path: '/onboarding/objetivo'
@@ -725,6 +779,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicExerciseGifIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/exercise-gif-by-name/$name': {
+      id: '/api/public/exercise-gif-by-name/$name'
+      path: '/api/public/exercise-gif-by-name/$name'
+      fullPath: '/api/public/exercise-gif-by-name/$name'
+      preLoaderRoute: typeof ApiPublicExerciseGifByNameNameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -782,6 +843,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
   ComunidadeRoute: ComunidadeRoute,
+  DietaRoute: DietaRoute,
   EvolucaoRoute: EvolucaoRoute,
   ExercicioDetalheRoute: ExercicioDetalheRoute,
   HomeRoute: HomeRoute,
@@ -801,9 +863,11 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingFrequenciaRoute: OnboardingFrequenciaRoute,
   OnboardingNivelRoute: OnboardingNivelRoute,
   OnboardingObjetivoRoute: OnboardingObjetivoRoute,
+  OnboardingPreviaRoute: OnboardingPreviaRoute,
   OnboardingPreviewRoute: OnboardingPreviewRoute,
   OnboardingProcessandoRoute: OnboardingProcessandoRoute,
   OnboardingSacoRoute: OnboardingSacoRoute,
+  ApiPublicExerciseGifByNameNameRoute: ApiPublicExerciseGifByNameNameRoute,
   ApiPublicExerciseGifIdRoute: ApiPublicExerciseGifIdRoute,
   ApiPublicHooksSendRemindersRoute: ApiPublicHooksSendRemindersRoute,
 }

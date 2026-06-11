@@ -57,7 +57,7 @@ function ProcessandoPage() {
       "Analisando seu perfil...",
       `✓ ${objetivoTxt} · ${caminhoTxt} · ${freqTxt}`,
       `Selecionando ${totalExercicios} exercícios pra você...`,
-      "Seu plano está pronto. Onde te envio?",
+      "Seu plano está pronto!",
     ];
   }, []);
 
@@ -65,7 +65,7 @@ function ProcessandoPage() {
     const interval = setInterval(() => {
       setStep((s) => Math.min(s + 1, passos.length - 1));
     }, 850);
-    const timeout = setTimeout(() => navigate({ to: "/onboarding/email" }), 3600);
+    const timeout = setTimeout(() => navigate({ to: "/onboarding/previa" }), 3600);
     return () => {
       clearInterval(interval);
       clearTimeout(timeout);

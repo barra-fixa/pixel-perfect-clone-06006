@@ -1,49 +1,58 @@
-## Onda 6 — Plano de implementação
+# Plano: 8 mudanças no Elevo
 
-Vou implementar em fases, adaptando ao stack atual (TanStack Router + `elevo-store` + `localStorage`/Supabase). Já existe `frequencia` e `equipamentos[]` no store — vou reutilizar.
+Antes de implementar quero alinhar escopo — é um lote grande e algumas decisões mudam o produto. Login/auth fica intocado.
 
-### Fase 1 — Frequência inteligente (já parcialmente existe)
-- `src/lib/treinos.ts`: adicionar `getDiasTreino(frequencia)` → retorna índices dos dias (seg=0):
-  - 3x → [0,2,4]
-  - 4x → [0,1,3,4]
-  - 5x → [0,1,2,3,4]
-  - 2x → [0,3]
-  - 7x → [0..6]
-- A tela `onboarding.frequencia.tsx` **já existe** e salva `frequencia`. Sem mudanças.
+## 1. Reordenar onboarding: prévia → email+whatsapp → cartão
+- `onboarding.processando` passa a navegar para uma **nova tela** `onboarding/previa` (não mais direto pro email).
+- `onboarding/previa`: mostra plano real (já temos `getPlanoSemanal`) com **título personalizado por objetivo** (`OBJETIVO_LABEL` → "Seu plano de aprovação no TAF", "Seu plano de emagrecimento" etc.).
+- `onboarding/email` vira `onboarding/contato`: captura **email + whatsapp** juntos, com máscara BR `(11) 91234-5678`, validação 10–11 dígitos, checkbox de consentimento LGPD.
+- Migration: adicionar coluna `whatsapp text` em `profiles` + salvar no `handle_new_user` via `raw_user_meta_data`.
+- Só **depois** do magic link confirmado, mostrar `onboarding/preview` atual (que vira a tela do cartão / oferta Pro).
 
-### Fase 2 — Abas dinâmicas em `treino-do-dia.tsx`
-- Mostrar apenas as abas dos dias planejados (`getDiasTreino(user.frequencia)`).
-- Botão **"+ Outro dia"** abre modo expandido mostrando todos os 7 dias (estado local).
-- Hoje destacado mesmo se não estiver no plano (avisa: "fora do plano").
+## 2. Tela do Pro (cartão) — copy claro
+- Reescrever `onboarding.preview.tsx` + `upgrade.tsx` com:
+  - "**14 dias grátis** — você só é cobrado depois"
+  - "Se bater sua meta de treino no mês, **o mês é grátis**"
+  - Gancho dieta IA: "Desbloqueie seu plano completo + **sua dieta personalizada por IA**"
+  - Pitch do H1 muda conforme `objetivo` (TAF / emagrecer / força / etc.)
+- Mecanismo treina=não-paga mantido.
+- **Nota:** não vou integrar Stripe/Paddle agora (não foi pedido) — só copy. Confirma?
 
-### Fase 3 — Equipamentos & filtragem
-- `src/lib/exercicios-filtro.ts` (novo):
-  - Mapa de exercícios → `{ equipamentoNecessario, alternativaId? }`.
-  - `filtrarExercicios(exercicios, equipamentos[], modoBarra)` → substitui ou remove.
-- Integrar em `getPlanoSemanal` (ou pós-processar no `treino-do-dia` e `treino.ativo`).
-- `perfil.dados.tsx` **já tem** edição de equipamentos via onboarding link. Adicionar toggle direto na tela de perfil para os 7 equipamentos novos (barra, banco, peso, corda, kettlebell, paralela, nenhum).
+## 3. Remover "barra fixa de porta"
+- Varrer `src/lib/produtos.ts`, `loja.tsx`, `equipamentos-pedidos.ts`, copy do onboarding/saco e qualquer menção. Trocar tudo por **"barra fixa de parede"**.
 
-### Fase 4 — Modo "Só Barra Fixa"
-- `src/lib/modo-barra-fixa.ts` (novo): get/set em localStorage (`modoBarraFixa`).
-- Toggle em `perfil.dados.tsx`.
-- Quando ativo → `filtrarExercicios` ignora todos que não usam barra, substitui por alternativa "barra/peso corporal".
+## 4. GIFs no treino do dia (todos os exercícios)
+- Generalizar `barra-gifs.functions.ts` → `ensureExerciciosGifs` que roda pra **qualquer** exercício ativo com `exercisedb_id` e sem `gif_url_local` (não só `equipment=barra_fixa_parede`).
+- Ampliar `SEARCH_BY_EXDB_ID` cobrindo flexão, agachamento, prancha, afundo, polichinelo, burpee, mountain climber, abdominal, ponte, elevação panturrilha, etc.
+- Chamar `ensureExerciciosGifs` no mount de `/treino-do-dia` e `/treino.ativo`.
+- Renderizar `<img src={gif_url_local}>` no card de exercício (hoje é quadrado cinza).
 
-### Fase 5 — Produtos da Barra Fixa
-- `src/lib/produtos.ts` (novo): array com 3 produtos (links ML, descrição, preço placeholder).
-- Card "Compre sua barra fixa" no rodapé de:
-  - `home.tsx`
-  - `treino-do-dia.tsx`
-- Já existe `/loja` — adicionar seção "Barras recomendadas" lá em vez de criar nova rota.
+## 5. Vídeos de execução "(em breve)"
+- Onde aparece "Vídeos de execução" no upgrade/planos, adicionar sufixo `(em breve)` e desabilitar visualmente.
 
-### Fase 6 — (Opcional, vou pular) `treinos-so-barra.tsx`
-Marcado como opcional no prompt. Skip para focar no essencial; o modo "Só Barra Fixa" já cobre o caso de uso.
+## 6. Só Barra Fixa = livre
+- Remover qualquer gate Pro de `treinos-so-barra` e do card na home. Acessível sempre.
 
-### Validação
-- `tsc --noEmit` limpo.
-- Verificar que abas refletem frequência selecionada.
-- Verificar substituições (ex.: sem kettlebell → "Jump squats").
+## 7. Nova aba "Dieta" (substitui Loja no BottomNav)
+- Nova rota `/dieta`: form (objetivo, alergias, refeições/dia, preferências) → server fn chamando Lovable AI (`google/gemini-3-flash-preview`) → retorna plano com refeições.
+- **Free:** vê prévia (1 dia, sem receitas).
+- **Pro:** plano semanal completo + receitas.
+- BottomNav: trocar ícone "Loja" por "Dieta" (ShoppingBag → UtensilsCrossed).
+- Realocar conteúdo da Loja: card "**Equipamentos & parceiros**" no Perfil (e card menor na Home) linkando para `/loja` (rota mantida, só sai da nav).
 
-### Fora de escopo
-- Não vou criar nova rota `/onboarding/frequencia` (já existe).
-- Não vou mexer em backend (Supabase) — equipamentos e modo continuam via `elevo-store` que já sincroniza.
-- Imagens dos produtos: usar placeholder/emoji 🏋️ (não vou raspar Mercado Livre).
+## 8. Clareza do mês grátis no Perfil
+- Card "Meu plano" mostra:
+  - Texto explícito: "Treine **X de Y vezes** essa semana para garantir seu mês grátis"
+  - Barra de progresso visual
+  - Contador de dias restantes do trial separado
+
+## Ordem de execução
+1, 3, 5, 6, 8 (rápidos / copy) → 4 (GIFs + backfill) → 7 (Dieta IA, maior) → 2 (Pro copy depende de 7 pro gancho dieta).
+
+## Perguntas antes de codar
+- **(a)** Tela do Pro: implemento só copy/UI (sem cobrança real)? Ou já integro Stripe?
+- **(b)** Dieta IA: ok usar `google/gemini-3-flash-preview` via Lovable AI Gateway (gratuito pra você no momento, sem chave)?
+- **(c)** Loja: realoco como card no **Perfil** (minha sugestão) ou prefere card permanente na **Home**?
+- **(d)** Whatsapp é **obrigatório** ou opcional no onboarding/contato?
+
+Responde essas 4 e eu toco o lote inteiro.

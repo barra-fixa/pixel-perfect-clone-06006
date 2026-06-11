@@ -1,23 +1,43 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Mail } from "lucide-react";
+import { Mail, MessageCircle } from "lucide-react";
 import { OnboardingShell } from "@/components/OnboardingShell";
 import { saveUser } from "@/lib/elevo-store";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/onboarding/email")({
-  component: EmailPage,
+  component: ContatoPage,
 });
 
-function EmailPage() {
+/** Aceita formatos BR: (11) 91234-5678, 11912345678, +55 11 91234-5678 etc. */
+function digits(v: string) {
+  return v.replace(/\D/g, "");
+}
+function formatBR(v: string) {
+  const d = digits(v).slice(0, 11);
+  if (d.length <= 2) return d;
+  if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+}
+function whatsappValido(v: string) {
+  const d = digits(v);
+  return d.length === 10 || d.length === 11;
+}
+
+function ContatoPage() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
-  const [opt, setOpt] = useState(true);
+  const [whatsapp, setWhatsapp] = useState("");
+  const [consentimento, setConsentimento] = useState(true);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [enviado, setEnviado] = useState(false);
 
-  const valido = nome.trim().length >= 2 && /\S+@\S+\.\S+/.test(email);
+  const emailOk = /\S+@\S+\.\S+/.test(email);
+  const nomeOk = nome.trim().length >= 2;
+  const whatsOpcionalOk = whatsapp.trim() === "" || whatsappValido(whatsapp);
+  const valido = nomeOk && emailOk && whatsOpcionalOk && consentimento;
 
   const handleSubmit = async () => {
     setErro(null);
@@ -25,15 +45,20 @@ function EmailPage() {
     try {
       const emailLimpo = email.trim().toLowerCase();
       const nomeLimpo = nome.trim();
+      const whatsLimpo = whatsapp.trim() ? `+55${digits(whatsapp)}` : "";
       const { error } = await supabase.auth.signInWithOtp({
         email: emailLimpo,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
-          data: { nome: nomeLimpo },
+          data: { nome: nomeLimpo, whatsapp: whatsLimpo || null },
         },
       });
       if (error) throw error;
-      saveUser({ nome: nomeLimpo, email: emailLimpo });
+      saveUser({
+        nome: nomeLimpo,
+        email: emailLimpo,
+        whatsapp: whatsLimpo || undefined,
+      });
       setEnviado(true);
     } catch (err) {
       setErro(err instanceof Error ? err.message : "Não foi possível enviar o link");
@@ -79,8 +104,8 @@ function EmailPage() {
 
   return (
     <OnboardingShell
-      title="Para onde enviamos seu plano?"
-      subtitle="Sem senha. Enviamos um link de acesso pro seu email."
+      title="Quase lá — onde te envio?"
+      subtitle="Te mando o plano no e-mail e te lembro de treinar no WhatsApp."
       footer={
         <>
           <button className="btn-primary" disabled={!valido || loading} onClick={handleSubmit}>
@@ -91,8 +116,9 @@ function EmailPage() {
               {erro}
             </p>
           )}
-          <p className="text-center mt-3 text-xs" style={{ color: "var(--subtle)" }}>
-            Sem spam. Cancele quando quiser.
+          <p className="text-center mt-3 text-[10px] leading-relaxed" style={{ color: "var(--subtle)" }}>
+            Ao continuar você aceita receber comunicações do Elevo conforme a LGPD.
+            Seus dados ficam só com a gente, nunca vendidos.
           </p>
         </>
       }
@@ -123,15 +149,35 @@ function EmailPage() {
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
+        <div>
+          <label className="text-xs font-medium mb-1.5 flex items-center gap-1.5" style={{ color: "var(--muted-foreground)" }}>
+            <MessageCircle size={12} /> WhatsApp <span className="text-[10px] opacity-70">(opcional, pra lembretes)</span>
+          </label>
+          <input
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel-national"
+            className="input-field"
+            placeholder="(11) 91234-5678"
+            value={whatsapp}
+            onChange={(e) => setWhatsapp(formatBR(e.target.value))}
+          />
+          {whatsapp && !whatsOpcionalOk && (
+            <p className="text-[10px] mt-1" style={{ color: "var(--destructive)" }}>
+              Telefone inválido — use DDD + número (10 ou 11 dígitos).
+            </p>
+          )}
+        </div>
         <label className="flex items-start gap-3 mt-2 cursor-pointer">
           <input
             type="checkbox"
-            checked={opt}
-            onChange={(e) => setOpt(e.target.checked)}
+            checked={consentimento}
+            onChange={(e) => setConsentimento(e.target.checked)}
             className="mt-0.5 size-4 accent-[oklch(0.62_0.13_160)]"
           />
-          <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-            Quero receber dicas de treino e ofertas do Elevo
+          <span className="text-[11px] leading-snug" style={{ color: "var(--muted-foreground)" }}>
+            Autorizo o Elevo a me enviar o plano, lembretes de treino e dicas por e-mail
+            {whatsapp ? " e WhatsApp" : ""}. Posso cancelar quando quiser.
           </span>
         </label>
       </div>
