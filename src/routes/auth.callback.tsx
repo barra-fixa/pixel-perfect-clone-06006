@@ -14,6 +14,25 @@ function irPara(destino: string) {
   }
 }
 
+/**
+ * Apos magic link: se o usuario veio do onboarding (flag setada em
+ * /onboarding/email) e ainda nao viu a oferta Pro, manda pra /onboarding/preview
+ * em vez de /home. A flag e consumida na primeira leitura.
+ */
+function destinoPosLogin(): string {
+  if (typeof window === "undefined") return "/home";
+  try {
+    const pendente = localStorage.getItem("elevo:pending-pro-offer");
+    if (pendente === "1") {
+      localStorage.removeItem("elevo:pending-pro-offer");
+      return "/onboarding/preview";
+    }
+  } catch {
+    // ignora storage indisponivel
+  }
+  return "/home";
+}
+
 function temTokenDeSessaoNoHash() {
   if (typeof window === "undefined") return false;
 
