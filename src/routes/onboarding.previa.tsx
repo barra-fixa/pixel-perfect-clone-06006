@@ -59,7 +59,8 @@ function PreviaPage() {
               style={{ borderTop: i === 0 ? undefined : "1px solid var(--border)" }}
             >
               <span
-                className="size-9 rounded-lg flex items-center justify-center text-xs font-bold shrink-0"
+                translate="no"
+                className="notranslate size-9 rounded-lg flex items-center justify-center text-xs font-bold shrink-0"
                 style={{ backgroundColor: "var(--card-elevated)" }}
               >
                 {DIAS_CURTOS[i] ?? `D${i + 1}`}
