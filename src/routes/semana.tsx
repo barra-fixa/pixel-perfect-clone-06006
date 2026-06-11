@@ -43,7 +43,7 @@ function SemanaPage() {
             <section key={dia}>
               <div className="flex items-center gap-2 mb-2">
                 <h2 className="text-base font-bold">
-                  {dia}: <span style={{ color: "var(--primary)" }}>{treino.nome}</span>
+                  <span translate="no" className="notranslate">{dia}</span>: <span style={{ color: "var(--primary)" }}>{treino.nome}</span>
                 </h2>
                 {ehHoje && (
                   <span
