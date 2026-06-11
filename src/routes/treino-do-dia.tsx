@@ -127,7 +127,8 @@ function TreinoDoDiaPage() {
             <button
               key={i}
               onClick={() => navigate({ to: "/treino-do-dia", search: { dia: i }, replace: true })}
-              className="shrink-0 rounded-xl px-3 py-2 min-w-[48px] text-xs font-bold relative transition"
+              translate="no"
+              className="notranslate shrink-0 rounded-xl px-3 py-2 min-w-[48px] text-xs font-bold relative transition"
               style={
                 ativo
                   ? {
