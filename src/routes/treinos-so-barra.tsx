@@ -77,7 +77,7 @@ function TreinosSoBarraPage() {
       const faltamGifs = lista.some((e) => !e.gif_url_local);
       if (!faltamGifs) return;
       try {
-        const r = await enrich({ data: undefined as never });
+        const r = await enrich();
         if (!ativo) return;
         if (r?.updated && r.updated > 0) {
           await carregar();
