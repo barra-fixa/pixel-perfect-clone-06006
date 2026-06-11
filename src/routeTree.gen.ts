@@ -44,6 +44,7 @@ import { Route as OnboardingEquipamentosRouteImport } from './routes/onboarding.
 import { Route as OnboardingEmailRouteImport } from './routes/onboarding.email'
 import { Route as OnboardingCaminhoRouteImport } from './routes/onboarding.caminho'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as ApiPublicMercadopagoWebhookRouteImport } from './routes/api/public/mercadopago-webhook'
 import { Route as ApiPublicHooksSendRemindersRouteImport } from './routes/api/public/hooks/send-reminders'
 import { Route as ApiPublicExerciseGifIdRouteImport } from './routes/api/public/exercise-gif.$id'
 import { Route as ApiPublicExerciseGifByNameNameRouteImport } from './routes/api/public/exercise-gif-by-name.$name'
@@ -223,6 +224,12 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/callback',
   getParentRoute: () => AuthRoute,
 } as any)
+const ApiPublicMercadopagoWebhookRoute =
+  ApiPublicMercadopagoWebhookRouteImport.update({
+    id: '/api/public/mercadopago-webhook',
+    path: '/api/public/mercadopago-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksSendRemindersRoute =
   ApiPublicHooksSendRemindersRouteImport.update({
     id: '/api/public/hooks/send-reminders',
@@ -277,6 +284,7 @@ export interface FileRoutesByFullPath {
   '/taf/simulado': typeof TafSimuladoRoute
   '/treino/ativo': typeof TreinoAtivoRoute
   '/treino/concluido': typeof TreinoConcluidoRoute
+  '/api/public/mercadopago-webhook': typeof ApiPublicMercadopagoWebhookRoute
   '/api/public/exercise-gif-by-name/$name': typeof ApiPublicExerciseGifByNameNameRoute
   '/api/public/exercise-gif/$id': typeof ApiPublicExerciseGifIdRoute
   '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
@@ -317,6 +325,7 @@ export interface FileRoutesByTo {
   '/taf/simulado': typeof TafSimuladoRoute
   '/treino/ativo': typeof TreinoAtivoRoute
   '/treino/concluido': typeof TreinoConcluidoRoute
+  '/api/public/mercadopago-webhook': typeof ApiPublicMercadopagoWebhookRoute
   '/api/public/exercise-gif-by-name/$name': typeof ApiPublicExerciseGifByNameNameRoute
   '/api/public/exercise-gif/$id': typeof ApiPublicExerciseGifIdRoute
   '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
@@ -358,6 +367,7 @@ export interface FileRoutesById {
   '/taf/simulado': typeof TafSimuladoRoute
   '/treino/ativo': typeof TreinoAtivoRoute
   '/treino/concluido': typeof TreinoConcluidoRoute
+  '/api/public/mercadopago-webhook': typeof ApiPublicMercadopagoWebhookRoute
   '/api/public/exercise-gif-by-name/$name': typeof ApiPublicExerciseGifByNameNameRoute
   '/api/public/exercise-gif/$id': typeof ApiPublicExerciseGifIdRoute
   '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
@@ -400,6 +410,7 @@ export interface FileRouteTypes {
     | '/taf/simulado'
     | '/treino/ativo'
     | '/treino/concluido'
+    | '/api/public/mercadopago-webhook'
     | '/api/public/exercise-gif-by-name/$name'
     | '/api/public/exercise-gif/$id'
     | '/api/public/hooks/send-reminders'
@@ -440,6 +451,7 @@ export interface FileRouteTypes {
     | '/taf/simulado'
     | '/treino/ativo'
     | '/treino/concluido'
+    | '/api/public/mercadopago-webhook'
     | '/api/public/exercise-gif-by-name/$name'
     | '/api/public/exercise-gif/$id'
     | '/api/public/hooks/send-reminders'
@@ -480,6 +492,7 @@ export interface FileRouteTypes {
     | '/taf/simulado'
     | '/treino/ativo'
     | '/treino/concluido'
+    | '/api/public/mercadopago-webhook'
     | '/api/public/exercise-gif-by-name/$name'
     | '/api/public/exercise-gif/$id'
     | '/api/public/hooks/send-reminders'
@@ -513,6 +526,7 @@ export interface RootRouteChildren {
   OnboardingPreviewRoute: typeof OnboardingPreviewRoute
   OnboardingProcessandoRoute: typeof OnboardingProcessandoRoute
   OnboardingSacoRoute: typeof OnboardingSacoRoute
+  ApiPublicMercadopagoWebhookRoute: typeof ApiPublicMercadopagoWebhookRoute
   ApiPublicExerciseGifByNameNameRoute: typeof ApiPublicExerciseGifByNameNameRoute
   ApiPublicExerciseGifIdRoute: typeof ApiPublicExerciseGifIdRoute
   ApiPublicHooksSendRemindersRoute: typeof ApiPublicHooksSendRemindersRoute
@@ -765,6 +779,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/api/public/mercadopago-webhook': {
+      id: '/api/public/mercadopago-webhook'
+      path: '/api/public/mercadopago-webhook'
+      fullPath: '/api/public/mercadopago-webhook'
+      preLoaderRoute: typeof ApiPublicMercadopagoWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/send-reminders': {
       id: '/api/public/hooks/send-reminders'
       path: '/api/public/hooks/send-reminders'
@@ -867,6 +888,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingPreviewRoute: OnboardingPreviewRoute,
   OnboardingProcessandoRoute: OnboardingProcessandoRoute,
   OnboardingSacoRoute: OnboardingSacoRoute,
+  ApiPublicMercadopagoWebhookRoute: ApiPublicMercadopagoWebhookRoute,
   ApiPublicExerciseGifByNameNameRoute: ApiPublicExerciseGifByNameNameRoute,
   ApiPublicExerciseGifIdRoute: ApiPublicExerciseGifIdRoute,
   ApiPublicHooksSendRemindersRoute: ApiPublicHooksSendRemindersRoute,

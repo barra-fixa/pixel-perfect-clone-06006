@@ -82,7 +82,7 @@ async function handle(request: Request) {
       evento_id: eventoId,
       tipo: type,
       resource_id: null,
-      payload: body,
+      payload: body as never,
     });
     return new Response("ok (no id)", { status: 200, headers: CORS });
   }
