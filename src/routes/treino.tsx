@@ -66,7 +66,7 @@ function TreinoPage() {
                 border: `1px solid ${active ? "var(--primary)" : "var(--border)"}`,
               }}
             >
-              <div className="text-[10px] uppercase tracking-wider opacity-80">
+              <div translate="no" className="notranslate text-[10px] uppercase tracking-wider opacity-80">
                 {DIAS[i % 7]} {i === hojeIdx && "· hoje"}
               </div>
               <div className="text-xs font-semibold mt-0.5 leading-tight">{t.nome}</div>
