@@ -37,6 +37,7 @@ export type Notificacoes = {
 export type ElevoUser = {
   nome?: string;
   email?: string;
+  whatsapp?: string;
   objetivo?: Objetivo;
   caminho?: Caminho;
   equipamentos?: string[];
@@ -88,6 +89,7 @@ export function saveUser(patch: Partial<ElevoUser>) {
 const PROFILE_COLS: Record<string, keyof ElevoUser> = {
   nome: "nome",
   email: "email",
+  whatsapp: "whatsapp",
   objetivo: "objetivo",
   caminho: "caminho",
   equipamentos: "equipamentos",
