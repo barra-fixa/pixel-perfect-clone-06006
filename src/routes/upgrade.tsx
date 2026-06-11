@@ -1,12 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Check, ChevronLeft, X, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { Check, ChevronLeft, X, Sparkles, Loader2, CreditCard, QrCode } from "lucide-react";
 import { toast } from "sonner";
 import { useElevoUser } from "@/lib/elevo-store";
 import { pitchProPorObjetivo } from "@/lib/objetivo-labels";
+import { criarAssinaturaMP } from "@/lib/mercadopago.functions";
 
 export const Route = createFileRoute("/upgrade")({
   component: UpgradePage,
 });
+
 
 type Linha = readonly [string, boolean, boolean, string?];
 const features: readonly Linha[] = [
