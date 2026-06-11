@@ -118,7 +118,12 @@ function PreviaPage() {
       </div>
 
       <div className="mt-6 space-y-2">
-        <button className="btn-primary" onClick={() => navigate({ to: "/onboarding/email" })}>
+        <button
+          className="btn-primary"
+          onClick={() =>
+            navigate({ to: isAuthenticated ? "/onboarding/preview" : "/onboarding/email" })
+          }
+        >
           Quero meu plano completo
         </button>
         <p className="text-center text-[11px]" style={{ color: "var(--subtle)" }}>
