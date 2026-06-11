@@ -564,7 +564,7 @@ export function alternativasDe(excluir: ExercicioId, user: ElevoUser): Exercicio
 // IDs completos (cópia local pra iterar — evita expor _IDS de exercicios-db).
 const _IDS_TREINOS: ExercicioId[] = [
   "flexao", "supino", "triceps", "flexaoDiamante",
-  "barraFixa", "barraFixaSupinada", "remadaAustraliana", "remadaCurvada",
+  "barraFixa", "barraFixaSupinada", "remadaAustraliana", "pullUpNegativo", "remadaCurvada",
   "rosca", "roscaMartelo",
   "agachamento", "agachamentoBulgaro", "afundo", "panturrilha", "glutePonte", "steup",
   "desenvolvimento", "elevacaoLateral", "elevacaoFrontal",
