@@ -253,7 +253,7 @@ function TreinoDoDiaPage() {
         </div>
         <h2 className="text-2xl font-bold leading-tight">{treino.nome}</h2>
         <div className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-          {DIAS_LONGOS[diaSelecionado]}, {dataSel.getDate()} de{" "}
+          <span translate="no" className="notranslate">{DIAS_LONGOS[diaSelecionado]}</span>, {dataSel.getDate()} de{" "}
           {dataSel.toLocaleDateString("pt-BR", { month: "long" })} · ~{treino.duracaoMin} min
         </div>
       </div>
