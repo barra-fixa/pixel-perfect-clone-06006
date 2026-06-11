@@ -44,6 +44,48 @@ export type Database = {
         }
         Relationships: []
       }
+      dieta_cache: {
+        Row: {
+          cache_key: string
+          created_at: string
+          hits: number
+          id: string
+          modelo: string
+          objetivo: string
+          plano: Json
+          preferencias_bucket: string
+          refeicoes_dia: number
+          restricoes: string
+          updated_at: string
+        }
+        Insert: {
+          cache_key: string
+          created_at?: string
+          hits?: number
+          id?: string
+          modelo: string
+          objetivo: string
+          plano: Json
+          preferencias_bucket?: string
+          refeicoes_dia: number
+          restricoes?: string
+          updated_at?: string
+        }
+        Update: {
+          cache_key?: string
+          created_at?: string
+          hits?: number
+          id?: string
+          modelo?: string
+          objetivo?: string
+          plano?: Json
+          preferencias_bucket?: string
+          refeicoes_dia?: number
+          restricoes?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       equipamentos_pedidos: {
         Row: {
           categoria: string | null
