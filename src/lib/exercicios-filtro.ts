@@ -113,8 +113,10 @@ export function filtrarExercicios(
     const nomeNormalizado = `${ex.nome ?? ""}`.toLowerCase();
     const ehBarraAustraliana = id === "remadaAustraliana" || nomeNormalizado.includes("australiana");
 
-    // Modo "Só Barra Fixa": qualquer coisa que não seja barra ou nenhum vira alternativa.
-    if (opts.modoBarraFixa && req !== "barra" && req !== "nenhum") {
+    // Modo "Só Barra Fixa": mantém SOMENTE exercícios que usam a barra fixa.
+    // Peso corporal (req === "nenhum") e demais equipamentos são substituídos por
+    // uma alternativa na barra; se não houver, o exercício é removido.
+    if (opts.modoBarraFixa && req !== "barra") {
       if (ehBarraAustraliana) {
         console.warn("❌ Exercício removido: Barra australiana [inversa] (incompatível com barra fixa de parede)");
       }
