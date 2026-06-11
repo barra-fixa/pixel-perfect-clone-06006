@@ -157,7 +157,8 @@ function EvolucaoPage() {
                     {d.treinos > 0 ? d.treinos : ""}
                   </div>
                   <span
-                    className="text-[10px]"
+                    translate="no"
+                    className="notranslate text-[10px]"
                     style={{ color: d.isToday ? "var(--primary)" : "var(--subtle)", fontWeight: d.isToday ? 700 : 500 }}
                   >
                     {d.dia}
