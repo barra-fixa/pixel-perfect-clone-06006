@@ -27,6 +27,7 @@ const EQUIP_REQ: Record<ExercicioId, EquipReq> = {
   barraFixa: "barra",
   barraFixaSupinada: "barra",
   remadaAustraliana: "barra",
+  pullUpNegativo: "barra",
   remadaCurvada: "peso",
 
   rosca: "peso",
