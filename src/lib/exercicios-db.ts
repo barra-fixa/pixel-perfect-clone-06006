@@ -29,6 +29,7 @@ const _IDS = [
   "barraFixa",
   "barraFixaSupinada",
   "remadaAustraliana",
+  "pullUpNegativo",
   "remadaCurvada",
   "rosca",
   "roscaMartelo",
