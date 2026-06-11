@@ -45,7 +45,7 @@ export const getExerciseDbInfo = createServerFn({ method: "GET" })
       return cached.data;
     }
 
-    const apiKey = process.env.RAPIDAPI_KEY;
+    const apiKey = process.env.RAPID_KEY;
     if (!apiKey) {
       const fallback: ExerciseDbResult = {
         gifUrl: null,
