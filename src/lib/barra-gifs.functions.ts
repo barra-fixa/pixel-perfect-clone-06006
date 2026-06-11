@@ -54,12 +54,13 @@ export const ensureBarraGifs = createServerFn({ method: "POST" })
           console.error(`[barra-gifs] ${r.exercisedb_id} "${term}" → HTTP ${res.status} ${body.slice(0, 200)}`);
           continue;
         }
-        const arr = (await res.json()) as Array<{ gifUrl?: string }>;
-        const gif = arr[0]?.gifUrl;
-        if (!gif) {
-          console.warn(`[barra-gifs] ${r.exercisedb_id} "${term}" → sem gifUrl`);
+        const arr = (await res.json()) as Array<{ id?: string }>;
+        const exId = arr[0]?.id;
+        if (!exId) {
+          console.warn(`[barra-gifs] ${r.exercisedb_id} "${term}" → sem match`);
           continue;
         }
+        const gif = `${PROXY_BASE}/${exId}`;
         const { error } = await supabaseAdmin
           .from("exercicios")
           .update({ gif_url_local: gif })
