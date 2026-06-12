@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Check, Sparkles, UtensilsCrossed } from "lucide-react";
-import { saveUser, useElevoUser } from "@/lib/elevo-store";
+import { useElevoUser } from "@/lib/elevo-store";
 import { pitchProPorObjetivo } from "@/lib/objetivo-labels";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -30,14 +30,6 @@ function PreviewPage() {
     }
   };
 
-  const irParaFree = () => {
-    saveUser({ plano: "free", diasJornada: 1, treinosFeitos: 0, streak: 0 });
-    if (isAuthenticated) {
-      navigate({ to: "/home" });
-    } else {
-      navigate({ to: "/onboarding/email", search: { next: "/home" } as never });
-    }
-  };
 
   return (
     <div className="elevo-shell px-5 pt-6 pb-8 min-h-dvh">
