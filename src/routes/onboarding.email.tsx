@@ -1,3 +1,4 @@
+// TODO: voltar ao codigo de 6 digitos (verifyOtp) quando o dominio elevo.club estiver verificado.
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Mail, MessageCircle } from "lucide-react";
@@ -33,8 +34,7 @@ function ContatoPage() {
   const [consentimento, setConsentimento] = useState(true);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-  const [etapa, setEtapa] = useState<"form" | "codigo">("form");
-  const [codigo, setCodigo] = useState("");
+  const [etapa, setEtapa] = useState<"form" | "link">("form");
   const [reenviando, setReenviando] = useState(false);
   const [reenviadoMsg, setReenviadoMsg] = useState<string | null>(null);
 
@@ -42,7 +42,6 @@ function ContatoPage() {
   const nomeOk = nome.trim().length >= 2;
   const whatsOpcionalOk = whatsapp.trim() === "" || whatsappValido(whatsapp);
   const valido = nomeOk && emailOk && whatsOpcionalOk && consentimento;
-  const codigoOk = /^\d{6}$/.test(codigo);
 
   const destinoPosLogin = () => {
     try {
@@ -57,19 +56,23 @@ function ContatoPage() {
     return "/onboarding/preview";
   };
 
-  const enviarCodigo = async () => {
+  const enviarLink = async (opts?: { silencioso?: boolean }) => {
     setErro(null);
     setReenviadoMsg(null);
-    setLoading(true);
+    if (opts?.silencioso) setReenviando(true);
+    else setLoading(true);
     try {
       const emailLimpo = email.trim().toLowerCase();
       const nomeLimpo = nome.trim();
       const whatsLimpo = whatsapp.trim() ? `+55${digits(whatsapp)}` : "";
+      const destino = destinoPosLogin();
+      const redirectUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(destino)}`;
 
       const { error } = await supabase.auth.signInWithOtp({
         email: emailLimpo,
         options: {
           shouldCreateUser: true,
+          emailRedirectTo: redirectUrl,
           data: { nome: nomeLimpo, whatsapp: whatsLimpo || null },
         },
       });
@@ -79,69 +82,30 @@ function ContatoPage() {
         email: emailLimpo,
         whatsapp: whatsLimpo || undefined,
       });
-      setEtapa("codigo");
+      if (opts?.silencioso) setReenviadoMsg("Link reenviado. Verifique seu e-mail.");
+      else setEtapa("link");
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "Não foi possível enviar o código");
+      setErro(err instanceof Error ? err.message : "Não foi possível enviar o link");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const verificarCodigo = async () => {
-    setErro(null);
-    setLoading(true);
-    try {
-      const emailLimpo = email.trim().toLowerCase();
-      const { error } = await supabase.auth.verifyOtp({
-        email: emailLimpo,
-        token: codigo.trim(),
-        type: "email",
-      });
-      if (error) throw error;
-      navigate({ to: destinoPosLogin() });
-    } catch (err) {
-      setErro(err instanceof Error ? err.message : "Código inválido ou expirado");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const reenviarCodigo = async () => {
-    setErro(null);
-    setReenviadoMsg(null);
-    setReenviando(true);
-    try {
-      const emailLimpo = email.trim().toLowerCase();
-      const { error } = await supabase.auth.signInWithOtp({
-        email: emailLimpo,
-        options: { shouldCreateUser: true },
-      });
-      if (error) throw error;
-      setReenviadoMsg("Código reenviado. Verifique seu e-mail.");
-    } catch (err) {
-      setErro(err instanceof Error ? err.message : "Não foi possível reenviar o código");
-    } finally {
       setReenviando(false);
     }
   };
 
-  if (etapa === "codigo") {
+  if (etapa === "link") {
     return (
       <OnboardingShell
-        title="Digite o código"
-        subtitle={`Enviamos um código de 6 dígitos para ${email}`}
+        title="Confira seu e-mail"
+        subtitle={`Enviamos um link de confirmação para ${email} — clique pra continuar`}
         footer={
           <>
-            <button className="btn-primary" disabled={!codigoOk || loading} onClick={verificarCodigo}>
-              {loading ? "Verificando..." : "Confirmar e continuar"}
-            </button>
             <button
               type="button"
-              className="btn-ghost w-full mt-2"
+              className="btn-primary"
               disabled={reenviando}
-              onClick={reenviarCodigo}
+              onClick={() => enviarLink({ silencioso: true })}
             >
-              {reenviando ? "Reenviando..." : "Reenviar código"}
+              {reenviando ? "Reenviando..." : "Reenviar link"}
             </button>
             <button
               type="button"
@@ -149,7 +113,6 @@ function ContatoPage() {
               style={{ color: "var(--subtle)" }}
               onClick={() => {
                 setEtapa("form");
-                setCodigo("");
                 setErro(null);
                 setReenviadoMsg(null);
               }}
@@ -176,20 +139,8 @@ function ContatoPage() {
           >
             <Mail size={28} style={{ color: "var(--primary)" }} />
           </div>
-          <input
-            type="text"
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            pattern="\d{6}"
-            maxLength={6}
-            placeholder="000000"
-            value={codigo}
-            onChange={(e) => setCodigo(e.target.value.replace(/\D/g, "").slice(0, 6))}
-            className="input-field text-center text-2xl tracking-[0.5em] font-semibold"
-            style={{ letterSpacing: "0.5em" }}
-          />
-          <p className="mt-3 text-[11px] max-w-[280px]" style={{ color: "var(--subtle)" }}>
-            Não recebeu? Verifique a caixa de spam, lixeira ou promoções. O código vale por alguns minutos.
+          <p className="text-[11px] max-w-[280px]" style={{ color: "var(--subtle)" }}>
+            Não recebeu? Verifique a caixa de spam, lixeira ou promoções. O link vale por alguns minutos.
           </p>
         </div>
       </OnboardingShell>
@@ -202,8 +153,8 @@ function ContatoPage() {
       subtitle="Te mando o plano no e-mail e te lembro de treinar no WhatsApp."
       footer={
         <>
-          <button className="btn-primary" disabled={!valido || loading} onClick={enviarCodigo}>
-            {loading ? "Enviando código..." : "Receber meu código por e-mail"}
+          <button className="btn-primary" disabled={!valido || loading} onClick={() => enviarLink()}>
+            {loading ? "Enviando link..." : "Receber meu link por e-mail"}
           </button>
           {erro && (
             <p className="text-center mt-2 text-xs" style={{ color: "var(--destructive)" }}>
