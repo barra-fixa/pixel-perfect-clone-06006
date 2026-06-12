@@ -2,7 +2,9 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
 import { useMemo } from "react";
 import { BottomNav } from "@/components/BottomNav";
+import { ProBloqueio } from "@/components/ProGate";
 import { useElevoUser } from "@/lib/elevo-store";
+import { useEhPro } from "@/lib/pro-status";
 import { getPlanoSemanal } from "@/lib/treinos";
 
 export const Route = createFileRoute("/semana")({
@@ -14,6 +16,7 @@ const DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domi
 function SemanaPage() {
   const user = useElevoUser();
   const navigate = useNavigate();
+  const ehPro = useEhPro();
   const plano = useMemo(() => getPlanoSemanal(user), [user]);
   const hojeIdx = (new Date().getDay() + 6) % 7; // segunda=0
 
@@ -34,6 +37,16 @@ function SemanaPage() {
       <p className="text-sm mb-5" style={{ color: "var(--muted-foreground)" }}>
         Toque em qualquer exercício pra abrir — você não precisa seguir uma ordem.
       </p>
+
+      {!ehPro && (
+        <div className="mb-5">
+          <ProBloqueio
+            titulo="Plano completo de 12 a 24 semanas"
+            descricao="A progressão completa, com periodização semana a semana, é Pro. Você continua com a semana atual e os treinos de barra fixa liberados."
+          />
+        </div>
+      )}
+
 
       <div className="space-y-5">
         {DIAS.map((dia, i) => {
