@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Mail, MessageCircle } from "lucide-react";
 import { OnboardingShell } from "@/components/OnboardingShell";
@@ -26,38 +26,50 @@ function whatsappValido(v: string) {
 }
 
 function ContatoPage() {
+  const navigate = useNavigate();
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [consentimento, setConsentimento] = useState(true);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-  const [enviado, setEnviado] = useState(false);
+  const [etapa, setEtapa] = useState<"form" | "codigo">("form");
+  const [codigo, setCodigo] = useState("");
+  const [reenviando, setReenviando] = useState(false);
+  const [reenviadoMsg, setReenviadoMsg] = useState<string | null>(null);
 
   const emailOk = /\S+@\S+\.\S+/.test(email);
   const nomeOk = nome.trim().length >= 2;
   const whatsOpcionalOk = whatsapp.trim() === "" || whatsappValido(whatsapp);
   const valido = nomeOk && emailOk && whatsOpcionalOk && consentimento;
+  const codigoOk = /^\d{6}$/.test(codigo);
 
-  const handleSubmit = async () => {
+  const destinoPosLogin = () => {
+    try {
+      const urlAtual = new URL(window.location.href);
+      const nextParam = urlAtual.searchParams.get("next");
+      if (nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//")) {
+        return nextParam;
+      }
+    } catch {
+      /* ignora */
+    }
+    return "/onboarding/preview";
+  };
+
+  const enviarCodigo = async () => {
     setErro(null);
+    setReenviadoMsg(null);
     setLoading(true);
     try {
       const emailLimpo = email.trim().toLowerCase();
       const nomeLimpo = nome.trim();
       const whatsLimpo = whatsapp.trim() ? `+55${digits(whatsapp)}` : "";
 
-      // Destino pos-login: vem do ?next= na URL atual (ex: /upgrade, /home);
-      // fallback /onboarding/preview pra fluxos antigos.
-      const urlAtual = new URL(window.location.href);
-      const nextParam = urlAtual.searchParams.get("next");
-      const destinoSeguro = nextParam && nextParam.startsWith("/") ? nextParam : "/onboarding/preview";
-      const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(destinoSeguro)}`;
-
       const { error } = await supabase.auth.signInWithOtp({
         email: emailLimpo,
         options: {
-          emailRedirectTo: redirectTo,
+          shouldCreateUser: true,
           data: { nome: nomeLimpo, whatsapp: whatsLimpo || null },
         },
       });
@@ -67,51 +79,117 @@ function ContatoPage() {
         email: emailLimpo,
         whatsapp: whatsLimpo || undefined,
       });
-      // Fallback localStorage: usado SO se o magic link abrir no mesmo browser
-      // e o ?next= se perder por algum motivo. O destino na URL e a fonte primaria.
-      try {
-        localStorage.setItem("elevo:pending-pro-offer", "1");
-        localStorage.setItem("elevo:post-login-next", destinoSeguro);
-      } catch {
-        // ignora storage indisponivel
-      }
-      setEnviado(true);
+      setEtapa("codigo");
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "Não foi possível enviar o link");
+      setErro(err instanceof Error ? err.message : "Não foi possível enviar o código");
     } finally {
       setLoading(false);
     }
   };
 
-  if (enviado) {
+  const verificarCodigo = async () => {
+    setErro(null);
+    setLoading(true);
+    try {
+      const emailLimpo = email.trim().toLowerCase();
+      const { error } = await supabase.auth.verifyOtp({
+        email: emailLimpo,
+        token: codigo.trim(),
+        type: "email",
+      });
+      if (error) throw error;
+      navigate({ to: destinoPosLogin() });
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : "Código inválido ou expirado");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const reenviarCodigo = async () => {
+    setErro(null);
+    setReenviadoMsg(null);
+    setReenviando(true);
+    try {
+      const emailLimpo = email.trim().toLowerCase();
+      const { error } = await supabase.auth.signInWithOtp({
+        email: emailLimpo,
+        options: { shouldCreateUser: true },
+      });
+      if (error) throw error;
+      setReenviadoMsg("Código reenviado. Verifique seu e-mail.");
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : "Não foi possível reenviar o código");
+    } finally {
+      setReenviando(false);
+    }
+  };
+
+  if (etapa === "codigo") {
     return (
       <OnboardingShell
-        title="Verifique seu email"
-        subtitle={`Enviamos um link de acesso para ${email}`}
+        title="Digite o código"
+        subtitle={`Enviamos um código de 6 dígitos para ${email}`}
         footer={
-          <button
-            onClick={() => {
-              setEnviado(false);
-              setErro(null);
-            }}
-            className="btn-ghost w-full"
-          >
-            Usar outro email
-          </button>
+          <>
+            <button className="btn-primary" disabled={!codigoOk || loading} onClick={verificarCodigo}>
+              {loading ? "Verificando..." : "Confirmar e continuar"}
+            </button>
+            <button
+              type="button"
+              className="btn-ghost w-full mt-2"
+              disabled={reenviando}
+              onClick={reenviarCodigo}
+            >
+              {reenviando ? "Reenviando..." : "Reenviar código"}
+            </button>
+            <button
+              type="button"
+              className="w-full mt-2 text-[11px] underline"
+              style={{ color: "var(--subtle)" }}
+              onClick={() => {
+                setEtapa("form");
+                setCodigo("");
+                setErro(null);
+                setReenviadoMsg(null);
+              }}
+            >
+              Usar outro e-mail
+            </button>
+            {erro && (
+              <p className="text-center mt-2 text-xs" style={{ color: "var(--destructive)" }}>
+                {erro}
+              </p>
+            )}
+            {reenviadoMsg && (
+              <p className="text-center mt-2 text-xs" style={{ color: "var(--primary)" }}>
+                {reenviadoMsg}
+              </p>
+            )}
+          </>
         }
       >
-        <div className="flex flex-col items-center text-center py-6">
+        <div className="flex flex-col items-center text-center py-4">
           <div
-            className="size-20 rounded-2xl flex items-center justify-center mb-6"
+            className="size-16 rounded-2xl flex items-center justify-center mb-5"
             style={{ background: "color-mix(in oklab, var(--primary) 18%, transparent)" }}
           >
-            <Mail size={36} style={{ color: "var(--primary)" }} />
+            <Mail size={28} style={{ color: "var(--primary)" }} />
           </div>
-          <p className="text-xs max-w-[280px]" style={{ color: "var(--subtle)" }}>
-            Abra o email e toque no link para entrar. Pode demorar até 1 minuto pra chegar.
-          </p>
-          <p className="mt-3 text-xs max-w-[280px]" style={{ color: "var(--subtle)" }}>
-            Não recebeu? Verifique a caixa de spam, lixeira ou promoções.
+          <input
+            type="text"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            pattern="\d{6}"
+            maxLength={6}
+            placeholder="000000"
+            value={codigo}
+            onChange={(e) => setCodigo(e.target.value.replace(/\D/g, "").slice(0, 6))}
+            className="input-field text-center text-2xl tracking-[0.5em] font-semibold"
+            style={{ letterSpacing: "0.5em" }}
+          />
+          <p className="mt-3 text-[11px] max-w-[280px]" style={{ color: "var(--subtle)" }}>
+            Não recebeu? Verifique a caixa de spam, lixeira ou promoções. O código vale por alguns minutos.
           </p>
         </div>
       </OnboardingShell>
@@ -124,8 +202,8 @@ function ContatoPage() {
       subtitle="Te mando o plano no e-mail e te lembro de treinar no WhatsApp."
       footer={
         <>
-          <button className="btn-primary" disabled={!valido || loading} onClick={handleSubmit}>
-            {loading ? "Enviando link..." : "Receber meu plano grátis"}
+          <button className="btn-primary" disabled={!valido || loading} onClick={enviarCodigo}>
+            {loading ? "Enviando código..." : "Receber meu código por e-mail"}
           </button>
           {erro && (
             <p className="text-center mt-2 text-xs" style={{ color: "var(--destructive)" }}>

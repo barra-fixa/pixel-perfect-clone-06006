@@ -117,7 +117,7 @@ function PreviaPage() {
       <div className="mt-6 space-y-2">
         <button
           className="btn-primary"
-          onClick={() => navigate({ to: "/onboarding/preview" })}
+          onClick={() => navigate({ to: "/onboarding/email" })}
         >
           Quero meu plano completo
         </button>
