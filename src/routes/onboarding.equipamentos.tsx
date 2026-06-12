@@ -33,7 +33,8 @@ function EquipPage() {
 
   return (
     <OnboardingShell
-      step={2}
+      step={3}
+      total={5}
       title="O que você tem em casa?"
       subtitle="Selecione tudo que tiver disponível"
       footer={
