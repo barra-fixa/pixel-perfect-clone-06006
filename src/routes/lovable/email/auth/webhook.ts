@@ -31,7 +31,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "pixel-perfect-clone-06006"
+const SITE_NAME = "Elevo"
 const SENDER_DOMAIN = "notify.elevo.club"
 const ROOT_DOMAIN = "elevo.club"
 const FROM_DOMAIN = "notify.elevo.club"

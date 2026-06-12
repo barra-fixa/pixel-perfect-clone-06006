@@ -18,7 +18,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "pixel-perfect-clone-06006"
+const SITE_NAME = "Elevo"
 const ROOT_DOMAIN = "elevo.club"
 
 // Sample data for preview mode ONLY (not used in actual email sending).
