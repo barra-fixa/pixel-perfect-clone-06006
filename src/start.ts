@@ -3,7 +3,18 @@ import { createStart, createMiddleware } from "@tanstack/react-start";
 import { renderErrorPage } from "./lib/error-page";
 import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
 
-const errorMiddleware = createMiddleware().server(async ({ next }) => {
+const errorMiddleware = createMiddleware().server(async ({ request, next }) => {
+  // /lovable/* routes (auth webhook, email queue, previews) handle their own
+  // auth (API key / signed webhook) and must NOT be wrapped in the SSR error
+  // HTML response — they need raw JSON errors.
+  try {
+    const url = new URL(request.url);
+    if (url.pathname.startsWith("/lovable/")) {
+      return await next();
+    }
+  } catch {
+    /* fall through */
+  }
   try {
     return await next();
   } catch (error) {
