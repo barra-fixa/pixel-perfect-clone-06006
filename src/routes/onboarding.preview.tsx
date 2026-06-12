@@ -114,20 +114,14 @@ function PreviewPage() {
             background:
               "linear-gradient(135deg, var(--secondary), color-mix(in oklab, var(--secondary) 70%, var(--primary)))",
           }}
-          onClick={() => navigate({ to: "/upgrade" })}
+          onClick={irParaPro}
         >
           Começar meus 14 dias grátis
         </button>
         <p className="text-center text-[11px] leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
           Sem cobrança hoje · avisamos por e-mail antes de qualquer cobrança · cancele em 1 toque.
         </p>
-        <button
-          className="btn-outline"
-          onClick={() => {
-            saveUser({ plano: "free", diasJornada: 1, treinosFeitos: 0, streak: 0 });
-            navigate({ to: "/home" });
-          }}
-        >
+        <button className="btn-outline" onClick={irParaFree}>
           Continuar grátis por enquanto
         </button>
         <p className="text-center text-[10px] leading-relaxed" style={{ color: "var(--subtle)" }}>
