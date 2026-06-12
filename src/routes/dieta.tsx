@@ -1,8 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, Lock, Sparkles, UtensilsCrossed } from "lucide-react";
+import { Loader2, UtensilsCrossed } from "lucide-react";
 import { BottomNav } from "@/components/BottomNav";
+import { ProGate } from "@/components/ProGate";
 import { useElevoUser } from "@/lib/elevo-store";
 import { gerarPlanoDieta, type PlanoDieta } from "@/lib/dieta.functions";
 
@@ -12,7 +13,6 @@ export const Route = createFileRoute("/dieta")({
 
 function DietaPage() {
   const user = useElevoUser();
-  const ehPro = user.plano === "pro";
   const fn = useServerFn(gerarPlanoDieta);
 
   const [objetivo, setObjetivo] = useState(
@@ -37,7 +37,7 @@ function DietaPage() {
           restricoes: restricoes.trim() || undefined,
           refeicoesPorDia: refeicoes,
           preferencias: preferencias.trim() || undefined,
-          modoPreview: !ehPro,
+          modoPreview: false,
         },
       });
       setPlano(r);
@@ -65,145 +65,117 @@ function DietaPage() {
         </div>
       </div>
 
-      {!ehPro && (
-        <div
-          className="mt-4 rounded-xl p-3 flex items-start gap-2"
-          style={{
-            background: "color-mix(in oklab, var(--secondary) 12%, var(--card))",
-            border: "1px solid color-mix(in oklab, var(--secondary) 35%, var(--border))",
-          }}
+      <div className="mt-5">
+        <ProGate
+          titulo="Dieta personalizada por IA"
+          descricao="Plano alimentar de 7 dias com receitas, gerado pra você. Disponível no Pro."
         >
-          <Sparkles size={14} className="mt-0.5 shrink-0" style={{ color: "var(--secondary)" }} />
-          <div className="text-[11px] leading-snug">
-            Plano <strong>Free</strong>: gere uma <strong>prévia de 1 dia</strong>. Pra liberar
-            7 dias completos + receitas, ative o <Link to="/upgrade" className="font-semibold underline">Pro</Link>.
-          </div>
-        </div>
-      )}
-
-      <section className="mt-5 elevo-card p-4 space-y-3">
-        <div>
-          <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted-foreground)" }}>
-            Objetivo
-          </label>
-          <input className="input-field" value={objetivo} onChange={(e) => setObjetivo(e.target.value)} maxLength={60} />
-        </div>
-        <div>
-          <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted-foreground)" }}>
-            Restrições / alergias <span className="opacity-60">(opcional)</span>
-          </label>
-          <input
-            className="input-field"
-            placeholder="Ex: lactose, glúten, vegetariano"
-            value={restricoes}
-            onChange={(e) => setRestricoes(e.target.value)}
-            maxLength={400}
-          />
-        </div>
-        <div>
-          <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted-foreground)" }}>
-            Refeições por dia
-          </label>
-          <div className="flex gap-2">
-            {[3, 4, 5, 6].map((n) => (
-              <button
-                key={n}
-                onClick={() => setRefeicoes(n)}
-                className="flex-1 py-2 rounded-lg text-sm font-semibold transition"
-                style={{
-                  backgroundColor: refeicoes === n ? "var(--primary)" : "var(--card-elevated)",
-                  color: refeicoes === n ? "var(--primary-foreground)" : "var(--foreground)",
-                }}
-              >
-                {n}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div>
-          <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted-foreground)" }}>
-            Preferências / comidas favoritas <span className="opacity-60">(opcional)</span>
-          </label>
-          <input
-            className="input-field"
-            placeholder="Ex: arroz, feijão, frango, ovos"
-            value={preferencias}
-            onChange={(e) => setPreferencias(e.target.value)}
-            maxLength={400}
-          />
-        </div>
-        <button className="btn-primary w-full" onClick={gerar} disabled={loading}>
-          {loading ? (
-            <span className="inline-flex items-center gap-2">
-              <Loader2 size={16} className="animate-spin" /> Gerando...
-            </span>
-          ) : ehPro ? (
-            "Gerar plano de 7 dias"
-          ) : (
-            "Gerar prévia (1 dia)"
-          )}
-        </button>
-        {erro && (
-          <p className="text-[11px] text-center" style={{ color: "var(--destructive)" }}>
-            {erro}
-          </p>
-        )}
-      </section>
-
-      {plano && (
-        <section className="mt-5">
-          <div className="flex items-baseline justify-between mb-2">
-            <h2 className="text-sm font-semibold">{plano.titulo}</h2>
-            {plano.resumoCalorico && (
-              <span className="text-[11px]" style={{ color: "var(--primary)" }}>
-                {plano.resumoCalorico}
-              </span>
-            )}
-          </div>
-          <ul className="space-y-2">
-            {plano.refeicoes.map((r, i) => (
-              <li key={i} className="elevo-card p-3">
-                <div className="flex items-baseline justify-between">
-                  <span className="text-sm font-bold">{r.nome}</span>
-                  <span className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
-                    {r.horario}{r.calorias ? ` · ${r.calorias} kcal` : ""}
-                  </span>
-                </div>
-                <ul className="mt-1.5 text-xs space-y-0.5" style={{ color: "var(--muted-foreground)" }}>
-                  {r.itens.map((it, j) => (
-                    <li key={j}>• {it}</li>
-                  ))}
-                </ul>
-                {r.receita && (
-                  <div
-                    className="mt-2 text-[11px] leading-snug p-2 rounded-lg"
-                    style={{ background: "var(--card-elevated)" }}
+          <section className="elevo-card p-4 space-y-3">
+            <div>
+              <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted-foreground)" }}>
+                Objetivo
+              </label>
+              <input className="input-field" value={objetivo} onChange={(e) => setObjetivo(e.target.value)} maxLength={60} />
+            </div>
+            <div>
+              <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted-foreground)" }}>
+                Restrições / alergias <span className="opacity-60">(opcional)</span>
+              </label>
+              <input
+                className="input-field"
+                placeholder="Ex: lactose, glúten, vegetariano"
+                value={restricoes}
+                onChange={(e) => setRestricoes(e.target.value)}
+                maxLength={400}
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted-foreground)" }}>
+                Refeições por dia
+              </label>
+              <div className="flex gap-2">
+                {[3, 4, 5, 6].map((n) => (
+                  <button
+                    key={n}
+                    onClick={() => setRefeicoes(n)}
+                    className="flex-1 py-2 rounded-lg text-sm font-semibold transition"
+                    style={{
+                      backgroundColor: refeicoes === n ? "var(--primary)" : "var(--card-elevated)",
+                      color: refeicoes === n ? "var(--primary-foreground)" : "var(--foreground)",
+                    }}
                   >
-                    <strong>Receita:</strong> {r.receita}
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-
-          {plano.preview && (
-            <Link
-              to="/upgrade"
-              className="mt-4 block rounded-2xl p-4 text-center"
-              style={{
-                background: "linear-gradient(135deg, color-mix(in oklab, var(--secondary) 30%, var(--card)), var(--card))",
-                border: "1px solid color-mix(in oklab, var(--secondary) 40%, var(--border))",
-              }}
-            >
-              <Lock size={16} className="inline mr-1.5" style={{ color: "var(--secondary)" }} />
-              <span className="text-sm font-bold">Quero os 7 dias + receitas →</span>
-              <div className="text-[11px] mt-1" style={{ color: "var(--muted-foreground)" }}>
-                Disponível no Pro · 14 dias grátis
+                    {n}
+                  </button>
+                ))}
               </div>
-            </Link>
+            </div>
+            <div>
+              <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted-foreground)" }}>
+                Preferências / comidas favoritas <span className="opacity-60">(opcional)</span>
+              </label>
+              <input
+                className="input-field"
+                placeholder="Ex: arroz, feijão, frango, ovos"
+                value={preferencias}
+                onChange={(e) => setPreferencias(e.target.value)}
+                maxLength={400}
+              />
+            </div>
+            <button className="btn-primary w-full" onClick={gerar} disabled={loading}>
+              {loading ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 size={16} className="animate-spin" /> Gerando...
+                </span>
+              ) : (
+                "Gerar plano de 7 dias"
+              )}
+            </button>
+            {erro && (
+              <p className="text-[11px] text-center" style={{ color: "var(--destructive)" }}>
+                {erro}
+              </p>
+            )}
+          </section>
+
+          {plano && (
+            <section className="mt-5">
+              <div className="flex items-baseline justify-between mb-2">
+                <h2 className="text-sm font-semibold">{plano.titulo}</h2>
+                {plano.resumoCalorico && (
+                  <span className="text-[11px]" style={{ color: "var(--primary)" }}>
+                    {plano.resumoCalorico}
+                  </span>
+                )}
+              </div>
+              <ul className="space-y-2">
+                {plano.refeicoes.map((r, i) => (
+                  <li key={i} className="elevo-card p-3">
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-sm font-bold">{r.nome}</span>
+                      <span className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+                        {r.horario}{r.calorias ? ` · ${r.calorias} kcal` : ""}
+                      </span>
+                    </div>
+                    <ul className="mt-1.5 text-xs space-y-0.5" style={{ color: "var(--muted-foreground)" }}>
+                      {r.itens.map((it, j) => (
+                        <li key={j}>• {it}</li>
+                      ))}
+                    </ul>
+                    {r.receita && (
+                      <div
+                        className="mt-2 text-[11px] leading-snug p-2 rounded-lg"
+                        style={{ background: "var(--card-elevated)" }}
+                      >
+                        <strong>Receita:</strong> {r.receita}
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
           )}
-        </section>
-      )}
+        </ProGate>
+      </div>
 
       <BottomNav />
     </div>
