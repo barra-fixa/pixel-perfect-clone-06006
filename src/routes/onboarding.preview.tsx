@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Check, Sparkles, UtensilsCrossed } from "lucide-react";
 import { saveUser, useElevoUser } from "@/lib/elevo-store";
 import { pitchProPorObjetivo } from "@/lib/objetivo-labels";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/onboarding/preview")({
   component: PreviewPage,
@@ -17,8 +18,26 @@ const beneficios = [
 function PreviewPage() {
   const user = useElevoUser();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const nome = user.nome ?? "atleta";
   const pitch = pitchProPorObjetivo(user.objetivo);
+
+  const irParaPro = () => {
+    if (isAuthenticated) {
+      navigate({ to: "/upgrade" });
+    } else {
+      navigate({ to: "/onboarding/email", search: { next: "/upgrade" } as never });
+    }
+  };
+
+  const irParaFree = () => {
+    saveUser({ plano: "free", diasJornada: 1, treinosFeitos: 0, streak: 0 });
+    if (isAuthenticated) {
+      navigate({ to: "/home" });
+    } else {
+      navigate({ to: "/onboarding/email", search: { next: "/home" } as never });
+    }
+  };
 
   return (
     <div className="elevo-shell px-5 pt-6 pb-8 min-h-dvh">
@@ -95,20 +114,14 @@ function PreviewPage() {
             background:
               "linear-gradient(135deg, var(--secondary), color-mix(in oklab, var(--secondary) 70%, var(--primary)))",
           }}
-          onClick={() => navigate({ to: "/upgrade" })}
+          onClick={irParaPro}
         >
           Começar meus 14 dias grátis
         </button>
         <p className="text-center text-[11px] leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
           Sem cobrança hoje · avisamos por e-mail antes de qualquer cobrança · cancele em 1 toque.
         </p>
-        <button
-          className="btn-outline"
-          onClick={() => {
-            saveUser({ plano: "free", diasJornada: 1, treinosFeitos: 0, streak: 0 });
-            navigate({ to: "/home" });
-          }}
-        >
+        <button className="btn-outline" onClick={irParaFree}>
           Continuar grátis por enquanto
         </button>
         <p className="text-center text-[10px] leading-relaxed" style={{ color: "var(--subtle)" }}>

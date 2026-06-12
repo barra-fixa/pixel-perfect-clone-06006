@@ -15,13 +15,31 @@ function irPara(destino: string) {
 }
 
 /**
- * Apos magic link: se o usuario veio do onboarding (flag setada em
- * /onboarding/email) e ainda nao viu a oferta Pro, manda pra /onboarding/preview
- * em vez de /home. A flag e consumida na primeira leitura.
+ * Apos magic link: prioriza o parametro ?next= da URL (funciona mesmo quando
+ * o link abre em outro browser/dispositivo). Fallback: flag de localStorage
+ * (mesmo browser). Default: /home.
  */
 function destinoPosLogin(): string {
   if (typeof window === "undefined") return "/home";
   try {
+    const url = new URL(window.location.href);
+    const next = url.searchParams.get("next");
+    if (next && next.startsWith("/") && !next.startsWith("//")) {
+      // consome fallbacks locais
+      try {
+        localStorage.removeItem("elevo:pending-pro-offer");
+        localStorage.removeItem("elevo:post-login-next");
+      } catch {
+        // ignora
+      }
+      return next;
+    }
+    const nextLocal = localStorage.getItem("elevo:post-login-next");
+    if (nextLocal && nextLocal.startsWith("/") && !nextLocal.startsWith("//")) {
+      localStorage.removeItem("elevo:post-login-next");
+      localStorage.removeItem("elevo:pending-pro-offer");
+      return nextLocal;
+    }
     const pendente = localStorage.getItem("elevo:pending-pro-offer");
     if (pendente === "1") {
       localStorage.removeItem("elevo:pending-pro-offer");

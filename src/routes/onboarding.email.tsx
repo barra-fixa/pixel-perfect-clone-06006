@@ -46,10 +46,18 @@ function ContatoPage() {
       const emailLimpo = email.trim().toLowerCase();
       const nomeLimpo = nome.trim();
       const whatsLimpo = whatsapp.trim() ? `+55${digits(whatsapp)}` : "";
+
+      // Destino pos-login: vem do ?next= na URL atual (ex: /upgrade, /home);
+      // fallback /onboarding/preview pra fluxos antigos.
+      const urlAtual = new URL(window.location.href);
+      const nextParam = urlAtual.searchParams.get("next");
+      const destinoSeguro = nextParam && nextParam.startsWith("/") ? nextParam : "/onboarding/preview";
+      const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(destinoSeguro)}`;
+
       const { error } = await supabase.auth.signInWithOtp({
         email: emailLimpo,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: redirectTo,
           data: { nome: nomeLimpo, whatsapp: whatsLimpo || null },
         },
       });
@@ -59,10 +67,11 @@ function ContatoPage() {
         email: emailLimpo,
         whatsapp: whatsLimpo || undefined,
       });
-      // Sinaliza ao /auth/callback que, ao voltar do magic link, o proximo
-      // passo do onboarding e a oferta Pro (nao /home).
+      // Fallback localStorage: usado SO se o magic link abrir no mesmo browser
+      // e o ?next= se perder por algum motivo. O destino na URL e a fonte primaria.
       try {
         localStorage.setItem("elevo:pending-pro-offer", "1");
+        localStorage.setItem("elevo:post-login-next", destinoSeguro);
       } catch {
         // ignora storage indisponivel
       }
