@@ -134,6 +134,35 @@ function UpgradePage() {
         </ul>
       </div>
 
+      {/* E-mail de pagamento (editavel, desacoplado do login) */}
+      <div className="elevo-card mt-6 p-4">
+        <label
+          htmlFor="email-pagamento"
+          className="text-xs font-semibold block"
+          style={{ color: "var(--muted-foreground)" }}
+        >
+          E-mail de pagamento
+        </label>
+        <input
+          id="email-pagamento"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          className="input-field mt-1.5"
+          placeholder="seu@email.com"
+          value={emailPagamento}
+          onChange={(e) => setEmailPagamento(e.target.value)}
+        />
+        <p className="mt-1.5 text-[10px] leading-relaxed" style={{ color: "var(--subtle)" }}>
+          Pode ser diferente do e-mail de login — use o e-mail da sua conta Mercado Pago, se preferir.
+        </p>
+        {emailPagamento && !emailPagamentoOk && (
+          <p className="mt-1 text-[10px]" style={{ color: "var(--destructive)" }}>
+            E-mail inválido.
+          </p>
+        )}
+      </div>
+
       {/* card pro */}
       <div
         className="mt-6 rounded-2xl p-5"
