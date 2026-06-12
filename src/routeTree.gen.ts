@@ -46,6 +46,8 @@ import { Route as OnboardingCaminhoRouteImport } from './routes/onboarding.camin
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as ApiPublicMercadopagoWebhookRouteImport } from './routes/api/public/mercadopago-webhook'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
+import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as ApiPublicHooksSendRemindersRouteImport } from './routes/api/public/hooks/send-reminders'
 import { Route as ApiPublicExerciseGifIdRouteImport } from './routes/api/public/exercise-gif.$id'
 import { Route as ApiPublicExerciseGifByNameNameRouteImport } from './routes/api/public/exercise-gif-by-name.$name'
@@ -237,6 +239,16 @@ const LovableEmailQueueProcessRoute =
     path: '/lovable/email/queue/process',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
+  id: '/lovable/email/auth/webhook',
+  path: '/lovable/email/auth/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
+  id: '/lovable/email/auth/preview',
+  path: '/lovable/email/auth/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksSendRemindersRoute =
   ApiPublicHooksSendRemindersRouteImport.update({
     id: '/api/public/hooks/send-reminders',
@@ -295,6 +307,8 @@ export interface FileRoutesByFullPath {
   '/api/public/exercise-gif-by-name/$name': typeof ApiPublicExerciseGifByNameNameRoute
   '/api/public/exercise-gif/$id': typeof ApiPublicExerciseGifIdRoute
   '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
@@ -337,6 +351,8 @@ export interface FileRoutesByTo {
   '/api/public/exercise-gif-by-name/$name': typeof ApiPublicExerciseGifByNameNameRoute
   '/api/public/exercise-gif/$id': typeof ApiPublicExerciseGifIdRoute
   '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
@@ -380,6 +396,8 @@ export interface FileRoutesById {
   '/api/public/exercise-gif-by-name/$name': typeof ApiPublicExerciseGifByNameNameRoute
   '/api/public/exercise-gif/$id': typeof ApiPublicExerciseGifIdRoute
   '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
@@ -424,6 +442,8 @@ export interface FileRouteTypes {
     | '/api/public/exercise-gif-by-name/$name'
     | '/api/public/exercise-gif/$id'
     | '/api/public/hooks/send-reminders'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -466,6 +486,8 @@ export interface FileRouteTypes {
     | '/api/public/exercise-gif-by-name/$name'
     | '/api/public/exercise-gif/$id'
     | '/api/public/hooks/send-reminders'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
   id:
     | '__root__'
@@ -508,6 +530,8 @@ export interface FileRouteTypes {
     | '/api/public/exercise-gif-by-name/$name'
     | '/api/public/exercise-gif/$id'
     | '/api/public/hooks/send-reminders'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
@@ -543,6 +567,8 @@ export interface RootRouteChildren {
   ApiPublicExerciseGifByNameNameRoute: typeof ApiPublicExerciseGifByNameNameRoute
   ApiPublicExerciseGifIdRoute: typeof ApiPublicExerciseGifIdRoute
   ApiPublicHooksSendRemindersRoute: typeof ApiPublicHooksSendRemindersRoute
+  LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
+  LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
@@ -807,6 +833,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/auth/webhook': {
+      id: '/lovable/email/auth/webhook'
+      path: '/lovable/email/auth/webhook'
+      fullPath: '/lovable/email/auth/webhook'
+      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/auth/preview': {
+      id: '/lovable/email/auth/preview'
+      path: '/lovable/email/auth/preview'
+      fullPath: '/lovable/email/auth/preview'
+      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/send-reminders': {
       id: '/api/public/hooks/send-reminders'
       path: '/api/public/hooks/send-reminders'
@@ -913,6 +953,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicExerciseGifByNameNameRoute: ApiPublicExerciseGifByNameNameRoute,
   ApiPublicExerciseGifIdRoute: ApiPublicExerciseGifIdRoute,
   ApiPublicHooksSendRemindersRoute: ApiPublicHooksSendRemindersRoute,
+  LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
+  LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
