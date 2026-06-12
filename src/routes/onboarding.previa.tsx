@@ -4,7 +4,7 @@ import { CheckCircle2, Sparkles, Lock } from "lucide-react";
 import { loadUser, useElevoUser } from "@/lib/elevo-store";
 import { getPlanoSemanal } from "@/lib/treinos";
 import { tituloPlanoPorObjetivo } from "@/lib/objetivo-labels";
-import { useAuth } from "@/hooks/use-auth";
+
 
 export const Route = createFileRoute("/onboarding/previa")({
   component: PreviaPage,
