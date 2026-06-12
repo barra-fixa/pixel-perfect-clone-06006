@@ -83,7 +83,7 @@ function PreviewPage() {
           <div className="font-bold text-sm">Sua dieta personalizada por IA</div>
           <div className="mt-0.5" style={{ color: "var(--muted-foreground)" }}>
             Plano alimentar de 7 dias gerado pra você, com receitas práticas e ajustado
-            ao seu objetivo. Incluso no Pro.
+            ao seu objetivo. Já incluída no seu plano Pro.
           </div>
         </div>
       </div>
