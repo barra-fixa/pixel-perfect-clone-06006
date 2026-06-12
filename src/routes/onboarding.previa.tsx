@@ -108,10 +108,8 @@ function PreviaPage() {
           📨
         </div>
         <div className="text-xs leading-snug">
-          <div className="font-semibold text-sm">Pra liberar tudo, preciso só de 2 coisas:</div>
-          <div className="mt-0.5" style={{ color: "var(--muted-foreground)" }}>
-            Seu <strong>e-mail</strong> (envio o plano) e seu <strong>WhatsApp</strong> (te
-            lembro de treinar). Sem spam.
+          <div style={{ color: "var(--muted-foreground)" }}>
+            Agora só preciso saber seu nome e seus dados pra liberar seu treino — já com o plano alimentar incluso.
           </div>
         </div>
       </div>
