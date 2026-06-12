@@ -167,7 +167,7 @@ function ContatoPage() {
         </div>
         <div>
           <label className="text-xs font-medium mb-1.5 flex items-center gap-1.5" style={{ color: "var(--muted-foreground)" }}>
-            <MessageCircle size={12} /> WhatsApp <span className="text-[10px] opacity-70">(opcional, pra lembretes)</span>
+            <MessageCircle size={12} /> WhatsApp
           </label>
           <input
             type="tel"

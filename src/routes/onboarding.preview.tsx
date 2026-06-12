@@ -119,13 +119,7 @@ function PreviewPage() {
           Começar meus 14 dias grátis
         </button>
         <p className="text-center text-[11px] leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
-          Sem cobrança hoje · avisamos por e-mail antes de qualquer cobrança · cancele em 1 toque.
-        </p>
-        <button className="btn-outline" onClick={irParaFree}>
-          Continuar grátis por enquanto
-        </button>
-        <p className="text-center text-[10px] leading-relaxed" style={{ color: "var(--subtle)" }}>
-          O plano grátis continua seu, sem cartão. O cartão é só pra liberar o Pro por 14 dias.
+          Sem cobrança hoje · avisamos por e-mail antes de qualquer cobrança. Cancele quando quiser, em 1 toque, sem burocracia. Mesmo se cancelar, você continua com acesso ao app — apenas os treinos com barra fixa ficam liberados.
         </p>
       </div>
     </div>
