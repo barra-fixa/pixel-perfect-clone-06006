@@ -32,16 +32,18 @@ function UpgradePage() {
   const pitch = pitchProPorObjetivo(user.objetivo);
   const criar = useServerFn(criarAssinaturaMP);
   const [loading, setLoading] = useState<null | "mensal" | "anual">(null);
+  const [emailPagamento, setEmailPagamento] = useState(user.email ?? "");
+  const emailPagamentoOk = /\S+@\S+\.\S+/.test(emailPagamento.trim());
 
   async function ativar(plano: "mensal" | "anual") {
-    if (!user.email) {
-      toast.error("Faltando email", { description: "Cadastre seu email no onboarding/perfil antes." });
-      navigate({ to: "/onboarding/email" });
+    const emailLimpo = emailPagamento.trim().toLowerCase();
+    if (!emailPagamentoOk) {
+      toast.error("E-mail de pagamento inválido", { description: "Confira o e-mail antes de continuar." });
       return;
     }
     setLoading(plano);
     try {
-      const r = await criar({ data: { plano, email: user.email, nome: user.nome } });
+      const r = await criar({ data: { plano, email: emailLimpo, nome: user.nome } });
       window.location.href = r.init_point;
     } catch (e) {
       toast.error("Não foi possível iniciar a assinatura", {
