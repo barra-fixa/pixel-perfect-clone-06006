@@ -18,8 +18,26 @@ const beneficios = [
 function PreviewPage() {
   const user = useElevoUser();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const nome = user.nome ?? "atleta";
   const pitch = pitchProPorObjetivo(user.objetivo);
+
+  const irParaPro = () => {
+    if (isAuthenticated) {
+      navigate({ to: "/upgrade" });
+    } else {
+      navigate({ to: "/onboarding/email", search: { next: "/upgrade" } as never });
+    }
+  };
+
+  const irParaFree = () => {
+    saveUser({ plano: "free", diasJornada: 1, treinosFeitos: 0, streak: 0 });
+    if (isAuthenticated) {
+      navigate({ to: "/home" });
+    } else {
+      navigate({ to: "/onboarding/email", search: { next: "/home" } as never });
+    }
+  };
 
   return (
     <div className="elevo-shell px-5 pt-6 pb-8 min-h-dvh">
