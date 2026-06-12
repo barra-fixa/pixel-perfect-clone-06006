@@ -8,11 +8,10 @@ export const Route = createFileRoute("/onboarding/preview")({
 });
 
 const beneficios = [
-  "14 dias grátis — só é cobrado depois",
-  "Treinou no mês? O mês é grátis",
-  "Plano completo de 12-24 semanas",
+  "14 dias grátis — só cobramos depois desse período",
+  "Plano completo de 12 a 24 semanas",
   "Dieta personalizada por IA + receitas",
-  "Cancele em 1 toque",
+  "Cancele em 1 toque, quando quiser",
 ];
 
 function PreviewPage() {
