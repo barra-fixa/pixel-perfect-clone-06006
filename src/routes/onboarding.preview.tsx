@@ -99,6 +99,9 @@ function PreviewPage() {
         >
           Começar meus 14 dias grátis
         </button>
+        <p className="text-center text-[11px] leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
+          Sem cobrança hoje · avisamos por e-mail antes de qualquer cobrança · cancele em 1 toque.
+        </p>
         <button
           className="btn-outline"
           onClick={() => {
@@ -109,7 +112,7 @@ function PreviewPage() {
           Continuar grátis por enquanto
         </button>
         <p className="text-center text-[10px] leading-relaxed" style={{ color: "var(--subtle)" }}>
-          Sem cobrança hoje · cartão só pra confirmar · cancela quando quiser
+          O plano grátis continua seu, sem cartão. O cartão é só pra liberar o Pro por 14 dias.
         </p>
       </div>
     </div>
