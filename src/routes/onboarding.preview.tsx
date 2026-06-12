@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Check, Sparkles, UtensilsCrossed } from "lucide-react";
 import { saveUser, useElevoUser } from "@/lib/elevo-store";
 import { pitchProPorObjetivo } from "@/lib/objetivo-labels";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/onboarding/preview")({
   component: PreviewPage,
