@@ -15,6 +15,7 @@ function CaminhoPage() {
   return (
     <OnboardingShell
       step={2}
+      total={5}
       title="Como você quer treinar?"
       subtitle="Escolha o caminho que mais combina com você"
       footer={

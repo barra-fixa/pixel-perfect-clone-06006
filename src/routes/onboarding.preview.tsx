@@ -8,11 +8,10 @@ export const Route = createFileRoute("/onboarding/preview")({
 });
 
 const beneficios = [
-  "14 dias grátis — só é cobrado depois",
-  "Treinou no mês? O mês é grátis",
-  "Plano completo de 12-24 semanas",
+  "14 dias grátis — só cobramos depois desse período",
+  "Plano completo de 12 a 24 semanas",
   "Dieta personalizada por IA + receitas",
-  "Cancele em 1 toque",
+  "Cancele em 1 toque, quando quiser",
 ];
 
 function PreviewPage() {
@@ -84,7 +83,7 @@ function PreviewPage() {
           <div className="font-bold text-sm">Sua dieta personalizada por IA</div>
           <div className="mt-0.5" style={{ color: "var(--muted-foreground)" }}>
             Plano alimentar de 7 dias gerado pra você, com receitas práticas e ajustado
-            ao seu objetivo. Incluso no Pro.
+            ao seu objetivo. Já incluída no seu plano Pro.
           </div>
         </div>
       </div>
@@ -100,6 +99,9 @@ function PreviewPage() {
         >
           Começar meus 14 dias grátis
         </button>
+        <p className="text-center text-[11px] leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
+          Sem cobrança hoje · avisamos por e-mail antes de qualquer cobrança · cancele em 1 toque.
+        </p>
         <button
           className="btn-outline"
           onClick={() => {
@@ -110,7 +112,7 @@ function PreviewPage() {
           Continuar grátis por enquanto
         </button>
         <p className="text-center text-[10px] leading-relaxed" style={{ color: "var(--subtle)" }}>
-          Sem cobrança hoje · cartão só pra confirmar · cancela quando quiser
+          O plano grátis continua seu, sem cartão. O cartão é só pra liberar o Pro por 14 dias.
         </p>
       </div>
     </div>

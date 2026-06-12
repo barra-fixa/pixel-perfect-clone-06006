@@ -15,7 +15,8 @@ function SacoPage() {
 
   return (
     <OnboardingShell
-      step={2}
+      step={3}
+      total={5}
       title="Você tem saco de pancada?"
       subtitle="Toda barra suporta saco de pancada — incluindo a sua"
     >
