@@ -120,9 +120,7 @@ function PreviaPage() {
       <div className="mt-6 space-y-2">
         <button
           className="btn-primary"
-          onClick={() =>
-            navigate({ to: isAuthenticated ? "/onboarding/preview" : "/onboarding/email" })
-          }
+          onClick={() => navigate({ to: "/onboarding/preview" })}
         >
           Quero meu plano completo
         </button>
