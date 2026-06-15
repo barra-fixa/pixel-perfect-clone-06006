@@ -13,17 +13,17 @@ export const Route = createFileRoute("/upgrade")({
 });
 
 
-type Linha = readonly [string, boolean, boolean, string?];
+type Linha = readonly [string, string?];
 const features: readonly Linha[] = [
-  ["Treino inicial (7 dias)", true, true],
-  ["Contador de séries/reps", true, true],
-  ["Treinos Só Barra Fixa", true, true],
-  ["Vídeos de execução", false, false, "em breve"],
-  ["Plano IA personalizado", false, true],
-  ["Progressão 12-24 semanas", false, true],
-  ["Dieta com IA + receitas", false, true],
-  ["Desafios ilimitados", false, true],
-  ["Cupons exclusivos", false, true],
+  ["Treino inicial (7 dias)"],
+  ["Contador de séries/reps"],
+  ["Treinos Só Barra Fixa"],
+  ["Vídeos de execução", "em breve"],
+  ["Plano IA personalizado"],
+  ["Progressão 12-24 semanas"],
+  ["Dieta com IA + receitas"],
+  ["Desafios ilimitados"],
+  ["Cupons exclusivos"],
 ] as const;
 
 function UpgradePage() {
@@ -118,44 +118,29 @@ function UpgradePage() {
         </ul>
       </div>
 
-      {/* tabela */}
-      <div className="elevo-card mt-6 overflow-hidden">
-        <div
-          className="grid grid-cols-[1fr_70px_70px] px-4 py-3 text-xs font-semibold"
-          style={{ borderBottom: "1px solid var(--border)" }}
-        >
-          <span>Recurso</span>
-          <span className="text-center" style={{ color: "var(--muted-foreground)" }}>Free</span>
-          <span className="text-center" style={{ color: "var(--secondary)" }}>Pro</span>
-        </div>
-        <ul>
-          {features.map(([label, free, pro, badge]) => (
-            <li
-              key={label}
-              className="grid grid-cols-[1fr_70px_70px] px-4 py-2.5 items-center text-sm"
-              style={{ borderTop: "1px solid var(--border)" }}
-            >
-              <span>
-                {label}
-                {badge && (
-                  <span
-                    className="ml-1.5 text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded"
-                    style={{ background: "var(--card-elevated)", color: "var(--muted-foreground)" }}
-                  >
-                    {badge}
-                  </span>
-                )}
-              </span>
-              <span className="flex justify-center">
-                {free ? <Check size={16} style={{ color: "var(--primary)" }} /> : <X size={16} style={{ color: "var(--subtle)" }} />}
-              </span>
-              <span className="flex justify-center">
-                {pro ? <Check size={16} style={{ color: "var(--secondary)" }} strokeWidth={3} /> : <X size={16} style={{ color: "var(--subtle)" }} />}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
+      {/* lista de recursos do Pro */}
+      <ul className="elevo-card mt-6 overflow-hidden">
+        {features.map(([label, badge]) => (
+          <li
+            key={label}
+            className="flex items-center gap-3 px-4 py-2.5 text-sm"
+            style={{ borderTop: "1px solid var(--border)" }}
+          >
+            <Check size={16} style={{ color: "var(--secondary)" }} strokeWidth={3} />
+            <span>
+              {label}
+              {badge && (
+                <span
+                  className="ml-1.5 text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded"
+                  style={{ background: "var(--card-elevated)", color: "var(--muted-foreground)" }}
+                >
+                  {badge}
+                </span>
+              )}
+            </span>
+          </li>
+        ))}
+      </ul>
 
       {/* E-mail de pagamento — escondido por padrão, usa e-mail de login automaticamente */}
       <div className="mt-6">
