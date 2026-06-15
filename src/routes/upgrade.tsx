@@ -35,17 +35,39 @@ function UpgradePage() {
   const [loading, setLoading] = useState<null | "mensal" | "anual">(null);
   const [emailPagamento, setEmailPagamento] = useState(user.email ?? "");
   const [editandoEmail, setEditandoEmail] = useState(false);
+  const [emailEditadoManual, setEmailEditadoManual] = useState(false);
   const emailPagamentoOk = /\S+@\S+\.\S+/.test(emailPagamento.trim());
 
+  // Hidrata o e-mail de pagamento com o e-mail do usuário autenticado, enquanto não for editado manualmente.
+  useEffect(() => {
+    if (emailEditadoManual) return;
+    if (user.email && user.email !== emailPagamento) {
+      setEmailPagamento(user.email);
+      return;
+    }
+    if (!emailPagamento) {
+      supabase.auth.getUser().then(({ data }) => {
+        const e = data.user?.email;
+        if (e && !emailEditadoManual) setEmailPagamento(e);
+      });
+    }
+  }, [user.email, emailEditadoManual, emailPagamento]);
+
   async function ativar(plano: "mensal" | "anual") {
-    const emailLimpo = emailPagamento.trim().toLowerCase();
-    if (!emailPagamentoOk) {
+    let email = emailPagamento.trim().toLowerCase();
+    if (!email) {
+      const { data } = await supabase.auth.getUser();
+      email = (data.user?.email ?? "").trim().toLowerCase();
+      if (email) setEmailPagamento(email);
+    }
+    const valido = /\S+@\S+\.\S+/.test(email);
+    if (!valido) {
       toast.error("E-mail de pagamento inválido", { description: "Confira o e-mail antes de continuar." });
       return;
     }
     setLoading(plano);
     try {
-      const r = await criar({ data: { plano, email: emailLimpo, nome: user.nome } });
+      const r = await criar({ data: { plano, email, nome: user.nome } });
       window.location.href = r.init_point;
     } catch (e) {
       toast.error("Não foi possível iniciar a assinatura", {
