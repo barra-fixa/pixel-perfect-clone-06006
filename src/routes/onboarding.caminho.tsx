@@ -15,7 +15,7 @@ function CaminhoPage() {
   return (
     <OnboardingShell
       step={2}
-      total={5}
+      total={4}
       title="Como você quer treinar?"
       subtitle="Escolha o caminho que mais combina com você"
       footer={
@@ -25,7 +25,7 @@ function CaminhoPage() {
           onClick={() => {
             if (!sel) return;
             saveUser({ caminho: sel });
-            navigate({ to: sel === "barra" ? "/onboarding/saco" : "/onboarding/equipamentos" });
+            navigate({ to: sel === "barra" ? "/onboarding/nivel" : "/onboarding/equipamentos" });
           }}
         >
           Continuar
