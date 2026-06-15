@@ -64,18 +64,17 @@ function ContatoPage() {
       const emailLimpo = email.trim().toLowerCase();
       const nomeLimpo = nome.trim();
       const whatsLimpo = whatsapp.trim() ? `+55${digits(whatsapp)}` : "";
-      const destino = destinoPosLogin();
-      const redirectUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(destino)}`;
 
-      const { error } = await supabase.auth.signInWithOtp({
-        email: emailLimpo,
-        options: {
-          shouldCreateUser: true,
-          emailRedirectTo: redirectUrl,
-          data: { nome: nomeLimpo, whatsapp: whatsLimpo || null },
+      const { data, error } = await supabase.functions.invoke("send-otp-brevo", {
+        body: {
+          email: emailLimpo,
+          metadata: { nome: nomeLimpo, whatsapp: whatsLimpo || null },
         },
       });
       if (error) throw error;
+      if (data && typeof data === "object" && "error" in data && (data as { error?: unknown }).error) {
+        throw new Error(String((data as { error: unknown }).error));
+      }
       saveUser({
         nome: nomeLimpo,
         email: emailLimpo,
