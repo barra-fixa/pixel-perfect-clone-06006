@@ -121,6 +121,21 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Captura o lead ANTES de gerar/enviar o código (não bloqueia se falhar)
+    try {
+      const nome = metadata && typeof metadata.nome === "string" ? metadata.nome : null;
+      const whatsapp = metadata && typeof metadata.whatsapp === "string" ? metadata.whatsapp : null;
+      const { error: leadErr } = await admin
+        .from("leads")
+        .upsert(
+          { email, nome, whatsapp, updated_at: new Date().toISOString() },
+          { onConflict: "email" },
+        );
+      if (leadErr) console.error("leads upsert error:", leadErr.message);
+    } catch (e) {
+      console.error("leads upsert exception:", e instanceof Error ? e.message : e);
+    }
+
     const codigo = await gerarOtp(email, metadata);
     await enviarBrevo(email, codigo);
 
