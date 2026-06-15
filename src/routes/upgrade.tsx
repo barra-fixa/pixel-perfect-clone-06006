@@ -23,7 +23,7 @@ const features: readonly Linha[] = [
   ["Progressão 12-24 semanas", false, true],
   ["Dieta com IA + receitas", false, true],
   ["Desafios ilimitados", false, true],
-  ["Meta: treina = mês grátis", false, true],
+  ["Cupons exclusivos", false, true],
   ["Cupons exclusivos", false, true],
 ] as const;
 
