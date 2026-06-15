@@ -94,7 +94,7 @@ const PROFILE_COLS: Record<string, keyof ElevoUser> = {
   objetivo: "objetivo",
   caminho: "caminho",
   equipamentos: "equipamentos",
-  tem_saco_pancada: "temSacoPancada",
+  // tem_saco_pancada removido do funil — não escrever mais.
   nivel: "nivel",
   frequencia: "frequencia",
   plano: "plano",
