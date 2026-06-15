@@ -19,8 +19,8 @@ function NivelPage() {
 
   return (
     <OnboardingShell
-      step={4}
-      total={5}
+      step={3}
+      total={4}
       title="Qual é o seu nível?"
       footer={
         <button
