@@ -242,7 +242,7 @@ function UpgradePage() {
           </span>
         </div>
         <p className="text-center text-[10px] mt-2" style={{ color: "var(--subtle)" }}>
-          Sem cobrança hoje · só é cobrado depois dos 14 dias · treina = mês grátis
+          Sem cobrança hoje · só é cobrado depois dos 14 dias · cancele quando quiser
         </p>
       </div>
 
