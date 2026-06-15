@@ -113,7 +113,7 @@ function UpgradePage() {
         </div>
         <ul className="space-y-1.5 text-xs mt-2">
           <li className="flex gap-2"><Check size={14} style={{ color: "var(--primary)" }} /> Você só é cobrado depois dos 14 dias.</li>
-          <li className="flex gap-2"><Check size={14} style={{ color: "var(--primary)" }} /> Se bater sua meta de treino no mês, o mês é grátis.</li>
+          <li className="flex gap-2"><Check size={14} style={{ color: "var(--primary)" }} /> Apenas R$17,90/mês depois — ou no plano anual com desconto.</li>
           <li className="flex gap-2"><Check size={14} style={{ color: "var(--primary)" }} /> Cancela em 1 toque, sem ligação.</li>
         </ul>
       </div>
