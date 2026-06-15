@@ -7,16 +7,12 @@ export const Route = createFileRoute("/onboarding/equipamentos")({
   component: EquipPage,
 });
 
+// Apenas equipamentos que têm exercícios cadastrados em public.exercicios.
+// peso_corporal = "nenhum" (sempre disponível como base do treino).
 const opcoes = [
   { id: "nenhum", emoji: "🏃", titulo: "Nenhum — só meu corpo" },
-  { id: "halteres", emoji: "🏋️", titulo: "Halteres" },
   { id: "elastico", emoji: "🟢", titulo: "Banda elástica" },
-  { id: "corda", emoji: "🪢", titulo: "Corda de pular" },
-  { id: "kettlebell", emoji: "⚫", titulo: "Kettlebell" },
-  { id: "paralela", emoji: "🦾", titulo: "Barra paralela" },
   { id: "saco", emoji: "🥊", titulo: "Saco de pancada" },
-  { id: "bike", emoji: "🚴", titulo: "Bicicleta" },
-  { id: "tapete", emoji: "🧘", titulo: "Colchonete" },
 ];
 
 function EquipPage() {
@@ -34,7 +30,7 @@ function EquipPage() {
   return (
     <OnboardingShell
       step={3}
-      total={5}
+      total={4}
       title="O que você tem em casa?"
       subtitle="Selecione tudo que tiver disponível"
       footer={
