@@ -41,6 +41,7 @@ export type ElevoUser = {
   objetivo?: Objetivo;
   caminho?: Caminho;
   equipamentos?: string[];
+  /** @deprecated removido do funil; mantido como opcional para retrocompat. */
   temSacoPancada?: boolean;
   nivel?: Nivel;
   frequencia?: number;
