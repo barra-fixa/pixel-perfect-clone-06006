@@ -206,7 +206,7 @@ function ContatoPage() {
       footer={
         <>
           <button className="btn-primary" disabled={!valido || loading} onClick={() => enviarLink()}>
-            {loading ? "Enviando..." : "Receber código e link por e-mail"}
+            {loading ? "Enviando..." : "Receber código por e-mail"}
           </button>
           {erro && (
             <p className="text-center mt-2 text-xs" style={{ color: "var(--destructive)" }}>
