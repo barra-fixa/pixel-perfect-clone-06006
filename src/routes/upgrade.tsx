@@ -23,7 +23,6 @@ const features: readonly Linha[] = [
   ["Progressão 12-24 semanas", false, true],
   ["Dieta com IA + receitas", false, true],
   ["Desafios ilimitados", false, true],
-  ["Meta: treina = mês grátis", false, true],
   ["Cupons exclusivos", false, true],
 ] as const;
 
@@ -114,7 +113,7 @@ function UpgradePage() {
         </div>
         <ul className="space-y-1.5 text-xs mt-2">
           <li className="flex gap-2"><Check size={14} style={{ color: "var(--primary)" }} /> Você só é cobrado depois dos 14 dias.</li>
-          <li className="flex gap-2"><Check size={14} style={{ color: "var(--primary)" }} /> Se bater sua meta de treino no mês, o mês é grátis.</li>
+          <li className="flex gap-2"><Check size={14} style={{ color: "var(--primary)" }} /> Apenas R$17,90/mês depois — ou no plano anual com desconto.</li>
           <li className="flex gap-2"><Check size={14} style={{ color: "var(--primary)" }} /> Cancela em 1 toque, sem ligação.</li>
         </ul>
       </div>
@@ -219,7 +218,7 @@ function UpgradePage() {
           </span>
         </div>
         <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>
-          Treina = mês grátis. Cancela quando quiser.
+          Cancela quando quiser, em 1 toque.
         </p>
         <button
           className="btn-primary mt-4 disabled:opacity-60"
@@ -243,7 +242,7 @@ function UpgradePage() {
           </span>
         </div>
         <p className="text-center text-[10px] mt-2" style={{ color: "var(--subtle)" }}>
-          Sem cobrança hoje · só é cobrado depois dos 14 dias · treina = mês grátis
+          Sem cobrança hoje · só é cobrado depois dos 14 dias · cancele quando quiser
         </p>
       </div>
 

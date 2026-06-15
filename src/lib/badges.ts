@@ -43,7 +43,7 @@ export function checkMetaSemanal(user: ElevoUser) {
   const treinos = (user.historicoTreinos ?? []).filter((t) => t.data >= sete).length;
   if (treinos === Math.ceil(freq)) {
     toast.success("Meta semanal batida! 🎯", {
-      description: "Você bateu sua meta de treinos da semana. Mês grátis garantido!",
+      description: "Você bateu sua meta de treinos da semana. Continue no ritmo!",
       duration: 6000,
     });
   }

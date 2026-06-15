@@ -89,15 +89,15 @@ function PerfilPage() {
             </div>
             <div className="font-bold text-sm mt-0.5">
               {bateu
-                ? "🎉 Meta da semana batida — mês grátis garantido!"
-                : `Treine ${treinosDaSemana} de ${meta} vezes essa semana pra garantir seu mês grátis`}
+                ? "🎉 Meta da semana batida — bom ritmo!"
+                : `Treine ${treinosDaSemana} de ${meta} vezes essa semana pra manter o ritmo`}
             </div>
             <div className="mt-2 progress-track">
               <div className="progress-fill" style={{ width: `${pct}%` }} />
             </div>
             <div className="text-[11px] mt-1.5" style={{ color: "var(--muted-foreground)" }}>
               {bateu
-                ? "Continue assim — sua próxima cobrança fica zerada."
+                ? "Continue assim — seu plano evolui semana a semana."
                 : `Faltam ${faltam} treino${faltam === 1 ? "" : "s"} · meta = ${meta}x por semana`}
             </div>
           </div>

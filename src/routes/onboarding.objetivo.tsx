@@ -23,7 +23,7 @@ function ObjetivoPage() {
   return (
     <OnboardingShell
       step={1}
-      total={5}
+      total={4}
       title="Qual é o seu principal objetivo?"
       subtitle="Vamos montar seu plano personalizado"
       footer={

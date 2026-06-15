@@ -33,7 +33,6 @@ import { Route as TafResultadoRouteImport } from './routes/taf.resultado'
 import { Route as PerfilNotificacoesRouteImport } from './routes/perfil.notificacoes'
 import { Route as PerfilHistoricoRouteImport } from './routes/perfil.historico'
 import { Route as PerfilDadosRouteImport } from './routes/perfil.dados'
-import { Route as OnboardingSacoRouteImport } from './routes/onboarding.saco'
 import { Route as OnboardingProcessandoRouteImport } from './routes/onboarding.processando'
 import { Route as OnboardingPreviewRouteImport } from './routes/onboarding.preview'
 import { Route as OnboardingPreviaRouteImport } from './routes/onboarding.previa'
@@ -172,11 +171,6 @@ const PerfilDadosRoute = PerfilDadosRouteImport.update({
   path: '/dados',
   getParentRoute: () => PerfilRoute,
 } as any)
-const OnboardingSacoRoute = OnboardingSacoRouteImport.update({
-  id: '/onboarding/saco',
-  path: '/onboarding/saco',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const OnboardingProcessandoRoute = OnboardingProcessandoRouteImport.update({
   id: '/onboarding/processando',
   path: '/onboarding/processando',
@@ -295,7 +289,6 @@ export interface FileRoutesByFullPath {
   '/onboarding/previa': typeof OnboardingPreviaRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/processando': typeof OnboardingProcessandoRoute
-  '/onboarding/saco': typeof OnboardingSacoRoute
   '/perfil/dados': typeof PerfilDadosRoute
   '/perfil/historico': typeof PerfilHistoricoRoute
   '/perfil/notificacoes': typeof PerfilNotificacoesRoute
@@ -339,7 +332,6 @@ export interface FileRoutesByTo {
   '/onboarding/previa': typeof OnboardingPreviaRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/processando': typeof OnboardingProcessandoRoute
-  '/onboarding/saco': typeof OnboardingSacoRoute
   '/perfil/dados': typeof PerfilDadosRoute
   '/perfil/historico': typeof PerfilHistoricoRoute
   '/perfil/notificacoes': typeof PerfilNotificacoesRoute
@@ -384,7 +376,6 @@ export interface FileRoutesById {
   '/onboarding/previa': typeof OnboardingPreviaRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/processando': typeof OnboardingProcessandoRoute
-  '/onboarding/saco': typeof OnboardingSacoRoute
   '/perfil/dados': typeof PerfilDadosRoute
   '/perfil/historico': typeof PerfilHistoricoRoute
   '/perfil/notificacoes': typeof PerfilNotificacoesRoute
@@ -430,7 +421,6 @@ export interface FileRouteTypes {
     | '/onboarding/previa'
     | '/onboarding/preview'
     | '/onboarding/processando'
-    | '/onboarding/saco'
     | '/perfil/dados'
     | '/perfil/historico'
     | '/perfil/notificacoes'
@@ -474,7 +464,6 @@ export interface FileRouteTypes {
     | '/onboarding/previa'
     | '/onboarding/preview'
     | '/onboarding/processando'
-    | '/onboarding/saco'
     | '/perfil/dados'
     | '/perfil/historico'
     | '/perfil/notificacoes'
@@ -518,7 +507,6 @@ export interface FileRouteTypes {
     | '/onboarding/previa'
     | '/onboarding/preview'
     | '/onboarding/processando'
-    | '/onboarding/saco'
     | '/perfil/dados'
     | '/perfil/historico'
     | '/perfil/notificacoes'
@@ -562,7 +550,6 @@ export interface RootRouteChildren {
   OnboardingPreviaRoute: typeof OnboardingPreviaRoute
   OnboardingPreviewRoute: typeof OnboardingPreviewRoute
   OnboardingProcessandoRoute: typeof OnboardingProcessandoRoute
-  OnboardingSacoRoute: typeof OnboardingSacoRoute
   ApiPublicMercadopagoWebhookRoute: typeof ApiPublicMercadopagoWebhookRoute
   ApiPublicExerciseGifByNameNameRoute: typeof ApiPublicExerciseGifByNameNameRoute
   ApiPublicExerciseGifIdRoute: typeof ApiPublicExerciseGifIdRoute
@@ -741,13 +728,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/perfil/dados'
       preLoaderRoute: typeof PerfilDadosRouteImport
       parentRoute: typeof PerfilRoute
-    }
-    '/onboarding/saco': {
-      id: '/onboarding/saco'
-      path: '/onboarding/saco'
-      fullPath: '/onboarding/saco'
-      preLoaderRoute: typeof OnboardingSacoRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/onboarding/processando': {
       id: '/onboarding/processando'
@@ -948,7 +928,6 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingPreviaRoute: OnboardingPreviaRoute,
   OnboardingPreviewRoute: OnboardingPreviewRoute,
   OnboardingProcessandoRoute: OnboardingProcessandoRoute,
-  OnboardingSacoRoute: OnboardingSacoRoute,
   ApiPublicMercadopagoWebhookRoute: ApiPublicMercadopagoWebhookRoute,
   ApiPublicExerciseGifByNameNameRoute: ApiPublicExerciseGifByNameNameRoute,
   ApiPublicExerciseGifIdRoute: ApiPublicExerciseGifIdRoute,
@@ -960,13 +939,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

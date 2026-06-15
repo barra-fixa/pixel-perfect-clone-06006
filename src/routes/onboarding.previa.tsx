@@ -94,8 +94,45 @@ function PreviaPage() {
         </div>
       </div>
 
+      {/* Destaque — plano alimentar incluso */}
       <div
-        className="mt-6 rounded-2xl p-4 flex items-start gap-3"
+        className="mt-5 rounded-2xl p-4"
+        style={{
+          background:
+            "linear-gradient(135deg, color-mix(in oklab, var(--secondary) 22%, var(--card)), var(--card))",
+          border: "1.5px solid color-mix(in oklab, var(--secondary) 55%, var(--border))",
+        }}
+      >
+        <div className="flex items-start gap-3">
+          <div
+            className="size-11 rounded-xl flex items-center justify-center shrink-0 text-2xl"
+            style={{ backgroundColor: "color-mix(in oklab, var(--secondary) 30%, transparent)" }}
+            aria-hidden
+          >
+            🍽️
+          </div>
+          <div className="flex-1 min-w-0">
+            <span
+              className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-1"
+              style={{
+                backgroundColor: "color-mix(in oklab, var(--secondary) 25%, transparent)",
+                color: "var(--secondary)",
+              }}
+            >
+              Incluso no seu plano
+            </span>
+            <div className="font-bold text-sm leading-tight">
+              + Plano alimentar personalizado por IA
+            </div>
+            <div className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>
+              Cardápio de 7 dias ajustado ao seu objetivo, nível e frequência de treino — com receitas práticas pra acelerar seus resultados.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        className="mt-4 rounded-2xl p-4 flex items-start gap-3"
         style={{
           background: "color-mix(in oklab, var(--primary) 12%, var(--card))",
           border: "1px solid color-mix(in oklab, var(--primary) 30%, var(--border))",
