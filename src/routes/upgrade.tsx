@@ -188,7 +188,7 @@ function UpgradePage() {
               className="input-field mt-1.5"
               placeholder="seu@email.com"
               value={emailPagamento}
-              onChange={(e) => setEmailPagamento(e.target.value)}
+              onChange={(e) => { setEmailEditadoManual(true); setEmailPagamento(e.target.value); }}
             />
             <p className="mt-1.5 text-[10px] leading-relaxed" style={{ color: "var(--subtle)" }}>
               Use o e-mail da sua conta Mercado Pago, se preferir.
