@@ -15,8 +15,8 @@ function FreqPage() {
 
   return (
     <OnboardingShell
-      step={5}
-      total={5}
+      step={4}
+      total={4}
       title="Quantos dias por semana?"
       subtitle="Escolha uma frequência realista — você pode mudar depois"
       footer={
