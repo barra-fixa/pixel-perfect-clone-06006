@@ -24,7 +24,6 @@ const features: readonly Linha[] = [
   ["Dieta com IA + receitas", false, true],
   ["Desafios ilimitados", false, true],
   ["Cupons exclusivos", false, true],
-  ["Cupons exclusivos", false, true],
 ] as const;
 
 function UpgradePage() {
