@@ -218,7 +218,7 @@ function UpgradePage() {
           </span>
         </div>
         <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>
-          Treina = mês grátis. Cancela quando quiser.
+          Cancela quando quiser, em 1 toque.
         </p>
         <button
           className="btn-primary mt-4 disabled:opacity-60"
