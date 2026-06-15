@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Check, ChevronLeft, X, Sparkles, Loader2, CreditCard, QrCode } from "lucide-react";
+import { Check, ChevronLeft, Sparkles, Loader2, CreditCard, QrCode } from "lucide-react";
 import { toast } from "sonner";
 import { useElevoUser } from "@/lib/elevo-store";
 import { pitchProPorObjetivo } from "@/lib/objetivo-labels";
