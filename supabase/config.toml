@@ -1,1 +1,4 @@
 project_id = "zipoyltvrhmgfrjlhzco"
+
+[functions.send-otp-brevo]
+verify_jwt = false

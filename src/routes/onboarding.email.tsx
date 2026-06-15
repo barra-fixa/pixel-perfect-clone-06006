@@ -64,18 +64,17 @@ function ContatoPage() {
       const emailLimpo = email.trim().toLowerCase();
       const nomeLimpo = nome.trim();
       const whatsLimpo = whatsapp.trim() ? `+55${digits(whatsapp)}` : "";
-      const destino = destinoPosLogin();
-      const redirectUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(destino)}`;
 
-      const { error } = await supabase.auth.signInWithOtp({
-        email: emailLimpo,
-        options: {
-          shouldCreateUser: true,
-          emailRedirectTo: redirectUrl,
-          data: { nome: nomeLimpo, whatsapp: whatsLimpo || null },
+      const { data, error } = await supabase.functions.invoke("send-otp-brevo", {
+        body: {
+          email: emailLimpo,
+          metadata: { nome: nomeLimpo, whatsapp: whatsLimpo || null },
         },
       });
       if (error) throw error;
+      if (data && typeof data === "object" && "error" in data && (data as { error?: unknown }).error) {
+        throw new Error(String((data as { error: unknown }).error));
+      }
       saveUser({
         nome: nomeLimpo,
         email: emailLimpo,
@@ -121,7 +120,7 @@ function ContatoPage() {
     return (
       <OnboardingShell
         title="Confirme seu e-mail"
-        subtitle={`Enviamos um código e um link de confirmação para ${email}.`}
+        subtitle={`Enviamos um código de 6 dígitos para ${email}.`}
         footer={
           <>
             <button
@@ -190,8 +189,7 @@ function ContatoPage() {
             onChange={(e) => setCodigo(digits(e.target.value).slice(0, 6))}
           />
           <p className="text-[11px] mt-4 max-w-[300px]" style={{ color: "var(--subtle)" }}>
-            Ou clique no link que enviamos no seu e-mail — ele também conclui o cadastro e abre o
-            próximo passo automaticamente.
+            Digite o código aqui para entrar. Você não precisa sair desta tela.
           </p>
           <p className="text-[10px] mt-2 max-w-[280px]" style={{ color: "var(--subtle)" }}>
             Não recebeu? Verifique spam, lixeira ou promoções. Pode levar alguns segundos.
@@ -208,7 +206,7 @@ function ContatoPage() {
       footer={
         <>
           <button className="btn-primary" disabled={!valido || loading} onClick={() => enviarLink()}>
-            {loading ? "Enviando..." : "Receber código e link por e-mail"}
+            {loading ? "Enviando..." : "Receber código por e-mail"}
           </button>
           {erro && (
             <p className="text-center mt-2 text-xs" style={{ color: "var(--destructive)" }}>

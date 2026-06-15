@@ -9,12 +9,20 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
+function digits(v: string) {
+  return v.replace(/\D/g, "");
+}
+
 function AuthPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-  const [enviado, setEnviado] = useState(false);
+  const [etapa, setEtapa] = useState<"form" | "codigo">("form");
+  const [codigo, setCodigo] = useState("");
+  const [verificando, setVerificando] = useState(false);
+  const [reenviando, setReenviando] = useState(false);
+  const [reenviadoMsg, setReenviadoMsg] = useState<string | null>(null);
   const [checkingSession, setCheckingSession] = useState(true);
 
   useEffect(() => {
@@ -47,25 +55,53 @@ function AuthPage() {
     };
   }, [navigate]);
 
-  const handleEnviar = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const enviarCodigo = async (opts?: { silencioso?: boolean }) => {
     setErro(null);
-    setLoading(true);
+    setReenviadoMsg(null);
+    if (opts?.silencioso) setReenviando(true);
+    else setLoading(true);
     try {
       const emailLimpo = email.trim().toLowerCase();
-      const { error } = await supabase.auth.signInWithOtp({
-        email: emailLimpo,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
+      const { data, error } = await supabase.functions.invoke("send-otp-brevo", {
+        body: { email: emailLimpo },
       });
       if (error) throw error;
+      if (data && typeof data === "object" && "error" in data && (data as { error?: unknown }).error) {
+        throw new Error(String((data as { error: unknown }).error));
+      }
       saveUser({ email: emailLimpo });
-      setEnviado(true);
+      if (opts?.silencioso) setReenviadoMsg("Reenviamos. Verifique seu e-mail.");
+      else setEtapa("codigo");
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "Erro ao enviar link");
+      setErro(err instanceof Error ? err.message : "Erro ao enviar código");
     } finally {
       setLoading(false);
+      setReenviando(false);
+    }
+  };
+
+  const verificarCodigo = async () => {
+    setErro(null);
+    setReenviadoMsg(null);
+    const token = digits(codigo);
+    if (token.length !== 6) {
+      setErro("Digite o código de 6 dígitos enviado por e-mail.");
+      return;
+    }
+    setVerificando(true);
+    try {
+      const emailLimpo = email.trim().toLowerCase();
+      const { error } = await supabase.auth.verifyOtp({
+        email: emailLimpo,
+        token,
+        type: "email",
+      });
+      if (error) throw error;
+      window.location.replace("/home");
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : "Código inválido ou expirado.");
+    } finally {
+      setVerificando(false);
     }
   };
 
@@ -83,41 +119,77 @@ function AuthPage() {
     );
   }
 
-  if (enviado) {
+  if (etapa === "codigo") {
     return (
       <div className="elevo-shell px-6 pt-14 pb-8 min-h-dvh flex flex-col">
-        <div className="flex-1 flex flex-col items-center justify-center text-center">
+        <div className="flex-1 flex flex-col items-center text-center">
           <div
             className="size-20 rounded-2xl flex items-center justify-center mb-6"
-            style={{
-              background:
-                "color-mix(in oklab, var(--primary) 18%, transparent)",
-            }}
+            style={{ background: "color-mix(in oklab, var(--primary) 18%, transparent)" }}
           >
             <Mail size={36} style={{ color: "var(--primary)" }} />
           </div>
-          <h1 className="text-2xl font-bold">Verifique seu email</h1>
-          <p className="mt-3 text-sm max-w-[300px]" style={{ color: "var(--muted-foreground)" }}>
-            Enviamos um link de acesso para
+          <h1 className="text-2xl font-bold">Digite o código</h1>
+          <p className="mt-2 text-sm max-w-[320px]" style={{ color: "var(--muted-foreground)" }}>
+            Enviamos um código de 6 dígitos para
           </p>
           <p className="mt-1 text-sm font-semibold">{email}</p>
-          <p className="mt-6 text-xs max-w-[280px]" style={{ color: "var(--subtle)" }}>
-            Abra o email e toque no link para entrar. Pode demorar até 1 minuto pra chegar.
-          </p>
-          <p className="mt-3 text-xs max-w-[280px]" style={{ color: "var(--subtle)" }}>
-            Não recebeu? Verifique a caixa de spam, lixeira ou promoções.
-          </p>
+
+          <input
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={6}
+            className="input-field text-center text-2xl tracking-[0.5em] font-semibold max-w-[220px] mt-6"
+            placeholder="000000"
+            value={codigo}
+            onChange={(e) => setCodigo(digits(e.target.value).slice(0, 6))}
+          />
 
           <button
-            onClick={() => {
-              setEnviado(false);
-              setErro(null);
-            }}
-            className="mt-8 text-sm"
-            style={{ color: "var(--primary)" }}
+            className="btn-primary mt-4 max-w-xs"
+            disabled={verificando || digits(codigo).length !== 6}
+            onClick={verificarCodigo}
           >
-            Usar outro email
+            {verificando ? "Verificando..." : "Entrar"}
           </button>
+
+          <button
+            type="button"
+            className="mt-3 text-xs underline"
+            disabled={reenviando}
+            onClick={() => enviarCodigo({ silencioso: true })}
+            style={{ color: "var(--muted-foreground)" }}
+          >
+            {reenviando ? "Reenviando..." : "Reenviar código"}
+          </button>
+          <button
+            type="button"
+            className="mt-1 text-[11px] underline"
+            style={{ color: "var(--subtle)" }}
+            onClick={() => {
+              setEtapa("form");
+              setCodigo("");
+              setErro(null);
+              setReenviadoMsg(null);
+            }}
+          >
+            Usar outro e-mail
+          </button>
+
+          {erro && (
+            <p className="text-center mt-3 text-xs" style={{ color: "var(--destructive)" }}>
+              {erro}
+            </p>
+          )}
+          {reenviadoMsg && (
+            <p className="text-center mt-3 text-xs" style={{ color: "var(--primary)" }}>
+              {reenviadoMsg}
+            </p>
+          )}
+
+          <p className="mt-6 text-[11px] max-w-[280px]" style={{ color: "var(--subtle)" }}>
+            Não recebeu? Verifique spam, lixeira ou promoções.
+          </p>
         </div>
 
         <Link to="/" className="mt-4 text-center text-xs" style={{ color: "var(--subtle)" }}>
@@ -136,11 +208,17 @@ function AuthPage() {
       <div className="mt-10 text-center">
         <h1 className="text-3xl font-black">Entrar no Elevo</h1>
         <p className="mt-2 text-sm" style={{ color: "var(--muted-foreground)" }}>
-          Digite seu email e enviamos um link de acesso. Sem senha.
+          Digite seu e-mail e enviamos um código de 6 dígitos. Sem senha.
         </p>
       </div>
 
-      <form onSubmit={handleEnviar} className="mt-8 space-y-4">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          void enviarCodigo();
+        }}
+        className="mt-8 space-y-4"
+      >
         <div>
           <label className="text-xs font-medium mb-1.5 block" style={{ color: "var(--muted-foreground)" }}>
             E-mail
@@ -164,7 +242,7 @@ function AuthPage() {
         )}
 
         <button className="btn-primary" disabled={loading || !email}>
-          {loading ? "Enviando link..." : "Entrar"}
+          {loading ? "Enviando código..." : "Enviar código"}
         </button>
 
         <p className="text-center text-[11px]" style={{ color: "var(--subtle)" }}>
