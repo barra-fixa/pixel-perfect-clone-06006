@@ -33,6 +33,7 @@ function UpgradePage() {
   const criar = useServerFn(criarAssinaturaMP);
   const [loading, setLoading] = useState<null | "mensal" | "anual">(null);
   const [emailPagamento, setEmailPagamento] = useState(user.email ?? "");
+  const [editandoEmail, setEditandoEmail] = useState(false);
   const emailPagamentoOk = /\S+@\S+\.\S+/.test(emailPagamento.trim());
 
   async function ativar(plano: "mensal" | "anual") {
@@ -134,32 +135,47 @@ function UpgradePage() {
         </ul>
       </div>
 
-      {/* E-mail de pagamento (editavel, desacoplado do login) */}
-      <div className="elevo-card mt-6 p-4">
-        <label
-          htmlFor="email-pagamento"
-          className="text-xs font-semibold block"
-          style={{ color: "var(--muted-foreground)" }}
-        >
-          E-mail de pagamento
-        </label>
-        <input
-          id="email-pagamento"
-          type="email"
-          inputMode="email"
-          autoComplete="email"
-          className="input-field mt-1.5"
-          placeholder="seu@email.com"
-          value={emailPagamento}
-          onChange={(e) => setEmailPagamento(e.target.value)}
-        />
-        <p className="mt-1.5 text-[10px] leading-relaxed" style={{ color: "var(--subtle)" }}>
-          Pode ser diferente do e-mail de login — use o e-mail da sua conta Mercado Pago, se preferir.
-        </p>
-        {emailPagamento && !emailPagamentoOk && (
-          <p className="mt-1 text-[10px]" style={{ color: "var(--destructive)" }}>
-            E-mail inválido.
-          </p>
+      {/* E-mail de pagamento — escondido por padrão, usa e-mail de login automaticamente */}
+      <div className="mt-6">
+        {!editandoEmail ? (
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => setEditandoEmail(true)}
+              className="text-xs underline"
+              style={{ color: "var(--muted-foreground)" }}
+            >
+              Pagar com outro e-mail
+            </button>
+          </div>
+        ) : (
+          <div className="elevo-card p-4">
+            <label
+              htmlFor="email-pagamento"
+              className="text-xs font-semibold block"
+              style={{ color: "var(--muted-foreground)" }}
+            >
+              E-mail de pagamento
+            </label>
+            <input
+              id="email-pagamento"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              className="input-field mt-1.5"
+              placeholder="seu@email.com"
+              value={emailPagamento}
+              onChange={(e) => setEmailPagamento(e.target.value)}
+            />
+            <p className="mt-1.5 text-[10px] leading-relaxed" style={{ color: "var(--subtle)" }}>
+              Use o e-mail da sua conta Mercado Pago, se preferir.
+            </p>
+            {emailPagamento && !emailPagamentoOk && (
+              <p className="mt-1 text-[10px]" style={{ color: "var(--destructive)" }}>
+                E-mail inválido.
+              </p>
+            )}
+          </div>
         )}
       </div>
 
