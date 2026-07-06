@@ -264,6 +264,16 @@ function UpgradePage() {
       <p className="text-center mt-5 text-[10px]" style={{ color: "var(--subtle)" }}>
         Cancele quando quiser. Sem fidelidade.
       </p>
+
+      {checkoutOpen && (
+        <CheckoutBrickMP
+          plano={checkoutOpen.plano}
+          email={checkoutOpen.email}
+          onClose={fecharCheckout}
+          onSuccess={sucessoCheckout}
+        />
+      )}
     </div>
   );
 }
+
