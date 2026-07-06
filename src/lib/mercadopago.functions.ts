@@ -116,6 +116,82 @@ export const criarAssinaturaMP = createServerFn({ method: "POST" })
     return { init_point, preapproval_id };
   });
 
+/**
+ * Checkout transparente: cria preapproval usando um card_token_id gerado
+ * pelo Bricks/SDK v2 no próprio app. Assina sem redirecionar pro MP.
+ */
+export const criarAssinaturaMPComToken = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z
+      .object({
+        plano: z.enum(["mensal", "anual"]),
+        card_token_id: z.string().min(8),
+        email: z.string().email(),
+        payment_method_id: z.string().optional(),
+      })
+      .parse(input)
+  )
+  .handler(async ({ data, context }) => {
+    const token = process.env.MERCADOPAGO_ACCESS_TOKEN?.trim();
+    if (!token) throw new Error("MERCADOPAGO_ACCESS_TOKEN não configurado");
+
+    const { userId } = context;
+    const cfg = PRECOS[data.plano];
+    const origin = getOrigin();
+
+    const body = {
+      reason: cfg.reason,
+      external_reference: `${userId}:${data.plano}`,
+      payer_email: data.email,
+      card_token_id: data.card_token_id,
+      back_url: `${origin}/perfil?assinatura=ok`,
+      auto_recurring: {
+        frequency: cfg.frequency,
+        frequency_type: cfg.frequency_type,
+        transaction_amount: cfg.amount,
+        currency_id: "BRL",
+        free_trial: { frequency: 14, frequency_type: "days" },
+      },
+      status: "authorized",
+    };
+
+    const res = await fetch(`${MP_API}/preapproval`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    const rawBody = await res.text();
+    let json: Record<string, unknown> = {};
+    try { json = JSON.parse(rawBody) as Record<string, unknown>; } catch { /* not json */ }
+    if (!res.ok) {
+      console.error("[mp] preapproval c/ token falhou", {
+        status: res.status, body: rawBody,
+      });
+      const msg = (json as { message?: string }).message ?? rawBody.slice(0, 200);
+      throw new Error(`Mercado Pago retornou ${res.status}: ${msg}`);
+    }
+
+    const preapproval_id = json.id as string;
+    const status = (json.status as string) || "authorized";
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin
+      .from("profiles")
+      .update({
+        plano_ciclo: data.plano,
+        mp_preapproval_id: preapproval_id,
+        mp_status: status,
+      })
+      .eq("id", userId);
+
+    return { preapproval_id, status };
+  });
+
+
 export const cancelarAssinaturaMP = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
