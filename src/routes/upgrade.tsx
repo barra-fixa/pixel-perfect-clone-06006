@@ -30,8 +30,8 @@ function UpgradePage() {
   const navigate = useNavigate();
   const user = useElevoUser();
   const pitch = pitchProPorObjetivo(user.objetivo);
-  const criar = useServerFn(criarAssinaturaMP);
   const [loading, setLoading] = useState<null | "mensal" | "anual">(null);
+  const [checkoutOpen, setCheckoutOpen] = useState<null | { plano: "mensal" | "anual"; email: string }>(null);
   const [emailPagamento, setEmailPagamento] = useState(user.email ?? "");
   const [editandoEmail, setEditandoEmail] = useState(false);
   const [emailEditadoManual, setEmailEditadoManual] = useState(false);
@@ -65,16 +65,17 @@ function UpgradePage() {
       return;
     }
     setLoading(plano);
-    try {
-      const r = await criar({ data: { plano, email, nome: user.nome } });
-      window.location.href = r.init_point;
-    } catch (e) {
-      toast.error("Não foi possível iniciar a assinatura", {
-        description: e instanceof Error ? e.message : "Tente novamente em instantes.",
-      });
-      setLoading(null);
-    }
+    // Abre o Bricks inline (checkout transparente) — sem sair do app.
+    setCheckoutOpen({ plano, email });
+    setLoading(null);
   }
+
+  const fecharCheckout = useCallback(() => setCheckoutOpen(null), []);
+  const sucessoCheckout = useCallback(() => {
+    setCheckoutOpen(null);
+    navigate({ to: "/perfil", search: { assinatura: "ok" } as never });
+  }, [navigate]);
+
 
   return (
     <div className="elevo-shell px-5 pt-5 pb-10 min-h-dvh">
