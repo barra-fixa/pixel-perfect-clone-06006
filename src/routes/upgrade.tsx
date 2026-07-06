@@ -1,12 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
+import { useCallback, useEffect, useState } from "react";
 import { Check, ChevronLeft, Sparkles, Loader2, CreditCard, QrCode } from "lucide-react";
 import { toast } from "sonner";
 import { useElevoUser } from "@/lib/elevo-store";
 import { pitchProPorObjetivo } from "@/lib/objetivo-labels";
-import { criarAssinaturaMP } from "@/lib/mercadopago.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { CheckoutBrickMP } from "@/components/CheckoutBrickMP";
+
 
 export const Route = createFileRoute("/upgrade")({
   component: UpgradePage,
@@ -30,8 +30,8 @@ function UpgradePage() {
   const navigate = useNavigate();
   const user = useElevoUser();
   const pitch = pitchProPorObjetivo(user.objetivo);
-  const criar = useServerFn(criarAssinaturaMP);
   const [loading, setLoading] = useState<null | "mensal" | "anual">(null);
+  const [checkoutOpen, setCheckoutOpen] = useState<null | { plano: "mensal" | "anual"; email: string }>(null);
   const [emailPagamento, setEmailPagamento] = useState(user.email ?? "");
   const [editandoEmail, setEditandoEmail] = useState(false);
   const [emailEditadoManual, setEmailEditadoManual] = useState(false);
@@ -65,16 +65,17 @@ function UpgradePage() {
       return;
     }
     setLoading(plano);
-    try {
-      const r = await criar({ data: { plano, email, nome: user.nome } });
-      window.location.href = r.init_point;
-    } catch (e) {
-      toast.error("Não foi possível iniciar a assinatura", {
-        description: e instanceof Error ? e.message : "Tente novamente em instantes.",
-      });
-      setLoading(null);
-    }
+    // Abre o Bricks inline (checkout transparente) — sem sair do app.
+    setCheckoutOpen({ plano, email });
+    setLoading(null);
   }
+
+  const fecharCheckout = useCallback(() => setCheckoutOpen(null), []);
+  const sucessoCheckout = useCallback(() => {
+    setCheckoutOpen(null);
+    navigate({ to: "/perfil", search: { assinatura: "ok" } as never });
+  }, [navigate]);
+
 
   return (
     <div className="elevo-shell px-5 pt-5 pb-10 min-h-dvh">
@@ -263,6 +264,16 @@ function UpgradePage() {
       <p className="text-center mt-5 text-[10px]" style={{ color: "var(--subtle)" }}>
         Cancele quando quiser. Sem fidelidade.
       </p>
+
+      {checkoutOpen && (
+        <CheckoutBrickMP
+          plano={checkoutOpen.plano}
+          email={checkoutOpen.email}
+          onClose={fecharCheckout}
+          onSuccess={sucessoCheckout}
+        />
+      )}
     </div>
   );
 }
+
