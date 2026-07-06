@@ -2,6 +2,15 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+export const getMpPublicKey = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async () => {
+    const key = process.env.MERCADOPAGO_PUBLIC_KEY?.trim();
+    if (!key) throw new Error("MERCADOPAGO_PUBLIC_KEY não configurada");
+    return { publicKey: key };
+  });
+
+
 const PRECOS = {
   mensal: { amount: 17.9, frequency: 1, frequency_type: "months" as const, reason: "Elevo Pro Mensal" },
   anual: { amount: 119.0, frequency: 12, frequency_type: "months" as const, reason: "Elevo Pro Anual" },
