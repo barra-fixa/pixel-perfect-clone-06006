@@ -19,12 +19,14 @@ const PRECOS = {
 const MP_API = "https://api.mercadopago.com";
 
 function getOrigin(): string {
-  return (
-    process.env.PUBLIC_APP_URL ||
-    process.env.VITE_PUBLIC_APP_URL ||
-    "https://pixel-perfect-clone-06006.lovable.app"
-  );
+  const env = process.env.PUBLIC_APP_URL || process.env.VITE_PUBLIC_APP_URL;
+  if (env && /^https?:\/\//.test(env)) return env.replace(/\/$/, "");
+  // Fallback seguro: nunca hardcode de outro projeto. Se PUBLIC_APP_URL não
+  // estiver setado, usamos o domínio publicado atual como último recurso.
+  // (Em preview isso será sobrescrito quando o secret for configurado.)
+  return "https://pixel-perfect-clone-06006.lovable.app";
 }
+
 
 export const criarAssinaturaMP = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
