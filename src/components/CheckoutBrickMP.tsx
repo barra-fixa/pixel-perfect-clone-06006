@@ -2,7 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Loader2, X, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-import { getMpPublicKey, criarAssinaturaMPComToken } from "@/lib/mercadopago.functions";
+import { criarAssinaturaMPComToken } from "@/lib/mercadopago.functions";
+
+async function fetchMpPublicKey(): Promise<string> {
+  const r = await fetch("/api/public/mp-public-key", { method: "GET" });
+  if (!r.ok) {
+    const t = await r.text().catch(() => "");
+    throw new Error(`Falha ao carregar chave pública (${r.status}) ${t.slice(0, 120)}`);
+  }
+  const j = (await r.json()) as { publicKey?: string; error?: string };
+  if (!j.publicKey) throw new Error(j.error || "Chave pública ausente");
+  return j.publicKey;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare global { interface Window { MercadoPago?: any } }
@@ -37,7 +48,6 @@ type Props = {
 };
 
 export function CheckoutBrickMP({ plano, email, onClose, onSuccess }: Props) {
-  const getKey = useServerFn(getMpPublicKey);
   const criar = useServerFn(criarAssinaturaMPComToken);
   const containerRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -50,7 +60,7 @@ export function CheckoutBrickMP({ plano, email, onClose, onSuccess }: Props) {
     (async () => {
       try {
         await loadMpSdk();
-        const { publicKey } = await getKey();
+        const publicKey = await fetchMpPublicKey();
         if (cancelled) return;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const mp = new (window as any).MercadoPago(publicKey, { locale: "pt-BR" });
@@ -115,7 +125,7 @@ export function CheckoutBrickMP({ plano, email, onClose, onSuccess }: Props) {
       cancelled = true;
       try { brickRef.current?.unmount?.(); } catch { /* noop */ }
     };
-  }, [plano, email, getKey, criar, onSuccess]);
+  }, [plano, email, criar, onSuccess]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm">
