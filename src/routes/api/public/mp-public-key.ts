@@ -14,13 +14,14 @@ export const Route = createFileRoute("/api/public/mp-public-key")({
             { status: 500 },
           );
         }
+        const env = key.startsWith("TEST-")
+          ? "sandbox"
+          : key.startsWith("APP_USR-")
+          ? "live"
+          : "unknown";
         return Response.json(
-          { publicKey: key },
-          {
-            headers: {
-              "cache-control": "public, max-age=300",
-            },
-          },
+          { publicKey: key, env },
+          { headers: { "cache-control": "public, max-age=300" } },
         );
       },
     },
