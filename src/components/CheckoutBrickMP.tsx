@@ -60,7 +60,7 @@ export function CheckoutBrickMP({ plano, email, onClose, onSuccess }: Props) {
     (async () => {
       try {
         await loadMpSdk();
-        const { publicKey } = await getKey();
+        const publicKey = await fetchMpPublicKey();
         if (cancelled) return;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const mp = new (window as any).MercadoPago(publicKey, { locale: "pt-BR" });
@@ -125,7 +125,7 @@ export function CheckoutBrickMP({ plano, email, onClose, onSuccess }: Props) {
       cancelled = true;
       try { brickRef.current?.unmount?.(); } catch { /* noop */ }
     };
-  }, [plano, email, getKey, criar, onSuccess]);
+  }, [plano, email, criar, onSuccess]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm">
