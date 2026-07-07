@@ -54,6 +54,14 @@ export function CheckoutBrickMP({ plano, email, onClose, onSuccess }: Props) {
   const brickRef = useRef<any>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "processing" | "error">("loading");
   const [error, setError] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
+
+  const retry = () => {
+    setError(null);
+    setStatus("loading");
+    setAttempt((n) => n + 1);
+  };
+
 
   useEffect(() => {
     let cancelled = false;
@@ -125,7 +133,7 @@ export function CheckoutBrickMP({ plano, email, onClose, onSuccess }: Props) {
       cancelled = true;
       try { brickRef.current?.unmount?.(); } catch { /* noop */ }
     };
-  }, [plano, email, criar, onSuccess]);
+  }, [plano, email, criar, onSuccess, attempt]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm">
@@ -157,8 +165,28 @@ export function CheckoutBrickMP({ plano, email, onClose, onSuccess }: Props) {
           </div>
         )}
         {status === "error" && (
-          <div className="py-6 text-sm text-center" style={{ color: "var(--destructive)" }}>
-            {error ?? "Erro inesperado."}
+          <div className="py-6 flex flex-col items-center gap-3 text-center">
+            <div className="text-sm" style={{ color: "var(--destructive)" }}>
+              Não conseguimos abrir o checkout seguro.
+            </div>
+            <div className="text-[11px] max-w-xs break-words" style={{ color: "var(--muted-foreground)" }}>
+              {error ?? "Erro inesperado."}
+            </div>
+            <div className="flex gap-2 mt-1">
+              <button
+                onClick={retry}
+                className="px-4 py-2 rounded-full text-xs font-bold elevo-card"
+              >
+                Tentar de novo
+              </button>
+              <button
+                onClick={onClose}
+                className="px-4 py-2 rounded-full text-xs"
+                style={{ color: "var(--muted-foreground)" }}
+              >
+                Fechar
+              </button>
+            </div>
           </div>
         )}
 
